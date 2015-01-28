@@ -44,3 +44,6 @@ Temporary Items
 *.classpath
 *.project
 *.prefs
+*.class
+target
+*.log
