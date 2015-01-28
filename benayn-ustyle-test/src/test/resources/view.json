@@ -1,0 +1,30 @@
+TypeDescrib{
+    level=1,
+    isPair=false,
+    describe=java.util.List<java.util.Map<java.lang.String, java.util.Set<java.lang.Integer>>>,
+    rawType=java.util.List,
+    childType=TypeDescrib{
+        level=2,
+        isPair=true,
+        describe=java.util.Map<java.lang.String, java.util.Set<java.lang.Integer>>,
+        rawType=java.util.Map,
+        childType=TypeDescrib{
+            level=3,
+            isPair=false,
+            describe=java.lang.String,
+            rawType=java.lang.String
+        },
+        childType2=TypeDescrib{
+            level=3,
+            isPair=false,
+            describe=java.util.Set<java.lang.Integer>,
+            rawType=java.util.Set,
+            childType=TypeDescrib{
+                level=4,
+                isPair=false,
+                describe=java.lang.Integer,
+                rawType=java.lang.Integer
+            }
+        }
+    }
+}
