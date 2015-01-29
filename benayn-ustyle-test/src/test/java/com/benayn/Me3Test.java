@@ -17,10 +17,13 @@ import org.junit.Test;
 
 import com.benayn.ustyle.Arrays2;
 import com.benayn.ustyle.Decisional;
+import com.benayn.ustyle.Decisions;
+import com.benayn.ustyle.Gather;
 import com.benayn.ustyle.JsonR;
 import com.benayn.ustyle.JsonW;
-import com.benayn.ustyle.Objects2;
+import com.benayn.ustyle.Mapper;
 import com.benayn.ustyle.Pair;
+import com.benayn.ustyle.Randoms;
 import com.benayn.ustyle.Reflecter;
 import com.benayn.ustyle.Sources;
 import com.benayn.ustyle.Suppliers2;
@@ -30,8 +33,6 @@ import com.benayn.ustyle.base.Domain;
 import com.benayn.ustyle.behavior.ValueBehavior;
 import com.benayn.ustyle.metest.generics.GenericsUtils;
 import com.benayn.ustyle.metest.generics.TestGenerics;
-import com.cedarsoftware.util.io.JsonReader;
-import com.cedarsoftware.util.io.JsonWriter;
 import com.google.common.base.Defaults;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
@@ -43,7 +44,83 @@ import com.google.common.reflect.TypeToken;
 
 public class Me3Test extends Me2Test {
     
-public static abstract class GenericTestClass<E, L, R, D, T> {
+    public static class Ran {
+        Map<List<Set<Map<String, Long>>>, Set<List<com.benayn.berkeley.Person>>> theMap;
+        Set<Map<BigInteger, List<com.benayn.berkeley.Person>>> theSet;
+        List<Map<Double, Set<BigDecimal>>> theList;
+    }
+    
+    @Test
+    public void testRandoms() {
+        Reflecter<Ran> reflecter = Reflecter.from(new Ran());
+        TypeDescrib theMapType = TypeRefer.of(reflecter.field("theMap")).asTypeDesc();
+        
+        assertTrue(theMapType.isPair());
+        assertEquals(Map.class, theMapType.rawClazz());
+        assertTrue(theMapType.next().hasChild());
+        assertTrue(theMapType.nextPairType().hasChild());
+        
+        Ran r = Randoms.get(new Ran());
+        
+        Gather.from(r.theList).info();
+        assertTrue(r.theList instanceof List);
+        for (Map<Double, Set<BigDecimal>> l : r.theList) {
+            assertTrue(l instanceof Map);
+            for (Double d : l.keySet()) {
+                assertTrue(d instanceof Double);
+                Set<BigDecimal> s = l.get(d);
+                assertTrue(s instanceof Set);
+                for (BigDecimal b : s) {
+                    assertTrue(b instanceof BigDecimal);
+                }
+            }
+        }
+        
+        Gather.from(r.theSet).info();
+        assertTrue(r.theSet instanceof Set);
+        for (Map<BigInteger, List<com.benayn.berkeley.Person>> m : r.theSet) {
+            assertTrue(m instanceof Map);
+            for (BigInteger b : m.keySet()) {
+                assertTrue(b instanceof BigInteger);
+                List<com.benayn.berkeley.Person> l = m.get(b);
+                assertTrue(l instanceof List);
+                for (com.benayn.berkeley.Person p : l) {
+                    assertTrue(p instanceof com.benayn.berkeley.Person);
+                }
+            }
+        }
+        
+        Mapper.from(r.theMap).info();
+        assertTrue(r.theMap instanceof Map);
+        for (List<Set<Map<String, Long>>> k : r.theMap.keySet()) {
+            assertTrue(k instanceof List);
+            for (Set<Map<String, Long>> k1 : k) {
+                assertTrue(k1 instanceof Set);
+                for (Map<String, Long> k2 : k1) {
+                    assertTrue(k2 instanceof Map);
+                    for (String k2k : k2.keySet()) {
+                        assertTrue(k2k instanceof String);
+                        assertTrue(k2.get(k2k) instanceof Long);
+                    }
+                }
+            }
+            
+            Set<List<com.benayn.berkeley.Person>> v = r.theMap.get(k);
+            assertTrue(v instanceof Set);
+            for (List<com.benayn.berkeley.Person> l2 : v) {
+                assertTrue(l2 instanceof List);
+                for (com.benayn.berkeley.Person p : l2) {
+                    assertTrue(p instanceof com.benayn.berkeley.Person);
+                }
+            }
+        }
+        
+        assertTrue(Map.class.isAssignableFrom(Hashtable.class));
+        assertTrue(Map.class.isAssignableFrom(Map.class));
+        assertTrue(Decisions.isAssignableFrom(Hashtable.class, Map.class));
+    }
+    
+    public static abstract class GenericTestClass<E, L, R, D, T> {
         
     }
     
@@ -334,25 +411,16 @@ public static abstract class GenericTestClass<E, L, R, D, T> {
 	
 	@Test
 	public void testJson() throws IOException {
+		
 		//Mapper.from(JsonReader.jsonToMaps(json)).info();
-		String json = Sources.asString(Me2Test.class, "/test.json");
-		log.info(json);
-		
-		JsonR.of(json).mapper().info();
-		JsonR.of(json).gather().info();
-		
-		String json2 = Sources.asString(Me2Test.class, "/test2.json");
-		log.info(JsonR.of(json2).list());
-		
-		//json
-		Domain d = Domain.getDomain();
-		String json3 = JsonWriter.objectToJson(d);
-		log.info(json3);
-		Domain d2 = (Domain) JsonReader.jsonToJava(json3);
-		assertTrue(Objects2.isEqual(d, d2));
-		
-		Domain d4 = Reflecter.from(d).copyTo(Domain.class);
-		assertTrue(Objects2.isEqual(d, d4));
+        String json = Sources.asString(Me2Test.class, "/test.json");
+        log.info(json);
+        
+        JsonR.of(json).mapper().info();
+        JsonR.of(json).gather().info();
+        
+        String json2 = Sources.asString(Me2Test.class, "/test2.json");
+        log.info(JsonR.of(json2).list());
 		
 		Object[] o = new Object[]{false, true, false};
 		Boolean[] b = Arrays2.convert(o, Boolean.class);

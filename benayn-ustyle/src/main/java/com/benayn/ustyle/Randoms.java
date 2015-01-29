@@ -1,8 +1,6 @@
 package com.benayn.ustyle;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -13,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import com.benayn.ustyle.TypeRefer.TypeDescrib;
 import com.benayn.ustyle.behavior.StructBehavior;
 import com.benayn.ustyle.behavior.ValueBehavior;
 import com.benayn.ustyle.logger.Log;
@@ -122,146 +121,165 @@ public final class Randoms {
 		@Override protected Object bigDecimalIf(BigDecimal resolvedP) { return BigDecimal.valueOf(r.nextDouble()); }
 		@Override protected Object bigIntegerIf(BigInteger resolvedP) { return BigInteger.valueOf(r.nextLong()); }
 
-		@SuppressWarnings("unchecked") @Override protected <K, V> Object mapIf(Map<K, V> resolvedP) {
+		@Override protected <K, V> Object mapIf(Map<K, V> resolvedP) {
 			if (null == this.field) {
 				return null;
 			}
 			
-			//java.util.Map<java.lang.String, java.lang.Integer>
-			ParameterizedType parameterizedType = (ParameterizedType) this.field.getGenericType();
-			//interface java.util.Map
-            Class<?> rawType = (Class<?>) parameterizedType.getRawType();
-            //[class java.lang.String, class java.lang.Integer]
-            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-            //[K, V]
-            //TypeVariable<?>[] typeParameters = rawType.getTypeParameters();
-            
-            //avoid dead loop
-            if (field.getDeclaringClass() == actualTypeArguments[0]
-            		|| field.getDeclaringClass() == actualTypeArguments[1]) {
-            	return null;
-            }
-            if (isTypeArgInterf(actualTypeArguments[0])
-            		|| isTypeArgInterf(actualTypeArguments[1])) {
-            	return null;
-            }
-            
-            Map<K, V> rMap = null;
-            if (rawType == Map.class) {
-            	rMap = Maps.newHashMap();
-            } else {
-            	rMap = (Map<K, V>) Suppliers2.toInstance(rawType).get();
-            }
-            
-            if (null == rMap) {
-            	return null;
-            }
-            
-            try {
-            	for (int i = 0; i < Math.max(2, r.nextInt(5)); i++) {
-    				rMap.put((K) get(getRawType(actualTypeArguments[0])), (V) get(getRawType(actualTypeArguments[1])));
-    			}
-			} catch (Exception e) {
-				return null;
+			TypeDescrib typeDesc = TypeRefer.of(this.field).asTypeDesc();
+			
+			//avoid dead loop
+			if (field.getDeclaringClass() == typeDesc.next().rawClazz()
+			        || field.getDeclaringClass() == typeDesc.nextPairType().rawClazz()) {
+			    return null;
 			}
-            
-			return rMap;
+			
+			return getInst(typeDesc);
+			
+//			//java.util.Map<java.lang.String, java.lang.Integer>
+//			ParameterizedType parameterizedType = (ParameterizedType) this.field.getGenericType();
+//			//interface java.util.Map
+//            Class<?> rawType = (Class<?>) parameterizedType.getRawType();
+//            //[class java.lang.String, class java.lang.Integer]
+//            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+//            //[K, V]
+//            //TypeVariable<?>[] typeParameters = rawType.getTypeParameters();
+//            
+//            //avoid dead loop
+//            if (field.getDeclaringClass() == actualTypeArguments[0]
+//            		|| field.getDeclaringClass() == actualTypeArguments[1]) {
+//            	return null;
+//            }
+//            if (isTypeArgInterf(actualTypeArguments[0])
+//            		|| isTypeArgInterf(actualTypeArguments[1])) {
+//            	return null;
+//            }
+//            
+//            Map<K, V> rMap = null;
+//            if (rawType == Map.class) {
+//            	rMap = Maps.newHashMap();
+//            } else {
+//            	rMap = (Map<K, V>) Suppliers2.toInstance(rawType).get();
+//            }
+//            
+//            if (null == rMap) {
+//            	return null;
+//            }
+//            
+//            try {
+//            	for (int i = 0; i < Math.max(2, r.nextInt(5)); i++) {
+//    				rMap.put((K) get(getRawType(actualTypeArguments[0])), (V) get(getRawType(actualTypeArguments[1])));
+//    			}
+//			} catch (Exception e) {
+//				return null;
+//			}
+//            
+//			return rMap;
 		}
 		
-		@SuppressWarnings("unchecked") @Override protected <T> Object setIf(Set<T> resolvedP) {
+		@Override protected <T> Object setIf(Set<T> resolvedP) {
 			if (null == this.field) {
 				return null;
 			}
 			
-			ParameterizedType parameterizedType = (ParameterizedType) this.field.getGenericType();
-            Class<?> rawType = (Class<?>) parameterizedType.getRawType();
-            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+			TypeDescrib typeDesc = TypeRefer.of(this.field).asTypeDesc();
             
             //avoid dead loop
-            if (field.getDeclaringClass() == actualTypeArguments[0]) {
-            	return null;
-            }
-            if (isTypeArgInterf(actualTypeArguments[0])) {
-            	return null;
+            if (field.getDeclaringClass() == typeDesc.next().rawClazz()) {
+                return null;
             }
             
-            Set<T> rSet = null;
-            if (rawType == Set.class) {
-            	rSet = Sets.newHashSet();
-            } else {
-            	rSet = (Set<T>) Suppliers2.toInstance(rawType).get();
-            }
-            
-            if (null == rSet) {
-            	return null;
-            }
-            
-            try {
-            	for (int i = 0; i < Math.max(2, r.nextInt(5)); i++) {
-    				rSet.add((T) get(getRawType(actualTypeArguments[0])));
-    			}
-			} catch (Exception e) {
-				return null;
-			}
-            
-            return rSet;
+            return getInst(typeDesc);
 		}
 		
-		@SuppressWarnings("unchecked") @Override protected <T> Object listIf(List<T> resolvedP) {
+		@Override protected <T> Object listIf(List<T> resolvedP) {
 			if (null == this.field) {
 				return null;
 			}
 			
-			ParameterizedType parameterizedType = (ParameterizedType) this.field.getGenericType();
-            Class<?> rawType = (Class<?>) parameterizedType.getRawType();
-            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+			TypeDescrib typeDesc = TypeRefer.of(this.field).asTypeDesc();
             
             //avoid dead loop
-            if (field.getDeclaringClass() == actualTypeArguments[0]) {
-            	return null;
+            if (field.getDeclaringClass() == typeDesc.next().rawClazz()) {
+                return null;
             }
             
-            if (isTypeArgInterf(actualTypeArguments[0])) {
-            	return null;
-            }
-            
-            List<T> rList = null;
-            if (rawType == List.class) {
-            	rList = Lists.newArrayList();
-            } else {
-            	rList = (List<T>) Suppliers2.toInstance(rawType).get();
-            }
-            
-            if (null == rList) {
-            	return null;
-            }
-            
-            try {
-            	for (int i = 0; i < Math.max(2, r.nextInt(5)); i++) {
-    				rList.add((T) get(getRawType(actualTypeArguments[0])));
-    			}
-			} catch (Exception e) {
-				return null;
-			}
-            
-            return rList;
+            return getInst(typeDesc);
 		}
 		
-		private Object getRawType(Object o) {
-			try {
-				return ((ParameterizedType) o).getRawType();
-			} catch (Exception e) {
-				return o;
-			}
+		@SuppressWarnings({ "unchecked", "rawtypes" }) private Object getInst(TypeDescrib type) {
+		    Class<?> clazz = type.rawClazz();
+		    
+		    if (type.hasChild()) {
+		        //Set<Map<String, List<Long>>>
+		        
+		        boolean isInterf = clazz.isInterface();
+		        
+		        //Map
+		        if (Map.class.isAssignableFrom(clazz)) {
+		            Map map = null;
+		            if (isInterf) {
+		                map = Maps.newHashMap();
+		            } else {
+		                map = (Map) Suppliers2.toInstance(clazz).get();
+		            }
+		            
+		            for (int i = 0; i < Math.max(2, r.nextInt(5)); i++) {
+	                    map.put(getInst(type.next()), getInst(type.nextPairType()));
+	                }
+		            
+		            return map;
+		        }
+		        //Set
+		        else if (Set.class.isAssignableFrom(clazz)) {
+		            Set set = null;
+		            if (isInterf) {
+		                set = Sets.newHashSet();
+		            } else {
+		                set = (Set) Suppliers2.toInstance(clazz).get();
+		            }
+		            
+		            for (int i = 0; i < Math.max(2, r.nextInt(5)); i++) {
+	                    set.add(getInst(type.next()));
+	                }
+		            
+		            return set;
+		        }
+		        //List
+		        else if (List.class.isAssignableFrom(clazz)) {
+		            List list = null;
+		            if (isInterf) { 
+		                list = Lists.newArrayList();
+		            } else {
+		                list = (List) Suppliers2.toInstance(clazz).get();
+		            }
+		            
+		            for (int i = 0; i < Math.max(2, r.nextInt(5)); i++) {
+	                    list.add(getInst(type.next()));
+	                }
+		            return list;
+		        }
+		        
+		    }
+
+		    return get(clazz);
 		}
 		
-		private boolean isTypeArgInterf(Type actualTypeArgument) {
-			try {
-				return ((Class<?>) ((ParameterizedType) actualTypeArgument).getRawType()).isInterface();
-			} catch (Exception e) {
-				return false;
-			}
-		}
+//		private Object getRawType(Object o) {
+//			try {
+//				return ((ParameterizedType) o).getRawType();
+//			} catch (Exception e) {
+//				return o;
+//			}
+//		}
+//		
+//		private boolean isTypeArgInterf(Type actualTypeArgument) {
+//			try {
+//				return ((Class<?>) ((ParameterizedType) actualTypeArgument).getRawType()).isInterface();
+//			} catch (Exception e) {
+//				return false;
+//			}
+//		}
 
 		@Override protected Object beanIf() { return Reflecter.from(this.clazz).populate4Test().get(); }
 		@Override protected Object nullIf() { return null; }

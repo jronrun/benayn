@@ -648,6 +648,11 @@ public final class Reflecter<T> {
 				log.info(String.format("set %s.%s = %s (%s)", delegate.get().getClass().getName(), 
 						propName, propVal, (null == propVal ? "null" : propVal.getClass().getName())));
 			}
+			
+			if ("serialVersionUID".equals(field.getName())) {
+			    return;
+			}
+			
 			field.setAccessible(true);
 			field.set(delegate.get(), propVal);
 		} catch (IllegalArgumentException e) {
