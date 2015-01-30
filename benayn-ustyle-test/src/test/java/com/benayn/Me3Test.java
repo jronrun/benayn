@@ -44,6 +44,59 @@ import com.google.common.reflect.TypeToken;
 
 public class Me3Test extends Me2Test {
     
+    public static class RefTest {
+        Map<Byte, List<Short>> map;
+        List<Set<Map<Short, Long>>> list;
+        Set<Map<Integer, List<Byte>>> set;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testReflecterAsMap() {
+        RefTest rt = Randoms.get(RefTest.class);
+        log.info(rt);
+        Map<String, Object> m = Reflecter.from(rt).asMap();
+        
+        Set<Map<Integer, List<Byte>>> propSet = (Set<Map<Integer, List<Byte>>>) m.get("set");
+        assertTrue(propSet instanceof Set);
+        for (Map<Integer, List<Byte>> m2 : propSet) {
+            assertTrue(m2 instanceof Map);
+            for (Integer i : m2.keySet()) {
+                assertTrue(i instanceof Integer);
+                List<Byte> l1 = m2.get(i);
+                assertTrue(l1 instanceof List);
+                for (Byte b1 : l1) {
+                    assertTrue(b1 instanceof Byte);
+                }
+            }
+        }
+        
+        List<Set<Map<Short, Long>>> propList = (List<Set<Map<Short, Long>>>) m.get("list");
+        assertTrue(propList instanceof List);
+        for (Set<Map<Short, Long>> s : propList) {
+            assertTrue(s instanceof Set);
+            for (Map<Short, Long> m1 : s) {
+                assertTrue(m1 instanceof Map);
+                for (Short s1 : m1.keySet()) {
+                    assertTrue(s1 instanceof Short);
+                    assertTrue(m1.get(s1) instanceof Long);
+                }
+            }
+        }
+        
+        Map<Byte, List<Short>> propMap = (Map<Byte, List<Short>>) m.get("map");
+        assertTrue(propMap instanceof Map);
+        for (Byte b : propMap.keySet()) {
+            assertTrue(b instanceof Byte);
+            List<Short> v = propMap.get(b);
+            assertTrue(v instanceof List);
+            for (Short s : v) {
+                assertTrue(s instanceof Short);
+            }
+        }
+        
+    }
+    
     public static class Ran {
         Map<List<Set<Map<String, Long>>>, Set<List<com.benayn.berkeley.Person>>> theMap;
         Set<Map<BigInteger, List<com.benayn.berkeley.Person>>> theSet;

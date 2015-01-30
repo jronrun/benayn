@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -165,7 +165,7 @@ public final class JsonR {
 	}
 	
 	/**
-	 * Returns the delegate JSON string as a {@link LinkedHashMap} or null
+	 * Returns the delegate JSON string as a {@link HashMap} or null
 	 * 
 	 * @return
 	 */
@@ -174,7 +174,7 @@ public final class JsonR {
 	}
 	
 	/**
-	 * Returns the delegate JSON string as a {@link LinkedHashMap} or empty instance
+	 * Returns the delegate JSON string as a {@link HashMap} or empty instance
 	 * 
 	 * @return
 	 */
@@ -269,7 +269,7 @@ public final class JsonR {
 		}
 		
 		if (noneNull) {
-			Map<String, Object> m = Maps.newLinkedHashMap();
+			Map<String, Object> m = Maps.newHashMap();
 			return (this.mapping = Optional.of(m));
 		}
 		
@@ -566,7 +566,7 @@ public final class JsonR {
 		//'S' read start object, 'F' field, 'V' value, 'P' post
 		char state = 'S';
 		String field = null;
-		Map<String, Object> map = Maps.newLinkedHashMap();
+		Map<String, Object> map = Maps.newHashMap();
 		final AsyncPushbackReader in = this.delegate;
 		
 		while (!done) {

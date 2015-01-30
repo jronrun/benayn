@@ -457,9 +457,9 @@ public class Objects2 {
 
 		@Override protected Boolean afterNullIf() {
 			this.clazz1 = this.delegate.getClass();
-			if (this.clazz1 != obj2.getClass()) {
+			if (null == obj2 || this.clazz1 != obj2.getClass()) {
 				if (log.isDebugEnabled()) {
-					log.debug(String.format(unEqualFmt, "after null if", this.clazz1.getName(), obj2.getClass().getName()));
+					log.debug(String.format(unEqualFmt, "after null if", this.clazz1.getName(), null == obj2 ? null : obj2.getClass().getName()));
 				}
 				return false;
 			}
@@ -782,5 +782,7 @@ public class Objects2 {
 	protected static final Exchanging<Float> Floats = new Exchanging<Float>() { };
 	protected static final Exchanging<Long> Longs = new Exchanging<Long>() { };
 	protected static final Exchanging<Short> Shorts = new Exchanging<Short>() { };
+	protected static final Exchanging<Object> PRIMITIVE_EXCHANGING = new Exchanging<Object>() { };
+
 	
 }

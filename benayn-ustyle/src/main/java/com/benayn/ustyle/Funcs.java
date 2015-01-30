@@ -69,7 +69,7 @@ public class Funcs {
 				if (Strs.DIGIT.matchesAllOf((String) input)) {
 					try { return Dater.of(Longs.tryParse((String) input)).get(); } catch (Exception e) { }
 				}
-				try { return Dater.of((String) input).get(); } catch (Exception e) { return null; }
+				try { return Dater.from((String) input).get(); } catch (Exception e) { return null; }
 			}
 			return null;
 		}

@@ -251,11 +251,6 @@ public class MeTest extends Assert {
 	}
 	
 	@Test
-	public void testObjects2IsEqual2() {
-		testObjects2IsEqual();
-	}
-	
-	@Test
 	public void testArray() {
 		isArrEquals(new Byte[]{33}, Arrays2.asArray((byte) 33));
 		isArrEquals(new Byte[]{33,44}, Arrays2.asArray((byte) 33, (byte) 44));
