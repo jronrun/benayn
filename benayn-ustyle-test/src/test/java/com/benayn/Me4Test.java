@@ -19,6 +19,7 @@ public class Me4Test extends Me3Test {
         boolean booleanP;
         Boolean booleanW;
         
+        byte byte1;
         short[] shortParr;
         Short[] shortWarr;
         String[] stringArr;
@@ -31,13 +32,16 @@ public class Me4Test extends Me3Test {
         ResolveTest rt = Randoms.get(ResolveTest.class);
         Reflecter<ResolveTest> ref = Reflecter.from(rt);
         
-        log.info(TypeRefer.of(ref.field("shortParr")).asDesc());
+        log.info(TypeRefer.of(String.class).asTypeDesc());
+        log.info(TypeRefer.of(ref.field("shortParr")).asTypeDesc().rawClazz().getComponentType());
+        log.info(TypeRefer.of(ref.field("shortWarr")).asTypeDesc().rawClazz().getComponentType());
         
         assertTrue(rt.shortParr.getClass().isArray());
         assertTrue(rt.shortWarr.getClass().isArray());
         
         assertTrue(Resolves.get(ref.field("booleanW"), "false") instanceof Boolean);
         assertTrue(Resolves.get(ref.field("booleanP"), Boolean.TRUE) instanceof Boolean);
+        assertTrue(Resolves.get(ref.field("byte1"), 1) instanceof Byte);
         
         assertTrue(Resolves.get(ref.field("shortParr"), rt.shortWarr) instanceof short[]);
         assertTrue(Resolves.get(ref.field("shortWarr"), rt.shortParr) instanceof Short[]);

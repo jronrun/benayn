@@ -52,6 +52,16 @@ public final class TypeRefer {
 	}
 	
 	/**
+     * Returns a new {@link TypeRefer} instance with given {@link Class}
+     * 
+     * @param target
+     * @return
+     */
+    public static <T> TypeRefer of(Class<T> target) {
+        return of(TypeToken.of(target));
+    }
+	
+	/**
 	 * Returns the delegate type as {@link TypeDescrib}
 	 * 
 	 * @return
