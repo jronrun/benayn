@@ -1,5 +1,6 @@
 package com.benayn.ustyle;
 
+import static com.benayn.ustyle.TypeRefer.of;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.lang.reflect.Field;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.benayn.ustyle.TypeRefer.TypeDescrib;
 import com.benayn.ustyle.behavior.StructBehavior;
@@ -21,7 +23,6 @@ import com.google.common.base.Enums;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.reflect.TypeToken;
 
 public final class Resolves {
     
@@ -31,24 +32,30 @@ public final class Resolves {
     protected static final Log log = Loggers.from(Resolves.class);
     
     public static <T> T get(Field field, Object input) {
-        return get(checkNotNull(field, "Field cannot be null").getGenericType(), input);
+        return get(of(checkNotNull(field)).asTypeDesc(), input);
     }
     
     public static <T> T get(Class<?> clazz, Object input) {
-        return get(TypeToken.of(checkNotNull(clazz, "Class cannot be null")).getType(), input);
+        return get(of(checkNotNull(clazz)).asTypeDesc(), input);
+    }
+    
+    public static <T> T get(Type type, Object input) {
+        return get(of(checkNotNull(type)).asTypeDesc(), input);
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> T get(Type type, Object input) {
-        return (T) new ResolveStructBehavior(type, input).doDetect();
+    public static <T> T get(TypeDescrib typeDescrib, Object input) {
+        return (T) new ResolveStructBehavior(checkNotNull(typeDescrib), input).doDetect();
     }
     
     private static class ResolveStructBehavior extends StructBehavior<Object> {
         
         private Object input;
+        private TypeDescrib type;
         
-        public ResolveStructBehavior(Type type, Object input) {
-            super(checkNotNull(type, "Type cannot be null"));
+        public ResolveStructBehavior(TypeDescrib type, Object input) {
+            super(checkNotNull(type.rawClazz(), "Type cannot be null"));
+            this.type = type;
             this.input = input;
         }
 
@@ -97,7 +104,7 @@ public final class Resolves {
         }
 
         @Override protected Object noneMatched() {
-            return new ResolveValueBehavior((Type) delegate, input).doDetect();
+            return new ResolveValueBehavior(type, input).doDetect();
         }
         
     }
@@ -105,9 +112,11 @@ public final class Resolves {
     private static class ResolveValueBehavior extends ValueBehavior<Object> {
 
         private Object input;
+        private TypeDescrib type;
         
-        public ResolveValueBehavior(Type type, Object input) {
-            super(type);
+        public ResolveValueBehavior(TypeDescrib type, Object input) {
+            super(type.rawClazz());
+            this.type = type;
             this.input = input;
         }
 
@@ -143,7 +152,7 @@ public final class Resolves {
                 return Arrays2.wraps(input);
             }
             
-            return Arrays2.wraps(get(this.clazz, input));
+            return Arrays2.wraps(get(type.rawClazz().getComponentType(), input));
         }
 
         @Override protected Object bigDecimalIf(BigDecimal resolvedP) {
@@ -158,25 +167,30 @@ public final class Resolves {
 
         @Override
         protected <K, V> Object mapIf(Map<K, V> resolvedP) {
-            TypeDescrib typeDesc = TypeRefer.of((Type) this.delegate).asTypeDesc();
-            return resolveValue(typeDesc, input);
+            return resolveValue(type, input);
         }
 
         @Override
         protected <T> Object setIf(Set<T> resolvedP) {
-            TypeDescrib typeDesc = TypeRefer.of((Type) this.delegate).asTypeDesc();
-            return resolveValue(typeDesc, input);
+            return resolveValue(type, input);
         }
 
         @Override
         protected <T> Object listIf(List<T> resolvedP) {
-            TypeDescrib typeDesc = TypeRefer.of((Type) this.delegate).asTypeDesc();
-            return resolveValue(typeDesc, input);
+            return resolveValue(type, input);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         protected Object beanIf() {
             try {
+                //input JSON object string
+                if (input instanceof String && isJSONObject((String) input)) {
+                    return JsonR.of((String) input).asObject(type.rawClazz());
+                } else if (Map.class.isAssignableFrom(input.getClass())) {
+                    return Reflecter.from(this.clazz).populate((Map<String, ?>) input).get();
+                }
+                
                 return this.clazz.cast(input);
             } catch (Exception e) {
                 log.warn("bean if cast expect: " + this.clazz.getName() + 
@@ -240,6 +254,13 @@ public final class Resolves {
                             set.add(resolveValue(type.next(), obj));
                         }
                     }
+                    //value JSON array string
+                    else if (value instanceof String && isJSONArray((String) value)) {
+                        List<?> list = JsonR.of((String) value).list();
+                        for (Object obj : list) {
+                            set.add(resolveValue(type.next(), obj));
+                        }
+                    }
                     
                     return set;
                 }
@@ -272,13 +293,31 @@ public final class Resolves {
                             list.add(resolveValue(type.next(), obj));
                         }
                     }
+                    //value JSON array string
+                    else if (value instanceof String && isJSONArray((String) value)) {
+                        List<?> l2 = JsonR.of((String) value).list();
+                        for (Object obj : l2) {
+                            list.add(resolveValue(type.next(), obj));
+                        }
+                    }
                     
                     return list;
                 }
                 
             }
 
-            return get(clazz, value);
+            return get(type, value);
+        }
+        
+        private static final Pattern JSON_ARRAY = Pattern.compile("^\\[.*?\\]$");
+        private static final Pattern JSON_OBJECT = Pattern.compile("^\\{.*?\\}$");
+        
+        private boolean isJSONObject(String target) {
+            return (null == target || target.isEmpty()) ? false : JSON_OBJECT.matcher(target).find();
+        }
+        
+        private boolean isJSONArray(String target) {
+            return (null == target || target.isEmpty()) ? false : JSON_ARRAY.matcher(target).find();
         }
 
         @Override protected Object nullIf() {

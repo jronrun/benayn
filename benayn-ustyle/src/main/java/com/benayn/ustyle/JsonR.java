@@ -25,7 +25,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.common.primitives.Primitives;
 
 public final class JsonR {
@@ -52,7 +51,9 @@ public final class JsonR {
 		
 		@Override public boolean apply(Field input) {
 			return (null != input) && (input.getType().isArray() 
-					|| input.getType().isEnum() || Collection.class.isAssignableFrom(input.getType()));
+					|| input.getType().isEnum() 
+					|| Collection.class.isAssignableFrom(input.getType())
+					|| Map.class.isAssignableFrom(input.getType()));
 		}
 	};
 	
@@ -87,12 +88,16 @@ public final class JsonR {
 				return Arrays2.convert((Object[]) val, Primitives.wrap(field.getType().getComponentType()));
 			}
 			//field list, val array
-			else if (List.class.isAssignableFrom(field.getType()) && val.getClass().isArray()) {
-				return Lists.newArrayList(Arrays2.wraps(val));
+			else if (List.class.isAssignableFrom(field.getType())) {
+			    return Resolves.get(field, val);
 			}
 			//field set, val array
-			else if (Set.class.isAssignableFrom(field.getType()) && val.getClass().isArray()) {
-				return Sets.newHashSet(Arrays2.wraps(val));
+			else if (Set.class.isAssignableFrom(field.getType())) {
+			    return Resolves.get(field, val);
+			}
+			//field map
+			else if (Map.class.isAssignableFrom(field.getType())) {
+			    return Resolves.get(field, val);
 			}
 			//field enum, val string
 			else if (field.getType().isEnum() && (val instanceof String)) {
@@ -383,7 +388,12 @@ public final class JsonR {
 		final int STATE_STRING_START = 0;
 		final int STATE_STRING_SLASH = 1;
 		final int STATE_HEX_DIGITS = 2;
+		final int STATE_FILED_ARRAY = 3;
+		final int STATE_FILED_OBJ = 4;
 		int state = STATE_STRING_START;
+		
+		int arraySymbol = 0;
+		int objSymbol = 0;
 
 		while (!done) {
 			int ch = this.delegate.read();
@@ -397,10 +407,47 @@ public final class JsonR {
 					state = STATE_STRING_SLASH;
 				} else if (ch == quotes) {
 					done = true;
-				} else {
+				} 
+				//field JSON array
+				else if (ch == arrayL) {
+				    state = STATE_FILED_ARRAY;
+				    strBuf.append(arrayL);
+				    ++arraySymbol;
+				} 
+				//field JSON obj
+				else if (ch == objL) {
+				    state = STATE_FILED_OBJ;
+				    strBuf.append(objL);
+				    ++objSymbol;
+				}
+				else {
 					strBuf.append(toChars(ch));
 				}
 				break;
+				
+			case STATE_FILED_OBJ:
+			    if (ch == objL) {
+                    ++objSymbol;
+                } else if (ch == objR) {
+                    --objSymbol;
+                    if (objSymbol == 0) {
+                        state = STATE_STRING_START;
+                    }
+                }
+                strBuf.append(toChars(ch));
+			    break;
+				
+			case STATE_FILED_ARRAY:
+			    if (ch == arrayL) {
+			        ++arraySymbol;
+			    } else if (ch == arrayR) {
+			        --arraySymbol;
+			        if (arraySymbol == 0) {
+			            state = STATE_STRING_START;
+			        }
+			    }
+			    strBuf.append(toChars(ch));
+			    break;
 
 			case STATE_STRING_SLASH:
 				if (ch == 'n') {

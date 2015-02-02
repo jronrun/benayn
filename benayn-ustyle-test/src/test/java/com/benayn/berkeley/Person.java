@@ -3,6 +3,8 @@ package com.benayn.berkeley;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.benayn.ustyle.Objects2;
+
 public class Person implements Serializable {
     
     /**
@@ -50,6 +52,14 @@ public class Person implements Serializable {
     public String toString() {
         return "Person [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName
                 + ", birthday=" + birthday + ", address=" + address + "]";
+    }
+    @Override
+    public int hashCode() {
+        return Objects2.hashCodes(this);
+    }
+    @Override
+    public boolean equals(Object obj) {
+        return Objects2.isEqual(this, obj);
     }
     
 }

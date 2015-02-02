@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
+import com.benayn.berkeley.Person;
 import com.benayn.ustyle.Arrays2;
 import com.benayn.ustyle.Decisional;
 import com.benayn.ustyle.Decisions;
@@ -22,14 +23,17 @@ import com.benayn.ustyle.Gather;
 import com.benayn.ustyle.JsonR;
 import com.benayn.ustyle.JsonW;
 import com.benayn.ustyle.Mapper;
+import com.benayn.ustyle.Objects2;
 import com.benayn.ustyle.Pair;
 import com.benayn.ustyle.Randoms;
 import com.benayn.ustyle.Reflecter;
+import com.benayn.ustyle.Resolves;
 import com.benayn.ustyle.Sources;
 import com.benayn.ustyle.Suppliers2;
 import com.benayn.ustyle.TypeRefer;
 import com.benayn.ustyle.TypeRefer.TypeDescrib;
 import com.benayn.ustyle.base.Domain;
+import com.benayn.ustyle.base.EnumType;
 import com.benayn.ustyle.behavior.ValueBehavior;
 import com.benayn.ustyle.metest.generics.GenericsUtils;
 import com.benayn.ustyle.metest.generics.TestGenerics;
@@ -43,6 +47,206 @@ import com.google.common.primitives.Primitives;
 import com.google.common.reflect.TypeToken;
 
 public class Me3Test extends Me2Test {
+    
+    public static enum EnumTest {
+        TEST1, TEST2
+    }
+    
+    public static class JsonTest {
+        Map<Short, Long>                                                           simpleMap;
+        Set<Byte>                                                                  simpleSet;
+        List<Short>                                                                simpleList;
+        byte[]                                                                     bytePArr;
+        Short[]                                                                    shortWArr;
+        EnumTest                                                                   enumTest;
+        double[]                                                                   doublePArr;
+
+        Map<String, Integer>                                                       mStrInt;
+        Map<Long, Boolean>                                                         mLongBool;
+
+        Set<Float>                                                                 sFloats;
+
+        List<String>                                                               lStrs;
+        List<Map<String, Set<Integer>>>                                            complex;
+
+        EnumType                                                                   enum4Test;
+        BigDecimal                                                                 bigDecimal;
+        BigInteger                                                                 bigInteger;
+
+        Date                                                                       date;
+        String                                                                     string;
+
+        Long                                                                       longa;
+        Long[]                                                                     longaArr;
+        long                                                                       longp;
+        long[]                                                                     longpArr;
+
+        Integer                                                                    integera;
+        Integer[]                                                                  integeraArr;
+        int                                                                        integerp;
+        int[]                                                                      integerpArr;
+
+        Short                                                                      shorta;
+        Short[]                                                                    shortaArr;
+        short                                                                      shortp;
+        short[]                                                                    shortpArr;
+
+        Byte                                                                       bytea;
+        Byte[]                                                                     byteaArr;
+        byte                                                                       bytep;
+        byte[]                                                                     bytepArr;
+
+        Double                                                                     doublea;
+        Double[]                                                                   doubleaArr;
+        double                                                                     doublep;
+        double[]                                                                   doublepArr;
+
+        Float                                                                      floata;
+        Float[]                                                                    floataArr;
+        float                                                                      floatp;
+        float[]                                                                    floatpArr;
+
+        Boolean                                                                    booleana;
+        Boolean[]                                                                  booleanaArr;
+        boolean                                                                    booleanp;
+        boolean[]                                                                  booleanpArr;
+
+        Character                                                                  charactera;
+        Character[]                                                                characteraArr;
+        char                                                                       characterp;
+        char                                                                       characterpArr;
+
+        Map<List<Long>, Set<Double>>                                               t1;
+        Map<Set<Byte>, List<Short>>                                                t2;
+
+        Map<List<String>, Set<Double>>                                             t3;
+        Map<Set<String>, List<Byte>>                                               t4;
+
+        Map<List<Map<String, Set<Integer>>>, Set<List<Map<String, Set<Integer>>>>> prop;
+        
+        Map<Person, Set<Short>> propObj;
+        Map<List<Person>, Set<Person>> propObj2;
+    }
+    
+    
+    @Test
+    public void testJsonRW() {
+        String json = null;
+        
+        JsonTest jt = Randoms.get(JsonTest.class);
+        assertNotNull(jt);
+        JsonTest jt3 = Reflecter.from(jt).copyTo(JsonTest.class);
+        assertTrue(Objects2.isEqual(jt, jt3));
+        json = JsonW.toJson(jt);
+        log.info(JsonW.fmtJson(json));
+        JsonTest jt2 = JsonR.of(json).asObject(JsonTest.class);
+        assertNotNull(jt2);
+        log.info(jt);
+        log.info(jt2);
+        assertTrue(Objects2.isEqual(jt, jt2));
+        
+        Domain d = Randoms.get(Domain.class);
+        json = JsonW.toJson(d);
+        log.info(JsonW.fmtJson(json));
+        Domain d2 = JsonR.of(json).asObject(Domain.class);
+        assertTrue(Objects2.isEqual(d, d2));
+        Domain d3 = Reflecter.from(d2).copyTo(Domain.class);
+        assertTrue(Objects2.isEqual(d, d3));
+        
+        Person p = Randoms.get(Person.class);
+        json = JsonW.toJson(p);
+        log.info(JsonW.fmtJson(json));
+        Person p2 = JsonR.of(json).asObject(Person.class);
+        assertTrue(Objects2.isEqual(p, p2));
+        Person p3 = Reflecter.from(p).copyTo(Person.class);
+        assertTrue(Objects2.isEqual(p, p3));
+        
+    }
+    
+    public static class ResolveTest {
+        boolean booleanP;
+        Boolean booleanW;
+        
+        byte byte1;
+        short[] shortParr;
+        Short[] shortWarr;
+        String[] stringArr;
+        
+        Set<List<Map<Byte, Long>>> byteSet;
+        List<Map<Short, Set<Map<Integer, Double>>>> list;
+        Map<Person, List<Set<Map<Float, Person>>>> map;
+    }
+    
+    @Test
+    public void testResolves() {
+        ResolveTest rt = Randoms.get(ResolveTest.class);
+        Reflecter<ResolveTest> ref = Reflecter.from(rt);
+        
+        log.info(TypeRefer.of(String.class).asTypeDesc());
+        log.info(TypeRefer.of(ref.field("shortParr")).asTypeDesc().rawClazz().getComponentType());
+        log.info(TypeRefer.of(ref.field("shortWarr")).asTypeDesc().rawClazz().getComponentType());
+        
+        assertTrue(rt.shortParr.getClass().isArray());
+        assertTrue(rt.shortWarr.getClass().isArray());
+        
+        assertTrue(Resolves.get(ref.field("booleanW"), "false") instanceof Boolean);
+        assertTrue(Resolves.get(ref.field("booleanP"), Boolean.TRUE) instanceof Boolean);
+        assertTrue(Resolves.get(ref.field("byte1"), 1) instanceof Byte);
+        
+        assertTrue(Resolves.get(ref.field("shortParr"), rt.shortWarr) instanceof short[]);
+        assertTrue(Resolves.get(ref.field("shortWarr"), rt.shortParr) instanceof Short[]);
+        
+        assertTrue(Resolves.get(ref.field("stringArr"), 1) instanceof String[]);
+        
+        Set<List<Map<Byte, Long>>> sr = Resolves.get(ref.field("byteSet"), rt.byteSet);
+        assertTrue(sr instanceof Set);
+        for (List<Map<Byte, Long>> l1 : sr) {
+            assertTrue(l1 instanceof List);
+            for (Map<Byte, Long> m1 : l1) {
+                assertTrue(m1 instanceof Map);
+                for (Byte b1 : m1.keySet()) {
+                    assertTrue(b1 instanceof Byte);
+                    assertTrue(m1.get(b1) instanceof Long);
+                }
+            }
+        }
+        
+        List<Map<Short, Set<Map<Integer, Double>>>> list = Resolves.get(ref.field("list"), rt.list);
+        assertTrue(list instanceof List);
+        for (Map<Short, Set<Map<Integer, Double>>> m1 : list) {
+            assertTrue(m1 instanceof Map);
+            for (Short s1 : m1.keySet()) {
+                assertTrue(s1 instanceof Short);
+                Set<Map<Integer, Double>> set1 = m1.get(s1);
+                assertTrue(set1 instanceof Set);
+                for (Map<Integer, Double> m2 : set1) {
+                    assertTrue(m2 instanceof Map);
+                    for (Integer i1 : m2.keySet()) {
+                        assertTrue(i1 instanceof Integer);
+                        assertTrue(m2.get(i1) instanceof Double);
+                    }
+                }
+            }
+        }
+        
+        Map<Person, List<Set<Map<Float, Person>>>> map = Resolves.get(ref.field("map"), rt.map);
+        assertTrue(map instanceof Map);
+        for (Person p1 : map.keySet()) {
+            assertTrue(p1 instanceof Person);
+            List<Set<Map<Float, Person>>> l1 = map.get(p1);
+            assertTrue(l1 instanceof List);
+            for (Set<Map<Float, Person>> s1 : l1) {
+                assertTrue(s1 instanceof Set);
+                for (Map<Float, Person> m2 : s1) {
+                    assertTrue(m2 instanceof Map);
+                    for (Float  f1 : m2.keySet()) {
+                        assertTrue(f1 instanceof Float);
+                        assertTrue(m2.get(f1) instanceof Person);
+                    }
+                }
+            }
+        }
+    }
     
     public static class RefTest {
         Map<Byte, List<Short>> map;
@@ -98,8 +302,8 @@ public class Me3Test extends Me2Test {
     }
     
     public static class Ran {
-        Map<List<Set<Map<String, Long>>>, Set<List<com.benayn.berkeley.Person>>> theMap;
-        Set<Map<BigInteger, List<com.benayn.berkeley.Person>>> theSet;
+        Map<List<Set<Map<String, Long>>>, Set<List<Person>>> theMap;
+        Set<Map<BigInteger, List<Person>>> theSet;
         List<Map<Double, Set<BigDecimal>>> theList;
     }
     
@@ -131,14 +335,14 @@ public class Me3Test extends Me2Test {
         
         Gather.from(r.theSet).info();
         assertTrue(r.theSet instanceof Set);
-        for (Map<BigInteger, List<com.benayn.berkeley.Person>> m : r.theSet) {
+        for (Map<BigInteger, List<Person>> m : r.theSet) {
             assertTrue(m instanceof Map);
             for (BigInteger b : m.keySet()) {
                 assertTrue(b instanceof BigInteger);
-                List<com.benayn.berkeley.Person> l = m.get(b);
+                List<Person> l = m.get(b);
                 assertTrue(l instanceof List);
-                for (com.benayn.berkeley.Person p : l) {
-                    assertTrue(p instanceof com.benayn.berkeley.Person);
+                for (Person p : l) {
+                    assertTrue(p instanceof Person);
                 }
             }
         }
@@ -158,12 +362,12 @@ public class Me3Test extends Me2Test {
                 }
             }
             
-            Set<List<com.benayn.berkeley.Person>> v = r.theMap.get(k);
+            Set<List<Person>> v = r.theMap.get(k);
             assertTrue(v instanceof Set);
-            for (List<com.benayn.berkeley.Person> l2 : v) {
+            for (List<Person> l2 : v) {
                 assertTrue(l2 instanceof List);
-                for (com.benayn.berkeley.Person p : l2) {
-                    assertTrue(p instanceof com.benayn.berkeley.Person);
+                for (Person p : l2) {
+                    assertTrue(p instanceof Person);
                 }
             }
         }
@@ -438,28 +642,6 @@ public class Me3Test extends Me2Test {
 				log.info(toJson(input.getR()));
 			}
 		});
-	}
-	
-	@Test
-	public void testJson2() {
-		Domain d = Domain.getDomain();
-		
-//		d.setDate(null);
-//		d.setBytepArr(null);
-//		d.setsDomains(null);
-//		d.setComplex(null);
-//		d.setsFloats(null);
-		
-		String json = toJson(d);
-		log.info(json);
-		
-		JsonR sj = JsonR.of(json);
-		sj.mapper().info();
-		
-		Domain d3 = sj.asObject(Domain.class);
-		log.info(d);
-		log.info(d3);
-		
 	}
 	
 	@Test

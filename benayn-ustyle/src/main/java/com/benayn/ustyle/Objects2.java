@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.benayn.ustyle.behavior.StructBehavior;
 import com.benayn.ustyle.behavior.ValueBehavior;
@@ -54,8 +55,11 @@ public class Objects2 {
 	public static boolean isParseable(Object input) {
 		return (null != input) && (isWrapperType(input.getClass())
 				|| allPrimitiveTypes().contains(input.getClass())
-				|| (String.class.isInstance(input) && ( Strs.inRange('0', '9').matchesAllOf((String) input) ) ) );
+				|| (String.class.isInstance(input) && ( Strs.inRange('0', '9').matchesAllOf(
+				        MINUS_STRING.matcher((String) input).replaceFirst(Strs.EMPTY)) ) ) );
 	}
+	
+	private static final Pattern MINUS_STRING = Pattern.compile("^-");
 	
 	/**
 	 * Checks if the given input class is instance of the eight java type, wrapped or primitive 
@@ -701,6 +705,9 @@ public class Objects2 {
 			for (Object k : resolvedP.keySet()) {
 				if (!isEqual(resolvedP.get(k), m2.get(k))) {
 					mapEqual = false;
+					if (log.isDebugEnabled()) {
+					    log.debug("map if equal failed key: " + k);
+					}
 					break;
 				}
 			}

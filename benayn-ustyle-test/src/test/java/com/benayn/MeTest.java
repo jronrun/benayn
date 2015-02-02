@@ -89,13 +89,13 @@ public class MeTest extends Assert {
 		assertEquals(Objects2.hashCodes(new Float[]{(float) 33.320000 }), Objects2.hashCodes(Arrays2.asArray(Float.valueOf("33.320000"))));
 		assertEquals(Objects2.hashCodes(null), Objects2.hashCodes(null));
 		
-		Pair<Person, Map<String, Object>> p1 = Pair.of(getTestPerson(), getTestMap());
-		Pair<Person, Map<String, Object>> p2 = Pair.of(getTestPerson(), getTestMap());
+		Pair<Person2, Map<String, Object>> p1 = Pair.of(getTestPerson(), getTestMap());
+		Pair<Person2, Map<String, Object>> p2 = Pair.of(getTestPerson(), getTestMap());
 		assertEquals(p1.hashCode(), p2.hashCode());
 		assertTrue(p1.equals(p2));
 		
-		Pair<List<Person>, Map<Object, Object>> p11 = Pair.of(getTestPersons(), getTestMap2());
-		Pair<List<Person>, Map<Object, Object>> p22 = Pair.of(getTestPersons(), getTestMap2());
+		Pair<List<Person2>, Map<Object, Object>> p11 = Pair.of(getTestPersons(), getTestMap2());
+		Pair<List<Person2>, Map<Object, Object>> p22 = Pair.of(getTestPersons(), getTestMap2());
 		assertEquals(p11.hashCode(), p22.hashCode());
 		assertTrue(p11.equals(p22));
 		
@@ -118,7 +118,7 @@ public class MeTest extends Assert {
 		assertTrue(Objects2.isEqual(getTestPerson(), getTestPerson()));
 		assertTrue(Objects2.isEqual(getTestPersons(), getTestPersons()));
 		
-		Person p = getTestPerson();
+		Person2 p = getTestPerson();
 		p.setName("name");
 		assertFalse(Objects2.isEqual(p, getTestPerson()));
 		
@@ -153,16 +153,16 @@ public class MeTest extends Assert {
 		Map<String, Object> m2 = getTestMap();
 
 //		Map<Object, Object> m = ImmutableMap.<Object, Object>of(
-//				33, new Person("hello", 33), 
+//				33, new Person2("hello", 33), 
 //				44, 44, 
 //				55, ImmutableMap.of(
-//						333, new Person("3 ceng person", 333),
+//						333, new Person2("3 ceng person", 333),
 //						444, 444,
 //						555, ImmutableMap.of(
-//								3333, new Person("4 ceng person", 3333),
+//								3333, new Person2("4 ceng person", 3333),
 //								4444, 4444,
 //								5555, ImmutableMap.of(
-//										33333, new Person("5 ceng person", 33333),
+//										33333, new Person2("5 ceng person", 33333),
 //										44444, 44444,
 //										55555, mapTest()
 //									)
@@ -175,16 +175,16 @@ public class MeTest extends Assert {
 		Map<Integer, Object> m2l4 = (Map<Integer, Object>) m2l3.get(5555);
 		Map<Integer, Object> m2l5 = (Map<Integer, Object>) m2l4.get(55555);
 //		Map<Object, Object> m = ImmutableMap.<Object, Object>of(
-//				66, new Person("hello", 66), 
+//				66, new Person2("hello", 66), 
 //				77, 77, 
 //				88, ImmutableMap.of(
-//						666, new Person("3 ceng person", 666),
+//						666, new Person2("3 ceng person", 666),
 //						777, 777,
 //						888, ImmutableMap.of(
-//								6666, new Person("4 ceng person", 6666),
+//								6666, new Person2("4 ceng person", 6666),
 //								7777, 7777,
 //								8888, ImmutableMap.of(
-//										66666, new Person("5 ceng person", 66666),
+//										66666, new Person2("5 ceng person", 66666),
 //										77777, 77777,
 //										88888, 88888
 //										99999, innM
@@ -225,7 +225,7 @@ public class MeTest extends Assert {
 		m1l9.put(8888888, getTestPerson());
 		assertTrue(Objects2.isEqual(m1, m2));
 		
-		Person pM1l9 = (Person) m1l9.get(8888888);
+		Person2 pM1l9 = (Person2) m1l9.get(8888888);
 		pM1l9.setAge(28);
 		assertFalse(Objects2.isEqual(m1, m2));
 		
@@ -243,7 +243,7 @@ public class MeTest extends Assert {
 		m1 = Maps.newHashMap(m2);
 		assertTrue(Objects2.isEqual(m1, m2));
 
-		Person pM2l9 = (Person) m2l9.get(8888888);
+		Person2 pM2l9 = (Person2) m2l9.get(8888888);
 		pM2l9.setAge(18);
 		// pM2l9 same instance
 		assertTrue(Objects2.isEqual(m1, m2));
@@ -377,7 +377,7 @@ public class MeTest extends Assert {
 	
 	@Test
 	public void testLoggersLevel() {
-		Person p = getTestPerson();
+	    Person2 p = getTestPerson();
 		log.trace(p);
 		log.debug(p);
 		log.info(p);
@@ -624,7 +624,7 @@ public class MeTest extends Assert {
 		ll.info(Strs.betnLast(str, end).asMap());
 		ll = Loggers.from("hello world");
 		ll.debug(getTestPersons());
-		ll = Loggers.from(Person.class);
+		ll = Loggers.from(Person2.class);
 		ll.warn(getTestPerson());
 		Gather.from(getTestPersons()).info();
 		
@@ -2093,8 +2093,8 @@ public class MeTest extends Assert {
 	
 	// ------------------------------------------------------------- //
 	
-	List<Person> getTestPersons() {
-		List<Person> persons = Lists.newArrayList();
+	List<Person2> getTestPersons() {
+		List<Person2> persons = Lists.newArrayList();
 		for (int i = 0; i < 20; i++) {
 			Map<String, Object> m = Maps.newHashMap();
 			m.put("ik1" + (i + 100), (i + 100));
@@ -2109,7 +2109,7 @@ public class MeTest extends Assert {
 			addr.setStreets(ImmutableList.of("street" + i, "road" + i));
 			addr.setInnerAddr(innerAddr);
 			
-			Person p = new Person("name" + i, 10 + i);
+			Person2 p = new Person2("name" + i, 10 + i);
 			p.setAddr(addr);
 			
 			persons.add(p);
@@ -2117,7 +2117,7 @@ public class MeTest extends Assert {
 		return persons;
 	}
 	
-	Person getTestPerson() {
+	Person2 getTestPerson() {
 		Map<String, Object> m = Maps.newHashMap();
 		m.put("ikey1", 18);
 		m.put("ikey2", "ikey2 value");
@@ -2132,7 +2132,7 @@ public class MeTest extends Assert {
 		addr.setStreets(ImmutableList.of("street 1", "gu dun street", "nan jiu road 23"));
 		addr.setInnerAddr(innerAddr);
 		
-		Person person = new Person("hello world", 999);
+		Person2 person = new Person2("hello world", 999);
 		person.setAddr(addr);
 		return person;
 	}
@@ -2141,23 +2141,23 @@ public class MeTest extends Assert {
 		String str = "{\"cmd\":8006,\"code\":0,\"result\":{\"oid\":\"be38a0d8\",\"pid\":\"a9b530To\",\"did\":\"65649e0t\"," +
 				"\"type\":2,\"snd\":\"422720ty\",\"lat\":0.0,\"lng\":0.0,\"upt\":1352184076535,\"name\":\"paulo\",\"length\":59}}";
 		Map<String, Object> m = readMap(str);
-		m.put("person", new Person("jack", 23));
+		m.put("person", new Person2("jack", 23));
 		m.put("maptest", getTestMap2());
 		return m;
 	}
 	
 	private Map<Object, Object> getTestMap2() {
 		Map<Object, Object> m = ImmutableMap.<Object, Object>of(
-				33, new Person("hello", 33), 
+				33, new Person2("hello", 33), 
 				44, 44, 
 				55, ImmutableMap.of(
-						333, new Person("3 ceng person", 333),
+						333, new Person2("3 ceng person", 333),
 						444, 444,
 						555, ImmutableMap.of(
-								3333, new Person("4 ceng person", 3333),
+								3333, new Person2("4 ceng person", 3333),
 								4444, 4444,
 								5555, ImmutableMap.of(
-										33333, new Person("5 ceng person", 33333),
+										33333, new Person2("5 ceng person", 33333),
 										44444, 44444,
 										55555, mapTest()
 									)
@@ -2172,16 +2172,16 @@ public class MeTest extends Assert {
 		innM.put(888888, 888888);
 		
 		Map<Object, Object> m = ImmutableMap.<Object, Object>of(
-				66, new Person("hello", 66), 
+				66, new Person2("hello", 66), 
 				77, 77, 
 				88, ImmutableMap.of(
-						666, new Person("3 ceng person", 666),
+						666, new Person2("3 ceng person", 666),
 						777, 777,
 						888, ImmutableMap.of(
-								6666, new Person("4 ceng person", 6666),
+								6666, new Person2("4 ceng person", 6666),
 								7777, 7777,
 								8888, ImmutableMap.of(
-										66666, new Person("5 ceng person", 66666),
+										66666, new Person2("5 ceng person", 66666),
 										77777, 77777,
 										88888, 88888,
 										99999, innM
@@ -2228,12 +2228,12 @@ public class MeTest extends Assert {
 }
 
 
-class Person {
+class Person2 {
 	private String name;
 	private Integer age;
 	private Address addr;
-	public Person() {}
-	public Person(String name, Integer age) {
+	public Person2() {}
+	public Person2(String name, Integer age) {
 		this.name = name;
 		this.age = age;
 	}
@@ -2272,7 +2272,7 @@ class Person {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Person other = (Person) obj;
+		Person2 other = (Person2) obj;
 		if (addr == null) {
 			if (other.addr != null)
 				return false;
