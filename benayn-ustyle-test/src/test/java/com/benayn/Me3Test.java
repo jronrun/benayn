@@ -34,6 +34,7 @@ import com.benayn.ustyle.TypeRefer;
 import com.benayn.ustyle.TypeRefer.TypeDescrib;
 import com.benayn.ustyle.base.Domain;
 import com.benayn.ustyle.base.EnumType;
+import com.benayn.ustyle.base.JsonJacksonPO;
 import com.benayn.ustyle.behavior.ValueBehavior;
 import com.benayn.ustyle.metest.generics.GenericsUtils;
 import com.benayn.ustyle.metest.generics.TestGenerics;
@@ -643,6 +644,26 @@ public class Me3Test extends Me2Test {
 			}
 		});
 	}
+	
+	@Test
+    public void testJsonJackson() {
+        String json = null;
+        JsonR jr = null;
+        
+        JsonJacksonPO jjt = Randoms.get(JsonJacksonPO.class);
+        log.info(jjt);
+        
+        json = toJson(jjt);
+        log.info(json);
+        
+        jr = JsonR.of(json);
+        
+        JsonJacksonPO jjt2 = jr.asObject(JsonJacksonPO.class);
+        log.info(jjt2);
+        
+        assertTrue(Objects2.isEqual(jjt, jjt2));
+        
+    }
 	
 	@Test
 	public void testJson() throws IOException {

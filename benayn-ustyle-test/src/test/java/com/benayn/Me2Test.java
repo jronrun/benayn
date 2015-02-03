@@ -90,7 +90,7 @@ public class Me2Test extends MeTest {
 	}
     
 	@Test
-	public void testTemp() {
+	public void testDaterTmp() {
 		Date now = new Date();
 		assertEquals(now.getTime() - Dater.DAY * 7, Dater.of(now).add().day(-7).get().getTime());
 		assertEquals(24*60*60*1000, Dater.DAY);
