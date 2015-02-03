@@ -72,7 +72,7 @@ public final class Reflecter<T> {
 	 * @return
 	 */
 	public <F> F val(String propName) {
-		if (nameValMap.isPresent()) {
+		if (!this.isChanged && nameValMap.isPresent()) {
 			return nameValMap.get().get(propName);
 		}
 		
@@ -88,6 +88,7 @@ public final class Reflecter<T> {
 	 */
 	public <V> Reflecter<T> val(String propName, V propVal) {
 		setPropVal(matchField(propName), propName, propVal);
+		this.isChanged = true;
 		return this;
 	}
 	
@@ -183,6 +184,7 @@ public final class Reflecter<T> {
 		}
 		
 		fieldHolder.get().loop(new TransformMap2ObjVal<V>(properties, excludes));
+		this.isChanged = true;
 		return this;
 	}
 
@@ -193,6 +195,7 @@ public final class Reflecter<T> {
 	 */
 	public Reflecter<T> populate4Test() {
 		fieldHolder.get().loop(new RandomVal2ObjVal());
+		this.isChanged = true;
 		return this;
 	}
 	
@@ -300,7 +303,7 @@ public final class Reflecter<T> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked") public <V> Mapper<String, V> mapper() {
-		if (nameValMap.isPresent()) {
+		if (!isChanged && nameValMap.isPresent()) {
 			return (Mapper<String, V>) nameValMap.get();
 		}
 		
@@ -310,6 +313,7 @@ public final class Reflecter<T> {
 		}
 		nameValMap = Optional.of(Mapper.from(fm));
 		
+		this.isChanged = false;
 		return (Mapper<String, V>) nameValMap.get();
 	}
 	
@@ -748,6 +752,7 @@ public final class Reflecter<T> {
 	private Map<String, Function<?, ?>> exchangeFuncs = Maps.newHashMap();
 	private Map<String, Function<?, ?>> exchangeFieldFuncs = Maps.newHashMap();
 	private boolean autoExchange = Boolean.TRUE;
+	private boolean isChanged = false;
 	private Set<String> excludePackagePath = Sets.newHashSet("com.google.common", "ch.qos.logback", "com.benayn.ustyle");
 	private boolean trace = Boolean.FALSE;
 }

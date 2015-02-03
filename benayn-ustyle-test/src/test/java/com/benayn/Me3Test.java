@@ -24,7 +24,7 @@ import com.benayn.ustyle.JsonR;
 import com.benayn.ustyle.JsonW;
 import com.benayn.ustyle.Mapper;
 import com.benayn.ustyle.Objects2;
-import com.benayn.ustyle.Objects2.WrappedObject;
+import com.benayn.ustyle.Objects2.FacadeObject;
 import com.benayn.ustyle.Pair;
 import com.benayn.ustyle.Randoms;
 import com.benayn.ustyle.Reflecter;
@@ -42,6 +42,7 @@ import com.benayn.ustyle.metest.generics.TestGenerics;
 import com.benayn.ustyle.string.Strs;
 import com.google.common.base.Defaults;
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.ObjectArrays;
@@ -54,6 +55,66 @@ public class Me3Test extends Me2Test {
     public static class WrapObjectTest {
         String name;
         Integer age;
+    }
+    
+    @Test
+    public void testWrapObject2() {
+
+        Person wo1 = new Person();
+        
+        FacadeObject<Person> wrapObj1 = Objects2.wrapObj(wo1);
+        wrapObj1.info();
+        Map<String, Object> obj1Map = wrapObj1.asMap();
+        for (String prop : obj1Map.keySet()) {
+            if ("serialVersionUID".equals(prop)) {
+                continue;
+            }
+            assertNull(obj1Map.get(prop));
+        }
+        assertTrue(Strs.contains(wrapObj1.getJson(), "null"));
+        log.info(wrapObj1.getJson());
+        assertTrue(Objects2.isEqual(wo1.getFirstName(), wrapObj1.getValue("firstName")));
+        
+        //
+        
+        wrapObj1.populate4Test();
+        wrapObj1.info();
+        obj1Map = wrapObj1.asMap();
+        for (String prop : obj1Map.keySet()) {
+            if ("serialVersionUID".equals(prop)) {
+                continue;
+            }
+            assertNotNull(obj1Map.get(prop));
+        }
+        assertTrue(Objects2.isEqual(wo1.getFirstName(), wrapObj1.getValue("firstName")));
+        assertFalse(Strs.contains(wrapObj1.getJson(), "null"));
+        log.info(wrapObj1.getJson());
+        
+        Person p2 = Randoms.get(Person.class);
+        assertFalse(Objects2.isEqual(wo1, p2));
+        wrapObj1.populate(JsonW.toJson(p2));
+        assertTrue(Objects2.isEqual(wo1, p2));
+        wrapObj1.info();
+        
+        wrapObj1.populate(ImmutableMap.of("id", p2.getId() + 11L));
+        assertFalse(Objects2.isEqual(wo1, p2));
+        assertEquals(wo1.getId(), Long.valueOf((p2.getId() + 11L)));
+        assertTrue(Strs.contains(wrapObj1.getJson(), p2.getId() + 11L + ""));
+        
+        p2.setFirstName(wo1.getFirstName() + "abc");
+        assertFalse(Objects2.isEqual(p2.getFirstName(), wo1.getFirstName()));
+        assertTrue(Objects2.isEqual(wo1.getFirstName(), wrapObj1.getValue("firstName")));
+        wrapObj1.setValue("firstName", p2.getFirstName());
+        assertDeepEqual(p2.getFirstName(), wrapObj1.getValue("firstName"));
+        assertDeepEqual(p2.getFirstName(), wo1.getFirstName());
+        
+        Person p3 = new Person();
+        assertDeepNotEqual(wo1, p3);
+        wrapObj1.copyTo(p3, "firstName");
+        assertDeepNotEqual(wo1, p3);
+        wrapObj1.copyTo(p3);
+        assertDeepEqual(wo1, p3);
+        assertDeepEqual(wo1, wrapObj1.clone());
     }
     
     @Test
@@ -74,8 +135,8 @@ public class Me3Test extends Me2Test {
         assertFalse(wo2.equals(wo1));
         assertNotEquals(wo1.hashCode(), wo2.hashCode());
         
-        WrappedObject<WrapObjectTest> wrap1 = Objects2.wrapObj(wo1);
-        WrappedObject<WrapObjectTest> wrap2 = Objects2.wrapObj(wo2);
+        FacadeObject<WrapObjectTest> wrap1 = Objects2.wrapObj(wo1);
+        FacadeObject<WrapObjectTest> wrap2 = Objects2.wrapObj(wo2);
         assertTrue(Strs.contains(wrap1.toString(), "name", "age"));
         assertTrue(Strs.contains(wrap2.toString(), "name", "age"));
         assertTrue(wrap1.equals(wrap2));
@@ -83,6 +144,12 @@ public class Me3Test extends Me2Test {
         assertTrue(wrap1.equals(wo2));
         assertTrue(wrap2.equals(wo1));
         assertEquals(wrap1.hashCode(), wrap2.hashCode());
+        
+        assertNotNull(Objects2.wrapObj(null));
+        assertEquals(null, Objects2.wrapObj(null).get());
+        
+        assertTrue(Objects2.isEqual(wo1, wrap1.clone()));
+        assertTrue(Objects2.isEqual(wo2, wrap2.clone()));
     }
     
     public static enum EnumTest {

@@ -68,6 +68,13 @@ public class MeTest extends Assert {
 //	protected org.apache.commons.logging.Log log = Loggers.from(getClass());
 	protected Log log = Loggers.from(getClass());
 	
+	protected void assertDeepEqual(Object obj1, Object obj2) {
+	    assertTrue(Objects2.isEqual(obj1, obj2));
+	}
+	
+	protected void assertDeepNotEqual(Object obj1, Object obj2) {
+        assertFalse(Objects2.isEqual(obj1, obj2));
+    }
 	
 	@Test
 	public void testTmp() {

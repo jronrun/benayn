@@ -58,56 +58,14 @@ public final class JsonR {
 	};
 	
 	/**
+	 * Add the JSON exchange function to the given {@link Reflecter} instance
 	 * 
+	 * @param target
+	 * @return
 	 */
-	private static final Function<Pair<Field,Object>, Object> JSON_READ_FUNC = new Function<Pair<Field,Object>, Object>() {
-		
-		@SuppressWarnings({ "unchecked", "rawtypes" }) @Override public Object apply(Pair<Field, Object> input) {
-			if (null == input) { return null; }
-			
-			Field field = input.getL();
-			Object val = input.getR();
-			if (null == val) { return val; }
-			
-			//field byte array, val string
-			if (field.getType().isArray() 
-					&& (Byte.class == Primitives.wrap(field.getType().getComponentType())) && (val instanceof String)) {
-				if (Objects2.isPrimitive(field.getType().getComponentType())) {
-					return val.toString().getBytes(Charsets.UTF_8);
-				}
-				
-				return Arrays2.wrap(val.toString().getBytes(Charsets.UTF_8));
-			}
-			//filed array, val array
-			else if (field.getType().isArray() && Objects2.is8Type(field.getType().getComponentType()) && val.getClass().isArray()) {
-				//field primitive array
-				if (Objects2.isPrimitive(field.getType().getComponentType())) {
-					return Arrays2.unwraps(Arrays2.convert((Object[]) val, Primitives.wrap(field.getType().getComponentType())));
-				} 
-				
-				return Arrays2.convert((Object[]) val, Primitives.wrap(field.getType().getComponentType()));
-			}
-			//field list, val array
-			else if (List.class.isAssignableFrom(field.getType())) {
-			    return Resolves.get(field, val);
-			}
-			//field set, val array
-			else if (Set.class.isAssignableFrom(field.getType())) {
-			    return Resolves.get(field, val);
-			}
-			//field map
-			else if (Map.class.isAssignableFrom(field.getType())) {
-			    return Resolves.get(field, val);
-			}
-			//field enum, val string
-			else if (field.getType().isEnum() && (val instanceof String)) {
-//				return Enums.valueOfFunction((Class<Enum>) field.getType()).apply(val.toString().toUpperCase());
-				return Enums.stringConverter((Class<Enum>) field.getType()).convert(val.toString().toUpperCase());
-			}
-			
-			return val;
-		}
-	};
+	public static <T> Reflecter<T> addJsonExchangeFunc(Reflecter<T> target) {
+	    return checkNotNull(target).exchWithField(JSON_READ_FUNC, JSON_READ_DECISION);
+	}
 	
 	/**
 	 * Returns the delegate JSON string as a given target
@@ -116,7 +74,7 @@ public final class JsonR {
 	 * @return
 	 */
 	public <T> T asObject(Object target) {
-		Reflecter<Object> ref = Reflecter.from(target).exchWithField(JSON_READ_FUNC, JSON_READ_DECISION);
+		Reflecter<Object> ref = addJsonExchangeFunc(Reflecter.from(target));
 		
 		if (!this.mappingFuncs.isEmpty()) {
 			ref.setExchangeFuncs(this.mappingFuncs);
@@ -195,6 +153,58 @@ public final class JsonR {
 	public boolean isValid() {
 		return null != intlMapping(false);
 	}
+	
+	/**
+     * 
+     */
+    private static final Function<Pair<Field,Object>, Object> JSON_READ_FUNC = new Function<Pair<Field,Object>, Object>() {
+        
+        @SuppressWarnings({ "unchecked", "rawtypes" }) @Override public Object apply(Pair<Field, Object> input) {
+            if (null == input) { return null; }
+            
+            Field field = input.getL();
+            Object val = input.getR();
+            if (null == val) { return val; }
+            
+            //field byte array, val string
+            if (field.getType().isArray() 
+                    && (Byte.class == Primitives.wrap(field.getType().getComponentType())) && (val instanceof String)) {
+                if (Objects2.isPrimitive(field.getType().getComponentType())) {
+                    return val.toString().getBytes(Charsets.UTF_8);
+                }
+                
+                return Arrays2.wrap(val.toString().getBytes(Charsets.UTF_8));
+            }
+            //filed array, val array
+            else if (field.getType().isArray() && Objects2.is8Type(field.getType().getComponentType()) && val.getClass().isArray()) {
+                //field primitive array
+                if (Objects2.isPrimitive(field.getType().getComponentType())) {
+                    return Arrays2.unwraps(Arrays2.convert((Object[]) val, Primitives.wrap(field.getType().getComponentType())));
+                } 
+                
+                return Arrays2.convert((Object[]) val, Primitives.wrap(field.getType().getComponentType()));
+            }
+            //field list, val array
+            else if (List.class.isAssignableFrom(field.getType())) {
+                return Resolves.get(field, val);
+            }
+            //field set, val array
+            else if (Set.class.isAssignableFrom(field.getType())) {
+                return Resolves.get(field, val);
+            }
+            //field map
+            else if (Map.class.isAssignableFrom(field.getType())) {
+                return Resolves.get(field, val);
+            }
+            //field enum, val string
+            else if (field.getType().isEnum() && (val instanceof String)) {
+//              return Enums.valueOfFunction((Class<Enum>) field.getType()).apply(val.toString().toUpperCase());
+                return Enums.stringConverter((Class<Enum>) field.getType()).convert(val.toString().toUpperCase());
+            }
+            
+            return val;
+        }
+    };
 	
 	/**
 	 * 

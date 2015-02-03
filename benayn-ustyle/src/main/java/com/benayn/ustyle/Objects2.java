@@ -5,6 +5,7 @@ import static com.google.common.primitives.Primitives.allWrapperTypes;
 import static com.google.common.primitives.Primitives.isWrapperType;
 import static com.google.common.primitives.Primitives.wrap;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Objects;
+import com.google.common.base.Optional;
 import com.google.common.collect.ForwardingObject;
 
 public class Objects2 {
@@ -99,20 +101,27 @@ public class Objects2 {
 	}
 	
 	/**
-	 * Wraps the {@link Object#toString()}, {@link Object#hashCode()}, {@link Object#equals(Object)} methods to the given target
+	 * Wraps the {@link Object#toString()}, {@link Object#hashCode()}, {@link Object#equals(Object)} 
+	 * and more nicely method to the given target
+	 * 
 	 * @param target
 	 * @return
 	 */
-	public static <T> WrappedObject<T> wrapObj(final T target) {
-	    return new WrappedObject<T>(target);
+	public static <T> FacadeObject<T> wrapObj(final T target) {
+	    return new FacadeObject<T>(target);
 	}
 	
 	/**
 	 * 
 	 */
-	public static class WrappedObject<T> extends ForwardingObject {
+	public static class FacadeObject<T> extends ForwardingObject {
 	    
-	    public WrappedObject(T delegate) {
+	    /**
+	     * 
+	     */
+	    private static final Log log = Loggers.from(FacadeObject.class);
+	    
+	    public FacadeObject(T delegate) {
 	        this.delegate = delegate;
 	    }
 
@@ -140,13 +149,22 @@ public class Objects2 {
          * @see Objects2#isEqual(Object, Object)
          */
         @Override public boolean equals(Object obj) {
-            if (null != obj && obj instanceof WrappedObject) {
-                obj = ((WrappedObject<?>) obj).get();
+            if (null != obj && obj instanceof FacadeObject) {
+                obj = ((FacadeObject<?>) obj).get();
             }
             
             return isEqual(this.delegate(), obj);
         }
         
+        /**
+         * Override the given object's clone() method
+         * 
+         * @see Reflecter#clones()
+         */
+        public T clone() {
+            return Reflecter.from(this.delegate()).clones();
+        }
+
         /**
          * Returns the delegate object self
          * 
@@ -159,8 +177,122 @@ public class Objects2 {
         @Override protected T delegate() {
             return delegate;
         }
+        
+        /**
+         * @see Reflecter#field(String)
+         */
+        public Field getField(String propName) {
+            return this.reflection().field(propName);
+        }
+        
+        /**
+         * @see Reflecter#val(String)
+         */
+        public <F> F getValue(String propName) {
+            return this.reflection().val(propName);
+        }
+        
+        /**
+         * @see Reflecter#val(String, Object)
+         */
+        public <V> void setValue(String propName, V propVal) {
+            this.reflection().val(propName, propVal);
+        }
+        
+        /**
+         * @see Reflecter#copyTo(Object)
+         */
+        public <Dest> Dest copyTo(Object dest) {
+            return this.reflection().copyTo(dest);
+        }
+        
+        /**
+         * @see Reflecter#copyTo(Object, String...)
+         */
+        public <Dest> Dest copyTo(Object dest, String... excludes) {
+            return this.reflection().copyTo(dest, excludes);
+        }
+        
+        /**
+         * @see Reflecter#asMap()
+         */
+        public <V> Map<String, V> asMap() {
+            return this.reflection().asMap();
+        }
+        
+        /**
+         * @see Reflecter#mapper()
+         */
+        public <V> Mapper<String, V> mapper() {
+            return this.reflection().mapper();
+        }
+        
+        /**
+         * @see Reflecter#populate(Map)
+         */
+        public <V> void populate(Map<String, V> properties) {
+            this.reflection().populate(properties);
+        }
+        
+        /**
+         * @see Reflecter#populate(Map, String...)
+         */
+        public <V> void populate(Map<String, V> properties, String... excludes) {
+            this.reflection().populate(properties, excludes);
+        }
+        
+        /**
+         * @see Reflecter#populate(Map, List)
+         */
+        public <V> void populate(Map<String, V> properties, List<String> excludes) {
+            this.reflection().populate(properties, excludes);
+        }
+        
+        /**
+         * Populate the JavaBeans properties of this delegate object, based on the JSON string
+         * 
+         * @see JsonR#asObject(Object)
+         */
+        public void populate(String json) {
+            JsonR.addJsonExchangeFunc(this.reflection()).populate(JsonR.of(json).noneNullMap());
+        }
+        
+        /**
+         * {@link Reflecter#populate4Test()}
+         */
+        public void populate4Test() {
+            this.reflection().populate4Test();
+        }
+        
+        /**
+         * Log the delegate target as an easy-to-read JSON string
+         */
+        public void info() {
+            if (log.isInfoEnabled()) {
+                log.info(JsonW.of(this.delegate()).readable().asJson());
+            }
+        }
+        
+        /**
+         * @see JsonW#asJson()
+         */
+        public String getJson() {
+            return JsonW.toJson(this.delegate());
+        }
+        
+        /**
+         * Returns the {@link Reflecter} instance of the delegate object
+         * 
+         * @return
+         */
+        public Reflecter<T> reflection() {
+            return (theRef.isPresent() 
+                    ? theRef : (theRef = Optional.of(Reflecter.from(this.delegate())))).get();
+        }
 	    
         private T delegate;
+        private Optional<Reflecter<T>> theRef = Optional.absent();
+        
 	}
 	
 	/**
