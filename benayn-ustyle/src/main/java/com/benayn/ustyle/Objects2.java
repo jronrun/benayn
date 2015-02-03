@@ -259,12 +259,10 @@ public class Objects2 {
         }
         
         /**
-         * Populate the JavaBeans properties of this delegate object, based on the JSON string
-         * 
-         * @see JsonR#asObject(Object)
+         * @see Reflecter#populate(String)
          */
-        public void populate(String json) {
-            JsonR.addJsonExchangeFunc(this.reflection()).populate(JsonR.of(json).noneNullMap());
+        public void populate(String json, String... excludes) {
+            this.reflection().populate(json, excludes);
         }
         
         /**
