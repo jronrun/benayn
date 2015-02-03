@@ -108,7 +108,7 @@ public class Objects2 {
 	 * @return
 	 */
 	public static <T> FacadeObject<T> wrapObj(final T target) {
-	    return new FacadeObject<T>(target);
+	    return FacadeObject.wrap(target);
 	}
 	
 	/**
@@ -121,10 +121,16 @@ public class Objects2 {
 	     */
 	    private static final Log log = Loggers.from(FacadeObject.class);
 	    
-	    public FacadeObject(T delegate) {
-	        this.delegate = delegate;
+	    /**
+	     * Wrap the given target as {@link FacadeObject}
+	     * 
+	     * @param target
+	     * @return
+	     */
+	    public static <T> FacadeObject<T> wrap(T target) {
+	        return new FacadeObject<T>(target);
 	    }
-
+	    
 	    /**
 	     * Override the given object's toString() method
 	     * 
@@ -172,6 +178,10 @@ public class Objects2 {
          */
         public T get() {
             return delegate();
+        }
+        
+        private FacadeObject(T delegate) {
+            this.delegate = delegate;
         }
         
         @Override protected T delegate() {

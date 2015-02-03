@@ -62,7 +62,7 @@ public class Me3Test extends Me2Test {
 
         Person wo1 = new Person();
         
-        FacadeObject<Person> wrapObj1 = Objects2.wrapObj(wo1);
+        FacadeObject<Person> wrapObj1 = FacadeObject.wrap(wo1);
         wrapObj1.info();
         Map<String, Object> obj1Map = wrapObj1.asMap();
         for (String prop : obj1Map.keySet()) {
