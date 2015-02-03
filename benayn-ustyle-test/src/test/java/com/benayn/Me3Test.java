@@ -24,6 +24,7 @@ import com.benayn.ustyle.JsonR;
 import com.benayn.ustyle.JsonW;
 import com.benayn.ustyle.Mapper;
 import com.benayn.ustyle.Objects2;
+import com.benayn.ustyle.Objects2.WrappedObject;
 import com.benayn.ustyle.Pair;
 import com.benayn.ustyle.Randoms;
 import com.benayn.ustyle.Reflecter;
@@ -38,6 +39,7 @@ import com.benayn.ustyle.base.JsonJacksonPO;
 import com.benayn.ustyle.behavior.ValueBehavior;
 import com.benayn.ustyle.metest.generics.GenericsUtils;
 import com.benayn.ustyle.metest.generics.TestGenerics;
+import com.benayn.ustyle.string.Strs;
 import com.google.common.base.Defaults;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
@@ -48,6 +50,40 @@ import com.google.common.primitives.Primitives;
 import com.google.common.reflect.TypeToken;
 
 public class Me3Test extends Me2Test {
+    
+    public static class WrapObjectTest {
+        String name;
+        Integer age;
+    }
+    
+    @Test
+    public void testWrapObject() {
+        WrapObjectTest wo1 = new WrapObjectTest();
+        wo1.name = "test1";
+        wo1.age = 15;
+        log.info(wo1.toString());
+        
+        WrapObjectTest wo2 = new WrapObjectTest();
+        wo2.name = "test1";
+        wo2.age = 15;
+        log.info(wo2.toString());
+        
+        assertFalse(Strs.contains(wo1.toString(), "name", "age"));
+        assertFalse(Strs.contains(wo2.toString(), "name", "age"));
+        assertFalse(wo1.equals(wo2));
+        assertFalse(wo2.equals(wo1));
+        assertNotEquals(wo1.hashCode(), wo2.hashCode());
+        
+        WrappedObject<WrapObjectTest> wrap1 = Objects2.wrapObj(wo1);
+        WrappedObject<WrapObjectTest> wrap2 = Objects2.wrapObj(wo2);
+        assertTrue(Strs.contains(wrap1.toString(), "name", "age"));
+        assertTrue(Strs.contains(wrap2.toString(), "name", "age"));
+        assertTrue(wrap1.equals(wrap2));
+        assertTrue(wrap2.equals(wrap1));
+        assertTrue(wrap1.equals(wo2));
+        assertTrue(wrap2.equals(wo1));
+        assertEquals(wrap1.hashCode(), wrap2.hashCode());
+    }
     
     public static enum EnumTest {
         TEST1, TEST2

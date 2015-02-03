@@ -203,7 +203,7 @@ public abstract class Journalize<S> extends ForwardingObject implements Log {
 		if (Objects2.is8Type(target.getClass())) { return target; }
 		if (BigInteger.class.isInstance(target)) { return target; }
 		if (BigDecimal.class.isInstance(target)) { return target; }
-		return Objects2.TO_STRING_WRAP.apply(target);
+		return Objects2.wrapObj(target);
 	}
 
 	protected <E> void journalize(Collection<E> collection, 

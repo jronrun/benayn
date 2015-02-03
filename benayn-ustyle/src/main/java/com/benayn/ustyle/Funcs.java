@@ -9,6 +9,7 @@ import java.util.Date;
 
 import com.benayn.ustyle.string.Strs;
 import com.google.common.base.Function;
+import com.google.common.collect.ForwardingObject;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Floats;
 import com.google.common.primitives.Longs;
@@ -182,5 +183,47 @@ public class Funcs {
 			return Long.parseLong(input.toString());
 		}
 	};
+	
+	/**
+     * Override the given object's hashCode() and equals(Object) method
+     */
+    public static final Function<Object, Object> WRAP_EQUAL_HASHCODE = new Function<Object, Object>() {
+        
+        @Override public Object apply(final Object input) {
+            return new ForwardingObject() {
+                
+                @Override protected Object delegate() {
+                    return input;
+                }
+                
+                @Override public int hashCode() {
+                    return Objects2.hashCodes(this.delegate());
+                }
+
+                @Override public boolean equals(Object obj) {
+                    return Objects2.isEqual(this.delegate(), obj);
+                }
+            };
+        }
+    };
+    
+    /**
+     * Override the given object's toString() method
+     */
+    public static final Function<Object, Object> WRAP_TO_STRING = new Function<Object, Object>() {
+
+        @Override public Object apply(final Object input) {
+            return new ForwardingObject() {
+
+                @Override protected Object delegate() {
+                    return input;
+                }
+
+                @Override public String toString() {
+                    return Objects2.toString(this.delegate());
+                }
+            };
+        }
+    };
 
 }

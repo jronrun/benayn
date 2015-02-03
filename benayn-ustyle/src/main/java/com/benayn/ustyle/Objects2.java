@@ -99,46 +99,69 @@ public class Objects2 {
 	}
 	
 	/**
-	 * Override the given object's hashCode() and equals(Object) method
+	 * Wraps the {@link Object#toString()}, {@link Object#hashCode()}, {@link Object#equals(Object)} methods to the given target
+	 * @param target
+	 * @return
 	 */
-	public static final Function<Object, Object> EQUAL_HASHCODE_WRAP = new Function<Object, Object>() {
-		
-		@Override public Object apply(final Object input) {
-			return new ForwardingObject() {
-				
-				@Override protected Object delegate() {
-					return input;
-				}
-				
-				@Override public int hashCode() {
-					return hashCodes(this.delegate());
-				}
-
-				@Override public boolean equals(Object obj) {
-					return isEqual(this.delegate(), obj);
-				}
-			};
-		}
-	};
+	public static <T> WrappedObject<T> wrapObj(final T target) {
+	    return new WrappedObject<T>(target);
+	}
 	
 	/**
-	 * Override the given object's toString() method
+	 * 
 	 */
-	public static final Function<Object, Object> TO_STRING_WRAP = new Function<Object, Object>() {
+	public static class WrappedObject<T> extends ForwardingObject {
+	    
+	    public WrappedObject(T delegate) {
+	        this.delegate = delegate;
+	    }
 
-		@Override public Object apply(final Object input) {
-			return new ForwardingObject() {
+	    /**
+	     * Override the given object's toString() method
+	     * 
+	     * @see Objects2#toString(Object)
+	     */
+        @Override public String toString() {
+            return Objects2.toString(this.delegate());
+        }
+        
+        /**
+         * Override the given object's hashCode() method
+         * 
+         * @see Objects2#hashCodes(Object)
+         */
+        @Override public int hashCode() {
+            return hashCodes(this.delegate());
+        }
 
-				@Override protected Object delegate() {
-					return input;
-				}
-
-				@Override public String toString() {
-					return TO_STRING.apply(this.delegate());
-				}
-			};
-		}
-	};
+        /**
+         * Override the given object's equals() method
+         * 
+         * @see Objects2#isEqual(Object, Object)
+         */
+        @Override public boolean equals(Object obj) {
+            if (null != obj && obj instanceof WrappedObject) {
+                obj = ((WrappedObject<?>) obj).get();
+            }
+            
+            return isEqual(this.delegate(), obj);
+        }
+        
+        /**
+         * Returns the delegate object self
+         * 
+         * @return
+         */
+        public T get() {
+            return delegate();
+        }
+        
+        @Override protected T delegate() {
+            return delegate;
+        }
+	    
+        private T delegate;
+	}
 	
 	/**
 	 * Convert as string with given object

@@ -99,8 +99,8 @@ public class MeTest extends Assert {
 		assertEquals(p11.hashCode(), p22.hashCode());
 		assertTrue(p11.equals(p22));
 		
-		assertEquals(Objects2.EQUAL_HASHCODE_WRAP.apply(p11).hashCode(), p11.hashCode());
-		assertTrue(Objects2.EQUAL_HASHCODE_WRAP.apply(p11).equals(p22));
+		assertEquals(Objects2.wrapObj(p11).hashCode(), p11.hashCode());
+		assertTrue(Objects2.wrapObj(p11).equals(p22));
 		
 		assertEquals(p11.toString(), p22.toString());
 		assertEquals(p11.toString(), Objects2.toString(p11));
