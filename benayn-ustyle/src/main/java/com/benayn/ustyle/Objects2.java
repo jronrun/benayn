@@ -274,6 +274,16 @@ public class Objects2 {
         }
         
         /**
+         * Returns the delegate object's {@link TypeDescrib}
+         * @see TypeRefer#asTypeDesc()
+         */
+        public TypeDescrib getType() {
+            return TypeRefer.of(getClazz()).asTypeDesc();
+        }
+        
+        /**
+         * Returns the given property name {@link Field}'s {@link TypeDescrib}
+         * 
          * @see TypeRefer#asTypeDesc()
          */
         public TypeDescrib getType(String propName) {
@@ -384,7 +394,11 @@ public class Objects2 {
          */
         public void info() {
             if (log.isInfoEnabled()) {
-                log.info(JsonW.of(this.delegate()).readable().asJson());
+                StringBuilder builder = new StringBuilder("delegate class: ")
+                    .append(getClazz().getName())
+                    .append(" (").append(Modifier.toString(getClazz().getModifiers())).append(") ")
+                    .append(JsonW.of(this.delegate()).dateFmt(DateStyle.DEFAULT).readable().asJson());
+                log.info(builder.toString());
             }
         }
         

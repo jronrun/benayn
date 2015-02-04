@@ -52,6 +52,26 @@ import com.google.common.reflect.TypeToken;
 
 public class Me3Test extends Me2Test {
     
+    public static class User {
+        String username;
+        String password;
+        int age;
+        Address address;
+        Date birth;
+    }
+    
+    public static class Address {
+        Integer cityCode;
+        String street;
+        String detail;
+        Country country;
+    }
+    
+    public static class Country {
+        String name;
+        int state;
+    }
+    
     public static class WrapObjectTest {
         String name;
         Integer age;
