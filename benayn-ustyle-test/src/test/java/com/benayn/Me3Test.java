@@ -59,12 +59,29 @@ public class Me3Test extends Me2Test {
     
     @Test
     public void testWrapObject2() {
+        FacadeObject<WrapObjectTest> face = FacadeObject.wrap(new WrapObjectTest());
+        assertTrue(face.isPublic());
+        assertTrue(face.isStatic());
+        assertTrue(face.isInnerClass());
+        assertFalse(face.isPrivate());
+        assertFalse(face.isAbstract());
+        assertFalse(face.isFinal());
+        assertFalse(face.isInterface());
+        assertFalse(face.isProtected());
 
         Person wo1 = new Person();
-        
         FacadeObject<Person> wrapObj1 = FacadeObject.wrap(wo1);
+        assertTrue(wrapObj1.isPublic());
+        assertFalse(wrapObj1.isStatic());
+        assertFalse(wrapObj1.isInnerClass());
+        assertFalse(wrapObj1.isPrivate());
+        assertFalse(wrapObj1.isAbstract());
+        assertFalse(wrapObj1.isFinal());
+        assertFalse(wrapObj1.isInterface());
+        assertFalse(wrapObj1.isProtected());
+        
         wrapObj1.info();
-        Map<String, Object> obj1Map = wrapObj1.asMap();
+        Map<String, Object> obj1Map = wrapObj1.asMap(); 
         for (String prop : obj1Map.keySet()) {
             if ("serialVersionUID".equals(prop)) {
                 continue;

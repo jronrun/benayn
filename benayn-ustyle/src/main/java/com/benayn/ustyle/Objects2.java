@@ -6,6 +6,7 @@ import static com.google.common.primitives.Primitives.isWrapperType;
 import static com.google.common.primitives.Primitives.wrap;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -185,6 +186,89 @@ public class Objects2 {
             this.delegate = delegate;
         }
         
+        private boolean checkMod(int check) {
+            if (null == this.delegate()) {
+                return false;
+            }
+            
+            Class<?> clazz = getClazz();
+            int mod = clazz.getModifiers();
+            
+            switch (check) {
+                case 1: return Modifier.isPublic(mod);
+                case 2: return Modifier.isPrivate(mod);
+                case 4: return Modifier.isProtected(mod);
+                case 8: return Modifier.isStatic(mod);
+                case 16: return Modifier.isFinal(mod);
+                case 512: return Modifier.isInterface(mod);
+                case 1024: return Modifier.isAbstract(mod);
+                case -1: return clazz.getName().indexOf(Reflecter.INNER_CLASS_SEPARATOR_CHAR) != Strs.INDEX_NONE_EXISTS;
+                default: return false;
+            }
+        }
+        
+        public Class<?> getClazz() {
+            return (delegate() instanceof Class ? (Class<?>) delegate() : delegate().getClass());
+        }
+        
+        /**
+         * @see Modifier#isPublic(int)
+         */
+        public boolean isPublic() {
+            return checkMod(1);
+        }
+
+        /**
+         * @see Modifier#isPrivate(int)
+         */
+        public boolean isPrivate() {
+            return checkMod(2);
+        }
+
+        /**
+         * @see Modifier#isProtected(int)
+         */
+        public boolean isProtected() {
+            return checkMod(4);
+        }
+
+        /**
+         * @see Modifier#isStatic(int)
+         */
+        public boolean isStatic() {
+            return checkMod(8);
+        }
+
+        /**
+         * @see Modifier#isFinal(int)
+         */
+        public boolean isFinal() {
+            return checkMod(16);
+        }
+
+        /**
+         * @see Modifier#isInterface(int)
+         */
+        public boolean isInterface() {
+            return checkMod(512);
+        }
+
+        /**
+         * @see Modifier#isAbstract(int)
+         */
+        public boolean isAbstract() {
+            return checkMod(1024);
+        }
+        
+        /**
+         * Checks if the delegate target is an inner class
+         * 
+         * @return
+         */
+        public boolean isInnerClass() {
+            return checkMod(-1);
+        }
+
         @Override protected T delegate() {
             return delegate;
         }
