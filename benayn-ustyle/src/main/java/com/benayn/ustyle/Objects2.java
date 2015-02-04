@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import com.benayn.ustyle.TypeRefer.TypeDescrib;
 import com.benayn.ustyle.behavior.StructBehavior;
 import com.benayn.ustyle.behavior.ValueBehavior;
 import com.benayn.ustyle.behavior.ValueBehaviorAdapter;
@@ -189,6 +190,13 @@ public class Objects2 {
         }
         
         /**
+         * @see TypeRefer#asTypeDesc()
+         */
+        public TypeDescrib getType(String propName) {
+            return TypeRefer.of(getField(propName)).asTypeDesc();
+        }
+        
+        /**
          * @see Reflecter#field(String)
          */
         public Field getField(String propName) {
@@ -200,6 +208,14 @@ public class Objects2 {
          */
         public <F> F getValue(String propName) {
             return this.reflection().val(propName);
+        }
+        
+        /**
+         * @see Resolves#get(TypeDescrib, Object)
+         * @see Reflecter#val(String, Object)
+         */
+        public void setResolvedValue(String propName, Object propVal) {
+            setValue(propName, Resolves.get(getType(propName), propVal));
         }
         
         /**
