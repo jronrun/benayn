@@ -574,7 +574,8 @@ public final class Reflecter<T> {
 			
 			// Reject field from inner class.
 			String clzN = v.getClass().getName();
-			if (clzN.indexOf(INNER_CLASS_SEPARATOR_CHAR) != INDEX_NONE_EXISTS) {
+			if (!Modifier.isStatic(v.getClass().getModifiers()) 
+			        && clzN.indexOf(INNER_CLASS_SEPARATOR_CHAR) != INDEX_NONE_EXISTS) {
 				return true;
 			}
 			for (String packagePath : excludePackagePath) {
