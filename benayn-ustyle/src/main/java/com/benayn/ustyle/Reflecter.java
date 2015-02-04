@@ -158,6 +158,15 @@ public final class Reflecter<T> {
 	}
 	
 	/**
+     * Populate the JavaBeans properties of this delegate object, based on the JSON string
+     * 
+     * @see JsonR#asObject(Object)
+     */
+    public <V> Reflecter<T> populate(String json) {
+        return populate(json, new String[]{});
+    }
+	
+	/**
 	 * Populate the JavaBeans properties of this delegate object, based on the JSON string
      * 
      * @see JsonR#asObject(Object)

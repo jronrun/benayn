@@ -277,6 +277,13 @@ public class Objects2 {
         /**
          * @see Reflecter#populate(String)
          */
+        public void populate(String json) {
+            this.reflection().populate(json);
+        }
+        
+        /**
+         * @see Reflecter#populate(String, String...)
+         */
         public void populate(String json, String... excludes) {
             this.reflection().populate(json, excludes);
         }
