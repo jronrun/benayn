@@ -60,8 +60,8 @@ Guava, Berkeley DB JE, Usage, Utilities
 
       //{"birth":1425988977384,"address":{"detail":"moon",
       //"lonlat":{"lon":0.12,"lat":0.10},"code":30},"age":18,"name":"jack"}
-      String json = "{\"birth\":1425988977384,\"address\":{\"detail\":\"moon\","
-              + "\"lonlat\":{\"lon\":0.12,\"lat\":0.10},\"code\":30},\"age\":18,\"name\":\"jack\"}";
+      String json = "{\"birth\":1425988977384,\"address\":{\"detail\":\"moon\",\"lonlat\":"
+              + "{\"lon\":0.12,\"lat\":0.10},\"code\":30},\"age\":18,\"name\":\"jack\"}";
       
       Map<String, Object> jsonMap = JsonR.of(json).deepTierMap();
       //same as jsonMap.get("lon")
@@ -85,7 +85,8 @@ Guava, Berkeley DB JE, Usage, Utilities
       //populate with JSON
       userWrap.populate(json);
       assertTrue(Objects2.isEqual(user, user2));
-      assertTrue(user.getAddress().getLonlat().getLon() == user2.getAddress().getLonlat().getLon());
+      assertTrue(user.getAddress().getLonlat().getLon() 
+             == user2.getAddress().getLonlat().getLon());
       
       //modify user.address.lonlat.lat
       user.getAddress().getLonlat().setLat(0.2);
@@ -116,14 +117,14 @@ Guava, Berkeley DB JE, Usage, Utilities
       }
       
       //some string test
-      String email = "helloworld@test.com";
+      String str = "helloworld@test.com";
       
-      assertEquals("test", Finder.of(email).afters("@").befores(".").get());
-      assertEquals("hello*****@test.com", Replacer.ctx(email).afters(5).befores("@").with('*'));
-      assertEquals("world@test", Indexer.of(email).between(5, -4));
-      assertEquals("test", Betner.of(email).between("@", ".").first());
+      assertEquals("test", Finder.of(str).afters("@").befores(".").get());
+      assertEquals("hello*****@test.com", Replacer.ctx(str).afters(5).befores("@").with('*'));
+      assertEquals("world@test", Indexer.of(str).between(5, -4));
+      assertEquals("test", Betner.of(str).between("@", ".").first());
       assertEquals("*****world*********", 
-              Replacer.of(email).after(5).negates().before("@").negates().with('*'));
+              Replacer.of(str).after(5).negates().before("@").negates().with('*'));
   }
 ```
 
