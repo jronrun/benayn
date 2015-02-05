@@ -129,7 +129,6 @@ Guava, Berkeley DB JE, Usage, Utilities
 
 ## More
 
-<a href="https://github.com/jronrun/benayn/blob/master/benayn-ustyle-test/src/test/java/com/benayn/Me3Test.java">benayn-ustyle usage</a>
-<br/>
-<a href="https://github.com/jronrun/benayn/blob/master/benayn-ustyle-test/src/test/java/com/benayn/berkeley/BerkeleyTest.java">benayn-berkeley usage</a>
+- <a href="https://github.com/jronrun/benayn/blob/master/benayn-ustyle-test/src/test/java/com/benayn/Me3Test.java">benayn-ustyle usage</a>
+- <a href="https://github.com/jronrun/benayn/blob/master/benayn-ustyle-test/src/test/java/com/benayn/berkeley/BerkeleyTest.java">benayn-berkeley usage</a>
 
