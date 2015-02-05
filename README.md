@@ -119,13 +119,14 @@ Guava, Berkeley DB JE, Usage, Utilities
       //some string test
       String str = "helloworld@test.com";
       
-      assertEquals("test", Finder.of(str).afters("@").befores(".").get());
       assertEquals("hello*****@test.com", 
               Replacer.ctx(str).afters(5).befores("@").with('*'));
-      assertEquals("world@test", Indexer.of(str).between(5, -4));
-      assertEquals("test", Betner.of(str).between("@", ".").first());
       assertEquals("*****world*********", 
               Replacer.of(str).after(5).negates().before("@").negates().with('*'));
+      
+      assertEquals("test", Finder.of(str).afters("@").befores(".").get());        
+      assertEquals("world@test", Indexer.of(str).between(5, -4));
+      assertEquals("test", Betner.of(str).between("@", ".").first());
   }
 ```
 
