@@ -29,7 +29,6 @@ import com.benayn.ustyle.Dater;
 import com.benayn.ustyle.Objects2;
 import com.benayn.ustyle.Pair;
 import com.benayn.ustyle.Reflecter;
-import com.benayn.ustyle.Scale62;
 import com.benayn.ustyle.logger.Log;
 import com.benayn.ustyle.logger.Loggers;
 import com.google.common.base.Stopwatch;
@@ -76,14 +75,6 @@ public class BerkeleyTest extends Assert {
         store = env.connection("test-store", null);
         access = new QueueEntityAccess(store);
         bdb = newEnv("bdb").connection("test-bdb", null, null);
-    }
-    
-    @Test
-    public void testTmp() {
-        long num = 18;
-        String num62 = Scale62.get(num, 18);
-        log.info("number: " + num + ", scale 62: " + num62);
-        assertEquals(num, Scale62.get(num62));
     }
     
     @Test 

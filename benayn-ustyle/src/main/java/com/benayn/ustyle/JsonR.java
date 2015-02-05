@@ -128,6 +128,17 @@ public final class JsonR {
 	}
 	
 	/**
+	 * Returns the delegate JSON string as a deep look and tier key {@link HashMap}
+	 * 
+	 * @see Mapper#deepLook()
+	 * @see Mapper#tierKey()
+	 * @return
+	 */
+	public Map<String, Object> deepTierMap() {
+	    return mapper().deepLook().tierKey().map();
+	}
+	
+	/**
 	 * Returns the delegate JSON string as a {@link HashMap} or null
 	 * 
 	 * @return

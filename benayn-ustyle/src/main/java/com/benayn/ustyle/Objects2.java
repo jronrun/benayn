@@ -27,6 +27,7 @@ import com.benayn.ustyle.logger.Loggers;
 import com.benayn.ustyle.string.Strs;
 import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
@@ -37,7 +38,7 @@ public class Objects2 {
 	/**
 	 * 
 	 */
-	public static final String LINE_BREAK = System.getProperty("line.separator");
+	public static final String LINE_BREAK = StandardSystemProperty.LINE_SEPARATOR.value();
 	public static final String NULL_STR = "<null>";
 
 	/**
@@ -395,7 +396,7 @@ public class Objects2 {
         public void info() {
             if (log.isInfoEnabled()) {
                 StringBuilder builder = new StringBuilder("delegate class: ")
-                    .append(getClazz().getName())
+                    .append(defaultTostring(this.delegate()))
                     .append(" (").append(Modifier.toString(getClazz().getModifiers())).append(") ")
                     .append(JsonW.of(this.delegate()).dateFmt(DateStyle.DEFAULT).readable().asJson());
                 log.info(builder.toString());
