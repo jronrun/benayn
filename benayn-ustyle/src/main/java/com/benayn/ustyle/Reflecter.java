@@ -22,6 +22,7 @@ import com.benayn.ustyle.logger.Loggers;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicates;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -352,6 +353,16 @@ public final class Reflecter<T> {
 	 * @return
 	 */
 	public Field field(String propName) {
+	    if (checkNotNull(propName).contains(Mapper.TIER_SEP)) {
+	        List<String> props = Splitter.on(Mapper.TIER_SEP).splitToList(propName);
+	        Field field = matchField(props.get(0)); 
+	        for (int i = 1; i < props.size(); i++) {
+                field = Reflecter.from((Class<?>) field.getGenericType()).field(props.get(i));
+            }
+	        
+	        return field;
+	    }
+	    
 		return matchField(propName);
 	}
 	

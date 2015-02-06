@@ -52,26 +52,6 @@ import com.google.common.reflect.TypeToken;
 
 public class Me3Test extends Me2Test {
     
-    public static class User {
-        String username;
-        String password;
-        int age;
-        Address address;
-        Date birth;
-    }
-    
-    public static class Address {
-        Integer cityCode;
-        String street;
-        String detail;
-        Country country;
-    }
-    
-    public static class Country {
-        String name;
-        int state;
-    }
-    
     public static class WrapObjectTest {
         String name;
         Integer age;
@@ -339,6 +319,7 @@ public class Me3Test extends Me2Test {
         
         assertTrue(Resolves.get(ref.field("stringArr"), 1) instanceof String[]);
         
+        //Set<List<Map<Byte, Long>>>
         Set<List<Map<Byte, Long>>> sr = Resolves.get(ref.field("byteSet"), rt.byteSet);
         assertTrue(sr instanceof Set);
         for (List<Map<Byte, Long>> l1 : sr) {
@@ -352,6 +333,21 @@ public class Me3Test extends Me2Test {
             }
         }
         
+      //Set<List<Map<Byte, Long>>>
+        Set<?> sr2 = Resolves.get(ref.field("byteSet"), rt.byteSet);
+        assertTrue(sr2 instanceof Set);
+        for (Object l1 : sr) {
+            assertTrue(l1 instanceof List);
+            for (Object m1 : (List<?>) l1) {
+                assertTrue(m1 instanceof Map);
+                for (Object b1 : ((Map<?, ?>) m1).keySet()) {
+                    assertTrue(b1 instanceof Byte);
+                    assertTrue(((Map<?, ?>) m1).get(b1) instanceof Long);
+                }
+            }
+        }
+        
+        //List<Map<Short, Set<Map<Integer, Double>>>>
         List<Map<Short, Set<Map<Integer, Double>>>> list = Resolves.get(ref.field("list"), rt.list);
         assertTrue(list instanceof List);
         for (Map<Short, Set<Map<Integer, Double>>> m1 : list) {
@@ -370,6 +366,26 @@ public class Me3Test extends Me2Test {
             }
         }
         
+        //List<Map<Short, Set<Map<Integer, Double>>>>
+        List<?> list2 = Resolves.get(ref.field("list"), rt.list);
+        assertTrue(list2 instanceof List);
+        for (Object m1 : list2) {
+            assertTrue(m1 instanceof Map);
+            for (Object s1 : ((Map<?, ?>) m1).keySet()) {
+                assertTrue(s1 instanceof Short);
+                Set<?> set1 = (Set<?>) ((Map<?, ?>) m1).get(s1);
+                assertTrue(set1 instanceof Set);
+                for (Object m2 : set1) {
+                    assertTrue(m2 instanceof Map);
+                    for (Object i1 : ((Map<?, ?>) m2).keySet()) {
+                        assertTrue(i1 instanceof Integer);
+                        assertTrue(((Map<?, ?>) m2).get(i1) instanceof Double);
+                    }
+                }
+            }
+        }
+        
+        //Map<Person, List<Set<Map<Float, Person>>>>
         Map<Person, List<Set<Map<Float, Person>>>> map = Resolves.get(ref.field("map"), rt.map);
         assertTrue(map instanceof Map);
         for (Person p1 : map.keySet()) {
@@ -383,6 +399,25 @@ public class Me3Test extends Me2Test {
                     for (Float  f1 : m2.keySet()) {
                         assertTrue(f1 instanceof Float);
                         assertTrue(m2.get(f1) instanceof Person);
+                    }
+                }
+            }
+        }
+        
+        //Map<Person, List<Set<Map<Float, Person>>>>
+        Map<?, ?> map2 = Resolves.get(ref.field("map"), rt.map);
+        assertTrue(map2 instanceof Map);
+        for (Object p1 : map2.keySet()) {
+            assertTrue(p1 instanceof Person);
+            List<?> l1 = (List<?>) ((Map<?, ?>) map2).get(p1);
+            assertTrue(l1 instanceof List);
+            for (Object s1 : l1) {
+                assertTrue(s1 instanceof Set);
+                for (Object m2 : ((Set<?>) s1)) {
+                    assertTrue(m2 instanceof Map);
+                    for (Object  f1 : ((Map<?, ?>) m2).keySet()) {
+                        assertTrue(f1 instanceof Float);
+                        assertTrue(((Map<?, ?>) m2).get(f1) instanceof Person);
                     }
                 }
             }
@@ -824,5 +859,88 @@ public class Me3Test extends Me2Test {
 		log.info(b);
 		log.info(b2);
 	}
+	
+    public static class User {
+        private String name;
+        private int age;
+        private Date birth;
+        private Address address;
+        private Map<Byte, List<Float>> testMap; 
+
+        public String getName() {
+            return name;
+        }
+        public void setName(String name) {
+            this.name = name;
+        }
+        public int getAge() {
+            return age;
+        }
+        public void setAge(int age) {
+            this.age = age;
+        }
+        public Date getBirth() {
+            return birth;
+        }
+        public void setBirth(Date birth) {
+            this.birth = birth;
+        }
+        public Address getAddress() {
+            return address;
+        }
+        public void setAddress(Address address) {
+            this.address = address;
+        }
+        public Map<Byte, List<Float>> getTestMap() {
+            return testMap;
+        }
+        public void setTestMap(Map<Byte, List<Float>> testMap) {
+            this.testMap = testMap;
+        }
+        
+    }
+
+    public static class Address {
+        private Integer code;
+        private String detail;
+        private Lonlat lonlat;
+        public Integer getCode() {
+            return code;
+        }
+        public void setCode(Integer code) {
+            this.code = code;
+        }
+        public String getDetail() {
+            return detail;
+        }
+        public void setDetail(String detail) {
+            this.detail = detail;
+        }
+        public Lonlat getLonlat() {
+            return lonlat;
+        }
+        public void setLonlat(Lonlat lonlat) {
+            this.lonlat = lonlat;
+        }
+        
+    }
+
+    public static class Lonlat {
+        private double lon;
+        private double lat;
+        public double getLon() {
+            return lon;
+        }
+        public void setLon(double lon) {
+            this.lon = lon;
+        }
+        public double getLat() {
+            return lat;
+        }
+        public void setLat(double lat) {
+            this.lat = lat;
+        }
+
+    }
 
 }

@@ -224,7 +224,9 @@ public final class Mapper<K, V> {
 	 * @return
 	 */
 	public Mapper<K, V> deepLook() {
-		delegate = Optional.of((Map<K, V>) DeepLookMap.from(delegate.get()));
+	    if (!(delegate.get() instanceof DeepLookMap)) {
+	        delegate = Optional.of((Map<K, V>) DeepLookMap.from(delegate.get()));
+	    }
 		return this;
 	}
 	
@@ -235,7 +237,9 @@ public final class Mapper<K, V> {
 	 * @return
 	 */
 	public Mapper<K, V> tierKey() {
-		delegate = Optional.of((Map<K, V>) TierKeyMap.from(delegate.get()));
+	    if (!(delegate.get() instanceof TierKeyMap)) {
+	        delegate = Optional.of((Map<K, V>) TierKeyMap.from(delegate.get()));
+	    }
 		return this;
 	}
 
@@ -396,19 +400,20 @@ public final class Mapper<K, V> {
 			return (R) ((null != r) ? asTierR(r) : (isC ? false : null));
 		}
 		
-		private static final String SEP = ".";
 		private boolean isTierKey(Object k) {
-			return (null != k) && (k instanceof String) && (((String) k).indexOf(SEP) != Strs.INDEX_NONE_EXISTS);
+			return (null != k) && (k instanceof String) && (((String) k).indexOf(TIER_SEP) != Strs.INDEX_NONE_EXISTS);
 		}
 		
 		private String[] asTierKey(Object k) {
-			return Lists.newLinkedList(Splitter.on(SEP).split((String) k)).toArray(new String[]{});
+			return Lists.newLinkedList(Splitter.on(TIER_SEP).split((String) k)).toArray(new String[]{});
 		}
 		@SuppressWarnings("unchecked")
 		private <R> R asTierR(Object v) {
 			return (R) ((null != v && v instanceof Map) ? tiers((Map<K, V>) v) : v);
 		}
 	}
+	
+	protected static final String TIER_SEP = ".";
 	
 	/**
 	 * 

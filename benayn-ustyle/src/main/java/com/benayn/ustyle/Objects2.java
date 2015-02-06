@@ -27,10 +27,10 @@ import com.benayn.ustyle.logger.Loggers;
 import com.benayn.ustyle.string.Strs;
 import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.StandardSystemProperty;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.ForwardingObject;
 
 public class Objects2 {
@@ -110,7 +110,7 @@ public class Objects2 {
 	 * @param target
 	 * @return
 	 */
-	public static <T> FacadeObject<T> wrapObj(final T target) {
+	public static <T> FacadeObject<T> wrapObj(Object target) {
 	    return FacadeObject.wrap(target);
 	}
 	
@@ -130,8 +130,10 @@ public class Objects2 {
 	     * @param target
 	     * @return
 	     */
-	    public static <T> FacadeObject<T> wrap(T target) {
-	        return new FacadeObject<T>(target);
+	    @SuppressWarnings("unchecked")
+        public static <T> FacadeObject<T> wrap(Object target) {
+	        return new FacadeObject<T>(
+	                (T) (target instanceof Class ? Suppliers2.toInstance((Class<T>) target).get() : target));
 	    }
 	    
 	    /**
@@ -171,7 +173,7 @@ public class Objects2 {
          * @see Reflecter#clones()
          */
         public T clone() {
-            return Reflecter.from(this.delegate()).clones();
+            return this.reflection().clones();
         }
 
         /**
@@ -302,7 +304,7 @@ public class Objects2 {
          * @see Reflecter#val(String)
          */
         public <F> F getValue(String propName) {
-            return this.reflection().val(propName);
+            return this.mapper().tierKey().get(propName);
         }
         
         /**
