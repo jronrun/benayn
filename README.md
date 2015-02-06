@@ -100,7 +100,8 @@ Guava, Berkeley DB JE, Usage, Utilities
         assertEquals(double.class, userWrap.getType("address.lonlat.lon").rawClazz());
         assertEquals(Integer.class, userWrap.getType("address.code").rawClazz());
         
-        assertEquals(user.getAddress().getLonlat().getLat(), userWrap.getValue("address.lonlat.lat"));
+        assertEquals(user.getAddress().getLonlat().getLat(), 
+                     userWrap.getValue("address.lonlat.lat"));
         assertEquals(user.getAddress().getDetail(), userWrap.getValue("address.detail"));
         assertEquals(user.getBirth().getTime(), userWrap.<Date>getValue("birth").getTime());
 
