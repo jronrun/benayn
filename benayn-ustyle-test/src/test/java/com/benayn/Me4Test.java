@@ -26,7 +26,7 @@ public class Me4Test extends Me3Test {
     
     @Test
     public void testTmp() {
-        
+    	
     }
     
     @Test public void testUsage() {

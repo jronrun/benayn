@@ -11,13 +11,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
 import com.benayn.berkeley.Person;
 import com.benayn.ustyle.Arrays2;
-import com.benayn.ustyle.Decisional;
 import com.benayn.ustyle.Decisions;
 import com.benayn.ustyle.Gather;
 import com.benayn.ustyle.JsonR;
@@ -25,7 +23,6 @@ import com.benayn.ustyle.JsonW;
 import com.benayn.ustyle.Mapper;
 import com.benayn.ustyle.Objects2;
 import com.benayn.ustyle.Objects2.FacadeObject;
-import com.benayn.ustyle.Pair;
 import com.benayn.ustyle.Randoms;
 import com.benayn.ustyle.Reflecter;
 import com.benayn.ustyle.Resolves;
@@ -41,7 +38,6 @@ import com.benayn.ustyle.metest.generics.GenericsUtils;
 import com.benayn.ustyle.metest.generics.TestGenerics;
 import com.benayn.ustyle.string.Strs;
 import com.google.common.base.Defaults;
-import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -167,6 +163,31 @@ public class Me3Test extends Me2Test {
         
         assertTrue(Objects2.isEqual(wo1, wrap1.clone()));
         assertTrue(Objects2.isEqual(wo2, wrap2.clone()));
+    }
+    
+    @Test
+    public void testFacadeObject() {
+    	User user = new User();
+    	FacadeObject<User> fo = FacadeObject.wrap(user);
+    	fo.populate4Test();
+    	
+    	assertTrue(fo.getObject("address") instanceof User);
+    	assertTrue(fo.getObject("address.lonlat") instanceof Address);
+    	assertTrue(fo.getObject("address.lonlat.lat") instanceof Lonlat);
+    	
+    	assertTrue(fo.getValue("address") instanceof Address);
+    	assertTrue(fo.getValue("address.lonlat") instanceof Lonlat);
+    	assertTrue(fo.getValue("address.lonlat.lat") instanceof Double);
+        
+    	assertEquals(user.getAddress().getLonlat().getLat(), 
+                fo.getValue("address.lonlat.lat"));
+    	
+    	double lat = 0.12;
+    	assertNotEquals(lat, user.getAddress().getLonlat().getLat());
+    	fo.setValue("address.lonlat.lat", lat);
+    	assertEquals(fo.getValue("address.lonlat.lat"), user.getAddress().getLonlat().getLat());
+    	assertEquals(fo.getValue("address.lonlat.lat"), lat);
+    	
     }
     
     public static enum EnumTest {
@@ -757,16 +778,16 @@ public class Me3Test extends Me2Test {
 		log.info(TypeRefer.of(Reflecter.from(Domain.class).field("sDomains")).asDesc());
 	}
 	
-	@Test
-	public void testJsonWfmt() throws IOException {
-		String json = Sources.asString(Me3Test.class, "/unfmt.json");
-		log.info(json);
-		log.info("\n" + JsonW.fmtJson(json));
-		log.info("\n" + JsonW.of(json).readable().fill("-----").aligns().asJson());
-		
-		log.info(JsonW.of(Domain.getDomain()).readable().fill(".....").align().asJson());
-		log.info(JsonW.of(Domain.getDomain()).readable().fill(".....").asJson());
-	}
+//	@Test
+//	public void testJsonWfmt() throws IOException {
+//		String json = Sources.asString(Me3Test.class, "/unfmt.json");
+//		log.info(json);
+//		log.info("\n" + JsonW.fmtJson(json));
+//		log.info("\n" + JsonW.of(json).readable().fill("-----").aligns().asJson());
+//		
+//		log.info(JsonW.of(Domain.getDomain()).readable().fill(".....").align().asJson());
+//		log.info(JsonW.of(Domain.getDomain()).readable().fill(".....").asJson());
+//	}
 	
 	@SuppressWarnings({ "unchecked", "unused" })
 	@Test
@@ -787,38 +808,38 @@ public class Me3Test extends Me2Test {
 		log.info(typeStr);
 	}
 	
-	@Test
-	public void testJsonW() {
-		Domain d = Domain.getDomain();
-		Stopwatch w1 = Stopwatch.createUnstarted(), w2 = Stopwatch.createUnstarted();
-		
-		w1.start();
-		log.info(JsonW.toJson(d));
-		log.info(w1.stop().elapsed(TimeUnit.NANOSECONDS));
-		
-		w2.start();
-		log.info(toJson(d));
-		log.info(w2.stop().elapsed(TimeUnit.NANOSECONDS));
-		
-		Reflecter.from(d).propLoop(new Decisional<Pair<Field, Object>>() {
-
-			@Override protected void decision(Pair<Field, Object> input) {
-				log.info("--------------- " + input.getL().getType().getName());
-				//log.info(JsonW.of(input.getR()).dateFmt(DateStyle.DEFAULT).asJson());
-				
-//				StringWriter strW = new StringWriter();
-//				try {
-//					JsonW.of(input.getR()).write(strW);
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//				log.info(strW.toString());
-				
-				log.info(JsonW.toJson(input.getR()));
-				log.info(toJson(input.getR()));
-			}
-		});
-	}
+//	@Test
+//	public void testJsonW() {
+//		Domain d = Domain.getDomain();
+//		Stopwatch w1 = Stopwatch.createUnstarted(), w2 = Stopwatch.createUnstarted();
+//		
+//		w1.start();
+//		log.info(JsonW.toJson(d));
+//		log.info(w1.stop().elapsed(TimeUnit.NANOSECONDS));
+//		
+//		w2.start();
+//		log.info(toJson(d));
+//		log.info(w2.stop().elapsed(TimeUnit.NANOSECONDS));
+//		
+//		Reflecter.from(d).propLoop(new Decisional<Pair<Field, Object>>() {
+//
+//			@Override protected void decision(Pair<Field, Object> input) {
+//				log.info("--------------- " + input.getL().getType().getName());
+//				//log.info(JsonW.of(input.getR()).dateFmt(DateStyle.DEFAULT).asJson());
+//				
+////				StringWriter strW = new StringWriter();
+////				try {
+////					JsonW.of(input.getR()).write(strW);
+////				} catch (IOException e) {
+////					e.printStackTrace();
+////				}
+////				log.info(strW.toString());
+//				
+//				log.info(JsonW.toJson(input.getR()));
+//				log.info(toJson(input.getR()));
+//			}
+//		});
+//	}
 	
 	@Test
     public void testJsonJackson() {

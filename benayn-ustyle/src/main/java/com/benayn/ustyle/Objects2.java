@@ -269,7 +269,7 @@ public class Objects2 {
          * @return
          */
         public boolean isInnerClass() {
-            return checkMod(-1);
+            return this.reflection().isInnerClass();
         }
 
         @Override protected T delegate() {
@@ -304,7 +304,21 @@ public class Objects2 {
          * @see Reflecter#val(String)
          */
         public <F> F getValue(String propName) {
-            return this.mapper().tierKey().get(propName);
+            return this.reflection().val(propName);
+        }
+        
+        /**
+         * @see Reflecter#getReflecter(String)
+         */
+        public <N> Reflecter<N> getReflecter(String propName) {
+        	return this.reflection().getReflecter(propName);
+        }
+        
+        /**
+         * @see Reflecter#getObject(String)
+         */
+        public <I> I getObject(String propName) {
+        	return this.reflection().getObject(propName);
         }
         
         /**

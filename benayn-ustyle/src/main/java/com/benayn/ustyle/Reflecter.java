@@ -19,10 +19,10 @@ import java.util.Set;
 
 import com.benayn.ustyle.logger.Log;
 import com.benayn.ustyle.logger.Loggers;
+import com.benayn.ustyle.string.Strs;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicates;
-import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -73,11 +73,8 @@ public final class Reflecter<T> {
 	 * @return
 	 */
 	public <F> F val(String propName) {
-		if (!this.isChanged && nameValMap.isPresent()) {
-			return nameValMap.get().get(propName);
-		}
-		
-		return getPropVal(matchField(propName), propName);
+		Triple<String, Field, Reflecter<Object>> triple = getNestRefInfo(propName);
+		return triple.getR().getPropVal(triple.getC(), triple.getL());
 	}
 	
 	/**
@@ -88,9 +85,31 @@ public final class Reflecter<T> {
 	 * @return
 	 */
 	public <V> Reflecter<T> val(String propName, V propVal) {
-		setPropVal(matchField(propName), propName, propVal);
+		Triple<String, Field, Reflecter<Object>> triple = getNestRefInfo(propName);
+		triple.getR().setPropVal(triple.getC(), triple.getL(), propVal);
 		this.isChanged = true;
 		return this;
+	}
+	
+	/**
+	 * Returns the nested {@link Reflecter} instance with given tier property name
+	 * 
+	 * @param propName
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <N> Reflecter<N> getReflecter(String propName) {
+		return (Reflecter<N>) getNestRefInfo(propName).getR();
+	}
+	
+	/**
+	 * Returns the belong instance with given property name
+	 * 
+	 * @param propName
+	 * @return
+	 */
+	public <I> I getObject(String propName) {
+		return getReflecter(propName).get();
 	}
 	
 	/**
@@ -202,7 +221,7 @@ public final class Reflecter<T> {
 			exchange(Funcs.TO_BIGINTEGER, bigIntegerD);
 		}
 		
-		fieldHolder.get().loop(new TransformMap2ObjVal<V>(properties, excludes));
+		fieldLoop(new TransformMap2ObjVal<V>(properties, excludes));
 		this.isChanged = true;
 		return this;
 	}
@@ -213,7 +232,7 @@ public final class Reflecter<T> {
 	 * @return
 	 */
 	public Reflecter<T> populate4Test() {
-		fieldHolder.get().loop(new RandomVal2ObjVal());
+		fieldLoop(new RandomVal2ObjVal());
 		this.isChanged = true;
 		return this;
 	}
@@ -328,7 +347,7 @@ public final class Reflecter<T> {
 		
 		Map<String, Object> fm = Maps.newHashMap();
 		if (fieldHolder.isPresent()) {
-			fieldHolder.get().loop(new TransformFields2Map<Object>(fm, this.trace));
+			fieldLoop(new TransformFields2Map<Object>(fm, this.trace));
 		}
 		nameValMap = Optional.of(Mapper.from(fm));
 		
@@ -353,17 +372,7 @@ public final class Reflecter<T> {
 	 * @return
 	 */
 	public Field field(String propName) {
-	    if (checkNotNull(propName).contains(Mapper.TIER_SEP)) {
-	        List<String> props = Splitter.on(Mapper.TIER_SEP).splitToList(propName);
-	        Field field = matchField(props.get(0)); 
-	        for (int i = 1; i < props.size(); i++) {
-                field = Reflecter.from((Class<?>) field.getGenericType()).field(props.get(i));
-            }
-	        
-	        return field;
-	    }
-	    
-		return matchField(propName);
+		return getNestRefInfo(propName).getC();
 	}
 	
 	/**
@@ -541,6 +550,18 @@ public final class Reflecter<T> {
 		return this;
 	}
 	
+	@SuppressWarnings("unchecked")
+	private <N> Triple<String, Field, Reflecter<N>> getNestRefInfo(String propName) {
+		int idx = checkNotNull(propName).indexOf(TIER_SEP);
+		if (idx > Strs.INDEX_NONE_EXISTS) {
+			N val = getPropertyValue(propName.substring(0, idx));
+        	return from(val).getNestRefInfo(propName.substring(idx + 1));
+	    }
+		
+		Field field = matchField(propName);
+		return null == field ? null : Triple.of(propName, field, (Reflecter<N>) this);
+	}
+	
 	/**
 	 * 
 	 * @param <V>
@@ -649,6 +670,10 @@ public final class Reflecter<T> {
     public boolean isInnerClass() {
         return delegate.isPresent() && delegate.get().getClass().getEnclosingClass() != null;
     }
+    
+    protected <V> V getPropertyValue(String propName) {
+    	return getPropVal(matchField(propName), propName);
+    }
 	
 	/**
 	 * 
@@ -668,6 +693,10 @@ public final class Reflecter<T> {
 		}
 		
 		return null;
+	}
+	
+	protected <V> void setPropertyValue(String propName, V propVal) {
+		setPropVal(matchField(propName), propName, propVal);
 	}
 	
 	/**
@@ -785,4 +814,5 @@ public final class Reflecter<T> {
 	private boolean isChanged = false;
 	private Set<String> excludePackagePath = Sets.newHashSet("com.google.common", "ch.qos.logback", "com.benayn.ustyle");
 	private boolean trace = Boolean.FALSE;
+	private static final String TIER_SEP = ".";
 }

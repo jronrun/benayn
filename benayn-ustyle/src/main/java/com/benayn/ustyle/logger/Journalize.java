@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 
 import com.benayn.ustyle.Decision;
 import com.benayn.ustyle.Decisions;
+import com.benayn.ustyle.Funcs;
 import com.benayn.ustyle.Gather;
 import com.benayn.ustyle.Objects2;
 import com.benayn.ustyle.string.Strs;
@@ -203,7 +204,7 @@ public abstract class Journalize<S> extends ForwardingObject implements Log {
 		if (Objects2.is8Type(target.getClass())) { return target; }
 		if (BigInteger.class.isInstance(target)) { return target; }
 		if (BigDecimal.class.isInstance(target)) { return target; }
-		return Objects2.wrapObj(target);
+		return Funcs.WRAP_TO_STRING.apply(target);
 	}
 
 	protected <E> void journalize(Collection<E> collection, 

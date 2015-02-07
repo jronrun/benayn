@@ -413,7 +413,7 @@ public final class Mapper<K, V> {
 		}
 	}
 	
-	protected static final String TIER_SEP = ".";
+	private static final String TIER_SEP = ".";
 	
 	/**
 	 * 
