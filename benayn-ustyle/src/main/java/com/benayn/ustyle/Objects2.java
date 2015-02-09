@@ -310,7 +310,7 @@ public class Objects2 {
         /**
          * @see Reflecter#getReflecter(String)
          */
-        public <N> Reflecter<N> getReflecter(String propName) {
+        public <N> Reflecter<N> reflection(String propName) {
         	return this.reflection().getReflecter(propName);
         }
         

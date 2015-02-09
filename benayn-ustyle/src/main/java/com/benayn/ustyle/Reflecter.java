@@ -552,14 +552,17 @@ public final class Reflecter<T> {
 	
 	@SuppressWarnings("unchecked")
 	private <N> Triple<String, Field, Reflecter<N>> getNestRefInfo(String propName) {
+	    Field field = null;
 		int idx = checkNotNull(propName).indexOf(TIER_SEP);
+		
 		if (idx > Strs.INDEX_NONE_EXISTS) {
-			N val = getPropertyValue(propName.substring(0, idx));
-        	return from(val).getNestRefInfo(propName.substring(idx + 1));
+		    String prop = propName.substring(0, idx);
+		    field = matchField(prop);
+			N val = getPropVal(field, prop);
+        	return from(null == val ? field.getType() : val).getNestRefInfo(propName.substring(idx + 1));
 	    }
 		
-		Field field = matchField(propName);
-		return null == field ? null : Triple.of(propName, field, (Reflecter<N>) this);
+		return null == (field = matchField(propName)) ? null : Triple.of(propName, field, (Reflecter<N>) this);
 	}
 	
 	/**
@@ -670,10 +673,6 @@ public final class Reflecter<T> {
     public boolean isInnerClass() {
         return delegate.isPresent() && delegate.get().getClass().getEnclosingClass() != null;
     }
-    
-    protected <V> V getPropertyValue(String propName) {
-    	return getPropVal(matchField(propName), propName);
-    }
 	
 	/**
 	 * 
@@ -693,10 +692,6 @@ public final class Reflecter<T> {
 		}
 		
 		return null;
-	}
-	
-	protected <V> void setPropertyValue(String propName, V propVal) {
-		setPropVal(matchField(propName), propName, propVal);
 	}
 	
 	/**
