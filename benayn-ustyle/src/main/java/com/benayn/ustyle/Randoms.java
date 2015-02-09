@@ -1,5 +1,7 @@
 package com.benayn.ustyle;
 
+import static com.benayn.ustyle.TypeRefer.of;
+
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -121,12 +123,18 @@ public final class Randoms {
 		@Override protected Object bigDecimalIf(BigDecimal resolvedP) { return BigDecimal.valueOf(r.nextDouble()); }
 		@Override protected Object bigIntegerIf(BigInteger resolvedP) { return BigInteger.valueOf(r.nextLong()); }
 
-		@Override protected <K, V> Object mapIf(Map<K, V> resolvedP) {
+		@SuppressWarnings("unchecked")
+        @Override protected <K, V> Object mapIf(Map<K, V> resolvedP) {
 			if (null == this.field) {
-				return null;
+                Map<K, V> rMap = (Map<K, V>) (this.clazz.isInterface() 
+			            ? Maps.newHashMap() : (Map<K, V>) Suppliers2.toInstance(this.clazz).get());
+			    for (int i = 0; i < Math.max(2, r.nextInt(5)); i++) {
+			        rMap.put((K) get(String.class), (V) get(Integer.class));
+			    }
+			    return rMap;
 			}
 			
-			TypeDescrib typeDesc = TypeRefer.of(this.field).asTypeDesc();
+			TypeDescrib typeDesc = of(this.field).asTypeDesc();
 			
 			//avoid dead loop
 			if (field.getDeclaringClass() == typeDesc.next().rawClazz()
@@ -177,12 +185,18 @@ public final class Randoms {
 //			return rMap;
 		}
 		
-		@Override protected <T> Object setIf(Set<T> resolvedP) {
-			if (null == this.field) {
-				return null;
-			}
+		@SuppressWarnings("unchecked")
+        @Override protected <T> Object setIf(Set<T> resolvedP) {
+		    if (null == this.field) {
+		        Set<T> rSet = (Set<T>) (this.clazz.isInterface() 
+                        ? Sets.newHashSet() : (Set<T>) Suppliers2.toInstance(this.clazz).get());
+                for (int i = 0; i < Math.max(2, r.nextInt(5)); i++) {
+                    rSet.add((T) get(String.class));
+                }
+                return rSet;
+            }
 			
-			TypeDescrib typeDesc = TypeRefer.of(this.field).asTypeDesc();
+			TypeDescrib typeDesc = of(this.field).asTypeDesc();
             
             //avoid dead loop
             if (field.getDeclaringClass() == typeDesc.next().rawClazz()) {
@@ -192,12 +206,18 @@ public final class Randoms {
             return getInst(typeDesc);
 		}
 		
-		@Override protected <T> Object listIf(List<T> resolvedP) {
-			if (null == this.field) {
-				return null;
-			}
+		@SuppressWarnings("unchecked")
+        @Override protected <T> Object listIf(List<T> resolvedP) {
+		    if (null == this.field) {
+		        List<T> rList = (List<T>) (this.clazz.isInterface() 
+                        ? Lists.newArrayList() : (List<T>) Suppliers2.toInstance(this.clazz).get());
+                for (int i = 0; i < Math.max(2, r.nextInt(5)); i++) {
+                    rList.add((T) get(String.class));
+                }
+                return rList;
+            }
 			
-			TypeDescrib typeDesc = TypeRefer.of(this.field).asTypeDesc();
+			TypeDescrib typeDesc = of(this.field).asTypeDesc();
             
             //avoid dead loop
             if (field.getDeclaringClass() == typeDesc.next().rawClazz()) {
