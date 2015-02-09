@@ -553,8 +553,8 @@ public abstract class FindingReplacing<S> extends AbstrStrMatcher<S> {
                 isRep2Find = true;
             }
             
-            if (log.isDebugEnabled()) {
-                log.debug(toString());
+            if (log.isTraceEnabled()) {
+                log.trace(toString());
             }
         }
 
@@ -920,8 +920,8 @@ public abstract class FindingReplacing<S> extends AbstrStrMatcher<S> {
                     this.mode4Repmnt = 'C';
                 }
                 
-                if (log.isDebugEnabled()) {
-                    log.debug(toString());
+                if (log.isTraceEnabled()) {
+                    log.trace(toString());
                 }
             }
 

@@ -809,5 +809,5 @@ public final class Reflecter<T> {
 	private boolean isChanged = false;
 	private Set<String> excludePackagePath = Sets.newHashSet("com.google.common", "ch.qos.logback", "com.benayn.ustyle");
 	private boolean trace = Boolean.FALSE;
-	private static final String TIER_SEP = ".";
+	protected static final String TIER_SEP = ".";
 }

@@ -1884,6 +1884,15 @@ public class MeTest extends Assert {
 	
 	@Test
 	public void testDater() throws ParseException {
+	    Dater aDater = Dater.of("2015-02-09 14:41:12");
+        assertEquals(2015, aDater.getYear());
+        assertEquals(1, aDater.getMonth());
+        assertEquals(9, aDater.getDay());
+        assertEquals(14, aDater.getHour());
+        assertEquals(41, aDater.getMinute());
+        assertEquals(12, aDater.getSecond());
+        assertEquals(2, aDater.getWeek());
+        
 		String sDate = "2012-11-11 23:11:11";
 		Dater dater = Dater.of(sDate);
 		

@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -87,8 +86,9 @@ public final class Randoms {
 		@Override protected Object stringIf(String resolvedP) { return UUID.randomUUID().toString().replace('-', 'c'); }
 
 		@Override protected Object dateIf(Date resolvedP) {
-			return Dater.now().set()
-					.years(Dater.now().asCalendar().get(Calendar.YEAR))
+		    Dater dater = Dater.now();
+			return dater.set()
+					.years(dater.getYear())
 					.months(Math.max(2, r.nextInt(11)))
 					.days(Math.max(2, r.nextInt(27)))
 					.hours(Math.max(2, r.nextInt(23)))

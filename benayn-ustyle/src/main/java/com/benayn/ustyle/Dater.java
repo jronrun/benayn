@@ -601,13 +601,15 @@ public final class Dater {
 	    }
 
 	    /**
-	     * Plus or minus or set a number of weeks to a delegate date
+	     * Plus or minus or set a number of weeks to a delegate date.
+	     * Sunday is the first day of week.
 	     * 
+	     * @see Calendar#DAY_OF_WEEK
 	     * @param amount
 	     * @return
 	     */
 		public DateUnit weeks(int amount) {
-	        return handle(Calendar.WEEK_OF_YEAR, amount);
+	        return handle(Calendar.DAY_OF_WEEK, amount);
 	    }
 
 	    /**
@@ -671,6 +673,89 @@ public final class Dater {
 	}
 	
 	/**
+	 * Returns the year of the delegate date
+	 * 
+	 * @see Calendar.YEAR
+	 * @return
+	 */
+	public int getYear() {
+	    return asCalendar().get(Calendar.YEAR);
+	}
+	
+	/**
+     * Returns the month of the delegate date.
+     * The first month of the year in the Gregorian and Julian calendars is JANUARY which is 0; 
+     * the last depends on the number of months in a year.
+     * 
+     * @see Calendar.MONTH
+     * @return
+     */
+	public int getMonth() {
+	    return asCalendar().get(Calendar.MONTH);
+	}
+	
+	/**
+	 * Returns the week of the delegate date.
+	 * Sunday is the first day of the week
+	 * 
+	 * @see Calendar.DAY_OF_WEEK
+	 * @return
+	 */
+	public int getWeek() {
+	    return asCalendar().get(Calendar.DAY_OF_WEEK);
+	}
+	
+	/**
+     * Returns the day of the delegate date
+     * 
+     * @see Calendar.DAY_OF_MONTH
+     * @return
+     */
+	public int getDay() {
+	    return asCalendar().get(Calendar.DAY_OF_MONTH);
+	}
+	
+	/**
+     * Returns the hour of the delegate date
+     * 
+     * @see Calendar.HOUR_OF_DAY
+     * @return
+     */
+	public int getHour() {
+	    return asCalendar().get(Calendar.HOUR_OF_DAY);
+	}
+	
+	/**
+     * Returns the minute of the delegate date
+     * 
+     * @see Calendar.MINUTE
+     * @return
+     */
+	public int getMinute() {
+	    return asCalendar().get(Calendar.MINUTE);
+	}
+	
+	/**
+     * Returns the second of the delegate date
+     * 
+     * @see Calendar.SECOND
+     * @return
+     */
+	public int getSecond() {
+	    return asCalendar().get(Calendar.SECOND);
+	}
+	
+	/**
+     * Returns the millisecond of the delegate date
+     * 
+     * @see Calendar.MILLISECOND
+     * @return
+     */
+	public int getMillisecond() {
+	    return asCalendar().get(Calendar.MILLISECOND);
+	}
+	
+	/**
 	 * Checks if two date objects represent the same instant in time
 	 * 
 	 * @param date
@@ -730,13 +815,15 @@ public final class Dater {
 		if (r.contain(".", "T")) {
 			style = DateStyle.ISO_FORMAT;
 		}
-		
-		switch (date.length()) {
-		case 6: style = "HHmmss"; break;
-		case 8: style = r.contain(":") ? DateStyle.HH_mm_ss : "yyyyMMdd"; break;
-		case 10: style = DateStyle.yyyy_MM_dd; break;
-		case 14: style = DateStyle.yyyyMMddHHmmss; break;
-		case 19: style = DateStyle.yyyy_MM_dd_HH_mm_ss; break;
+		//analyst
+		else {
+		    switch (date.length()) {
+	        case 6: style = "HHmmss"; break;
+	        case 8: style = r.contain(":") ? DateStyle.HH_mm_ss : "yyyyMMdd"; break;
+	        case 10: style = DateStyle.yyyy_MM_dd; break;
+	        case 14: style = DateStyle.yyyyMMddHHmmss; break;
+	        case 19: style = DateStyle.yyyy_MM_dd_HH_mm_ss; break;
+	        }
 		}
 		
 		return hasDiagonal ? r.set(style).lookups("-").with("/") : style;

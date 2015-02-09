@@ -1,5 +1,6 @@
 package com.benayn.ustyle;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.primitives.Primitives.allPrimitiveTypes;
 import static com.google.common.primitives.Primitives.allWrapperTypes;
 import static com.google.common.primitives.Primitives.isWrapperType;
@@ -24,6 +25,7 @@ import com.benayn.ustyle.behavior.ValueBehavior;
 import com.benayn.ustyle.behavior.ValueBehaviorAdapter;
 import com.benayn.ustyle.logger.Log;
 import com.benayn.ustyle.logger.Loggers;
+import com.benayn.ustyle.string.Finder;
 import com.benayn.ustyle.string.Strs;
 import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
@@ -32,6 +34,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.ForwardingObject;
+import com.google.common.collect.ImmutableMap;
 
 public class Objects2 {
 	
@@ -115,7 +118,7 @@ public class Objects2 {
 	}
 	
 	/**
-	 * 
+	 * supports tier property name, e.g user.address.location.lat
 	 */
 	public static class FacadeObject<T> extends ForwardingObject {
 	    
@@ -411,7 +414,7 @@ public class Objects2 {
          */
         public void info() {
             if (log.isInfoEnabled()) {
-                StringBuilder builder = new StringBuilder("delegate class: ")
+                StringBuilder builder = new StringBuilder()
                     .append(defaultTostring(this.delegate()))
                     .append(" (").append(Modifier.toString(getClazz().getModifiers())).append(") ")
                     .append(JsonW.of(this.delegate()).dateFmt(DateStyle.DEFAULT).readable().asJson());
@@ -424,6 +427,30 @@ public class Objects2 {
          */
         public String getJson() {
             return JsonW.toJson(this.delegate());
+        }
+        
+        /**
+         * if propName is "address" and result is { "code" : 33, "street" : "road sky" }, 
+         * then return is { "code" : 33, "street" : "road sky" }
+         * 
+         * @see FacadeObject#getJsonProperty(String)
+         * @see JsonW#asJson()
+         */
+        public String getJson(String propName) {
+            return JsonW.toJson(this.getValue(propName));
+        }
+        
+        /**
+         * if propName is "address" and result is { "code" : 33, "street" : "road sky" }, 
+         * then return is { "address" : { "code" : 33, "street" : "road sky" } }
+         * 
+         * @see FacadeObject#getJson(String)
+         * @see JsonW#asJson()
+         */
+        public String getJsonProperty(String propName) {
+            String name = checkNotNull(propName).contains(Reflecter.TIER_SEP) 
+                    ? Finder.of(propName).afters(Reflecter.TIER_SEP).getLast() : propName;
+            return JsonW.toJson(ImmutableMap.of(name, this.getValue(propName)));
         }
         
         /**
