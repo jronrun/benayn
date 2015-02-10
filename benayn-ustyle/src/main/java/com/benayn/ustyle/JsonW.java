@@ -3,6 +3,7 @@ package com.benayn.ustyle;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
@@ -338,6 +339,11 @@ public final class JsonW {
 		}
 
 		@Override protected StringBuilder beanIf() {
+		    if (this.clazz == Field.class) {
+		        strB.append(quotes).append(this.delegate.toString()).append(quotes);
+		        return strB;
+		    }
+		    
 			int no = 0;
 			Map<String, Object> props = Reflecter.from(this.delegate).asMap();
 			strB.append(objL);

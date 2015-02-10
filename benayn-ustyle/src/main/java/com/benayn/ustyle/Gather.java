@@ -182,32 +182,12 @@ public final class Gather<T> {
 	}
 	
 	/**
-	 * Preinstall the delegate elements as log target
-	 * 
-	 * @return
-	 */
-	public Loggers logset() {
-		return logger.install(result());
-	}
-	
-	/**
-	 * Log all element with INFO level
-	 * 
-	 * @param decision
-	 * @return
-	 */
-	public Gather<T> info(Decision<T> decision) {
-		logger.log(result(), decision);
-		return this;
-	}
-
-	/**
 	 * Log all element with INFO level
 	 * 
 	 * @return
 	 */
 	public Gather<T> info() {
-		logger.log(result());
+		logger.humanStyle().info(result());
 		return this;
 	}
 

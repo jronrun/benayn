@@ -303,6 +303,15 @@ public final class Dater {
 	}
 	
 	/**
+	 * Formats a Date into a date/time string with the "yyyy-MM-dd HH:mm:ss" style
+	 * 
+	 * @return
+	 */
+	public String asDefaultText() {
+	    return asText(DateStyle.DEFAULT);
+	}
+	
+	/**
 	 * Formats a Date into a date/time string with the "yyyyMMddHHmmss" style
 	 * 
 	 * @return
@@ -312,7 +321,7 @@ public final class Dater {
 	}
 	
 	/**
-	 * Formats a Date into a day string with the default day style without change the previous style
+	 * Formats a Date into a date/time string with the "yyyy-MM-dd" style
 	 * 
 	 * @return
 	 */
@@ -321,7 +330,7 @@ public final class Dater {
 	}
 	
 	/**
-	 * Formats a Date into a clock string with the default day style without change the previous style
+	 * Formats a Date into a date/time string with the "HH:mm:ss" style
 	 * 
 	 * @return
 	 */
@@ -812,8 +821,17 @@ public final class Dater {
 			r.update(r.lookups("/").with("-"));
 		}
 		
-		if (r.contain(".", "T")) {
+		//ISO
+		if (r.containAll(".", "T")) {
 			style = DateStyle.ISO_FORMAT;
+		}
+		//CST
+		else if (r.contain("CST")) {
+		    style = DateStyle.CST_FORMAT;
+		}
+		//GMT
+		else if (r.contain("GMT")) {
+		    style = DateStyle.GMT_FORMAT;
 		}
 		//analyst
 		else {

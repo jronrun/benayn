@@ -17,6 +17,7 @@ import com.benayn.ustyle.Decision;
 import com.benayn.ustyle.Decisions;
 import com.benayn.ustyle.Funcs;
 import com.benayn.ustyle.Gather;
+import com.benayn.ustyle.JsonW;
 import com.benayn.ustyle.Objects2;
 import com.benayn.ustyle.string.Strs;
 import com.google.common.base.Strings;
@@ -27,6 +28,13 @@ import com.google.common.collect.Iterables;
  *
  */
 public abstract class Journalize<S> extends ForwardingObject implements Log {
+    
+    /**
+     * 
+     */
+    protected static enum Style {
+        JSON_LINE, JSON_FORMATTED, MORE_INFO
+    }
 
 	/**
 	 * Log a message with special level
@@ -95,7 +103,19 @@ public abstract class Journalize<S> extends ForwardingObject implements Log {
 		journalize('F', msg, t);
 	}
 	
-	/**
+	@Override public Log jsonStyle() {
+        return style(Style.JSON_LINE);
+    }
+
+    @Override public Log humanStyle() {
+        return style(Style.JSON_FORMATTED);
+    }
+
+    @Override public Log infoStyle() {
+        return style(Style.MORE_INFO);
+    }
+
+    /**
 	 * 
 	 */
 	private class GatherLogDecision<E> implements Decision<E> {
@@ -159,7 +179,13 @@ public abstract class Journalize<S> extends ForwardingObject implements Log {
 	private <E> void journalize(Character l, boolean enabled, Object tgt, Throwable t, int fmt) {
 		if (!enabled) { return; }
 		if (Strs.is(tgt)) { log(l, gs(fmt) + (String) tgt, t); return;}
-		if (null == tgt) { log(l, null, t); return; }
+        if (null == tgt) { log(l, null, t); return; }
+        
+		switch (logStyle) {
+            case JSON_LINE: jsonOmit(l, JsonW.toJson(tgt), tgt, t); return;
+            case JSON_FORMATTED: jsonOmit(l, JsonW.of(tgt).readable().asJson(), tgt, t); return;
+            case MORE_INFO: default: break;
+        }
 		
 		String prev = null;
 		boolean logAs = -1 == fmt;
@@ -193,6 +219,10 @@ public abstract class Journalize<S> extends ForwardingObject implements Log {
 		if (format != -1 && format != 0) { return Strings.repeat(line_format, format * 3); }
 		return EMPTY;
 	}
+	
+	private void jsonOmit(Character l, String json, Object tgt, Throwable t) {
+	    log(l, ("{}".equals(json) || "{ }".equals(json)) ? tgt.toString() : json, t);
+    }
 	
 	private String logAs(String prev, Object after) {
 		return new StringBuilder("Log ").append(prev).append(" as ").append(Objects2.defaultTostring(after)).toString();
@@ -255,4 +285,11 @@ public abstract class Journalize<S> extends ForwardingObject implements Log {
 	 * 
 	 */
 	protected abstract S THIS();
+	
+	private Log style(Style style) {
+        this.logStyle = style;
+        return this;
+    }
+	
+	private Style logStyle = null;
 }

@@ -217,7 +217,7 @@ public final class Strs extends CharMatcher {
 			return INDEX_NONE_EXISTS;
 		}
 		
-		return matcher(target).indexs(fromIndex, indexWith);
+		return matcher(target).indexs(fromIndex, checkNotNull(indexWith).toArray(new String[indexWith.size()]));
 	}
 	
 	/**

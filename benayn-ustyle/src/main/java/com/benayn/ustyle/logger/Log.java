@@ -4,6 +4,7 @@
 package com.benayn.ustyle.logger;
 
 
+
 /**
  *
  */
@@ -183,4 +184,25 @@ public interface Log {
 	   * @return
 	   */
 	  public <D> D delegator();
+	  
+	  /**
+       * Log target as JSON
+       * 
+       * @return
+       */
+      public Log jsonStyle();
+    
+      /**
+       * Log target as formatted JSON
+       * 
+       * @return
+       */
+      public Log humanStyle();
+    
+      /**
+       * Log target as more info string
+       * 
+       * @return
+       */
+      public Log infoStyle();
 }

@@ -654,7 +654,6 @@ public class MeTest extends Assert {
 		}
 		
 		assertEquals("paulo", Mapper.from(m).info().get("name"));
-		Mapper.from(res).logset().chgL('E').journal();
 		
 		m = Mapper.from(m).uniqueKey().map();
 		assertNull(m.get("name"));
@@ -677,6 +676,8 @@ public class MeTest extends Assert {
 		String[][] dates = new String[][] {
 			new String[] { "2010-01-19 23:59:59", DateStyle.yyyy_MM_dd_HH_mm_ss },
 			new String[] { "2010-01-19T23:59:59.123456789", DateStyle.ISO_FORMAT },
+			new String[] { "Fri Mar 06 07:10:32 CST 2015", DateStyle.CST_FORMAT },
+			new String[] { "Tue, 26 Feb 2013 09:26:57 GMT", DateStyle.GMT_FORMAT },
 			new String[] { "2010-01-19", DateStyle.yyyy_MM_dd },
 			new String[] { "2010/01/19 23:59:59", "yyyy/MM/dd HH:mm:ss" },
 			new String[] { "2010/01/19T23:59:59.123456789", "yyyy/MM/dd'T'HH:mm:ss.SSS" },
@@ -686,7 +687,9 @@ public class MeTest extends Assert {
 			new String[] { "235959", "HHmmss" },
 			new String[] { "20100119235959", DateStyle.TIGHT.style() },
 		};
-		Loggers.journal(dates);
+		
+		Loggers.instance().humanStyle().info(dates);
+		
 		Dater dater = null;
 		for (String[] date : dates) {
 			dater = Dater.from(date[0]);

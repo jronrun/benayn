@@ -112,13 +112,39 @@ public abstract class AbstrStrMatcher<M> {
 	}
 	
 	/**
+     * Checks if delegate string contains all string in the given string array
+     * 
+     * @param containWith
+     * @return
+     */
+	public boolean containAll(String... containWith) {
+	    for (String contain : containWith) {
+            if (!contain(contain)) {
+                return false;
+            }
+        }
+	    
+	    return true;
+	}
+	
+	/**
+     * Checks if delegate string contains all string in the given string list
+     * 
+     * @param containWith
+     * @return
+     */
+	public boolean containsAll(List<String> containWith) {
+        return containAll(checkNotNull(containWith).toArray(new String[containWith.size()]));
+    }
+	
+	/**
 	 * Checks if delegate string contains any string in the given string array
 	 * 
 	 * @param containWith
 	 * @return
 	 */
 	public boolean contain(String... containWith) {
-		return contains(Arrays.asList(checkNotNull(containWith)));
+	    return indexs(0, containWith) >= 0;
 	}
 	
 	/**
@@ -128,7 +154,7 @@ public abstract class AbstrStrMatcher<M> {
 	 * @return
 	 */
 	public boolean contains(List<String> containWith) {
-		return indexs(0, containWith) >= 0;
+		return contain(checkNotNull(containWith).toArray(new String[containWith.size()]));
 	}
 	
 	/**
@@ -182,7 +208,7 @@ public abstract class AbstrStrMatcher<M> {
 	 * @return
 	 */
 	public int index(String... indexWith) {
-		return indexs(0, Arrays.asList(checkNotNull(indexWith)));
+		return indexs(0, checkNotNull(indexWith));
 	}
 	
 	/**
@@ -193,7 +219,7 @@ public abstract class AbstrStrMatcher<M> {
 	 * @param indexWith
 	 * @return
 	 */
-	public int indexs(final Integer fromIndex, List<String> indexWith) {
+	public int indexs(final Integer fromIndex, String... indexWith) {
 		int index = INDEX_NONE_EXISTS;
 		final String target = ignoreCase ? delegate.get().toLowerCase() : delegate.get();
 		

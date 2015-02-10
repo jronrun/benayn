@@ -274,32 +274,12 @@ public final class Mapper<K, V> {
     }
 	
 	/**
-	 * Preinstall the delegate map as log target
-	 * 
-	 * @return
-	 */
-	public Loggers logset() {
-		return logger.install(delegate.get().entrySet());
-	}
-	
-	/**
-	 * Log all element with INFO level
-	 * 
-	 * @param decision
-	 * @return
-	 */
-	public Mapper<K, V> info(Decision<Entry<K, V>> decision) {
-		logger.log(delegate.get().entrySet(), decision);
-		return this;
-	}
-
-	/**
 	 * Log all element with INFO level
 	 * 
 	 * @return
 	 */
 	public Mapper<K, V> info() {
-		logger.log(delegate.get().entrySet());
+		logger.humanStyle().info(delegate.get());
 		return this;
 	}
 	

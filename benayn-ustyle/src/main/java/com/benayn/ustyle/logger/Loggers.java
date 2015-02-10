@@ -2,14 +2,11 @@ package com.benayn.ustyle.logger;
 
 import static com.benayn.ustyle.Decisions.isClazzExists;
 
-import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.benayn.ustyle.Decision;
 import com.benayn.ustyle.Suppliers2;
 import com.benayn.ustyle.string.Strs;
-import com.google.common.base.Optional;
 
 
 public final class Loggers {
@@ -27,7 +24,7 @@ public final class Loggers {
 	 * @return
 	 */
 	public static <I> I from(Object target) {
-		return of(target).instance();
+		return of(target).getInstance();
 	}
 	
 	/**
@@ -68,121 +65,27 @@ public final class Loggers {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked") public <I> I instance() {
+	@SuppressWarnings("unchecked") public <I> I getInstance() {
 		return (I) parasitifer.THIS();
 	}
 	
 	/**
-	 * Log a message
-	 * 
-	 * @param message
-	 */
-	public Loggers log(Object message) {
-		this.parasitifer.journalize(this.lev, message);
-		return this;
-	}
-	
-	/**
-	 * Log a collection with custom decision
-	 * 
-	 * @param collection
-	 * @param decision
-	 * @return
-	 */
-	public <T> Loggers log(Collection<T> collection, Decision<T> decision) {
-		this.parasitifer.journalize(this.lev, collection, decision);
-		return this;
-	}
-	
-	/**
-	 * Set TRACE log level
-	 * 
-	 * @return
-	 */
-	public Loggers trace() {
-		return chgL('T');
-	}
-	
-	/**
-	 * Set DEBUG log level
-	 * 
-	 * @return
-	 */
-	public Loggers debug() {
-		return chgL('D');
-	}
-	
-	/**
-	 * Set INFO log level
-	 * 
-	 * @return
-	 */
-	public Loggers info() {
-		return chgL('I');
-	}
-	
-	/**
-	 * Set WARN log level
-	 * 
-	 * @return
-	 */
-	public Loggers warn() {
-		return chgL('W');
-	}
-	
-	/**
-	 * Set ERROR log level
-	 * 
-	 * @return
-	 */
-	public Loggers error() {
-		return chgL('E');
-	}
-	
-	/**
-	 * Sets the log level with given level, default is INFO
-	 * 'T': trace, 'D': debug, 'I': info, 'W': warn, 'E': error, 'F': fatal
-	 * 
-	 * @param level
-	 * @return
-	 */
-	public Loggers chgL(char level) {
-		this.lev = level;
-		return this;
-	}
-	
-	/**
-	 * Log a preinstall message
-	 * 
-	 * @return
-	 */
-	public Loggers journal() {
-		if (this.preinstallation.isPresent()) {
-			this.parasitifer.journalize(this.lev, this.preinstallation.get());
-		}
-		
-		return this;
-	}
-	
-	/**
-	 * Log a message target and returns a new wrapped logger instance
+	 * Log a message target with INFO level and returns a new wrapped logger instance
 	 * 
 	 * @param target
 	 * @return
 	 */
 	public static Loggers journal(Object target) {
-		return of(log).log(target);
+		return instance().info(target);
 	}
 	
 	/**
-	 * Preinstall a log message
+	 * Returns a {@link Loggers} instance
 	 * 
-	 * @param message
 	 * @return
 	 */
-	public Loggers install(Object message) {
-		this.preinstallation = Optional.fromNullable(message);
-		return this;
+	public static Loggers instance() {
+	    return of(log);
 	}
 	
 	/**
@@ -260,8 +163,30 @@ public final class Loggers {
 	 * Forwarding Journalizer
 	 */
 	private Journalize<?> parasitifer;
-	private Optional<Object> preinstallation;
-	private Character lev = 'I';
+	
+	public Loggers trace(Object message) {
+        return journalize(message, 'T');
+    }
+    
+    public Loggers debug(Object message) {
+        return journalize(message, 'D');
+    }
+    
+    public Loggers info(Object message) {
+        return journalize(message, 'I');
+    }
+    
+    public Loggers warn(Object message) {
+        return journalize(message, 'W');
+    }
+    
+    public Loggers error(Object message) {
+        return journalize(message, 'E');
+    }
+    
+    public Loggers fatal(Object message) {
+        return journalize(message, 'F');
+    }
 
 	private static Journalize<?> asJournalizer(Object target) {
 		String prop = null;
@@ -282,13 +207,49 @@ public final class Loggers {
 		return u(new ZDefaultJournalizer(), target);
 	}
 	
+	/**
+	 * Log target as JSON
+	 * 
+	 * @return
+	 */
+	public Loggers jsonStyle() {
+        this.parasitifer.jsonStyle();
+        return this;
+    }
+	
+	/**
+	 * Log target as formatted JSON
+	 * 
+	 * @return
+	 */
+	public Loggers humanStyle() {
+        this.parasitifer.humanStyle();
+        return this;
+    }
+	
+	/**
+	 * Log target as more info string
+	 * 
+	 * @return
+	 */
+	public Loggers infoStyle() {
+        this.parasitifer.infoStyle();
+        return this;
+    }
+	
+	//'T': trace, 'D': debug, 'I': info, 'W': warn, 'E': error, 'F': fatal
+	private Loggers journalize(Object message, Character level) {
+        this.parasitifer.journalize(level, message);
+        return this;
+    }
+	
 	private static Journalize<?> u(Journalize<?> journalize, Object target) {
 		journalize.update(target);
 		return journalize;
 	}
 	
 	private void intl(Journalize<?> parasitifer) {
-		this.parasitifer = parasitifer;
+		(this.parasitifer = parasitifer).jsonStyle();
 	}
 	
 }
