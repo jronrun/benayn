@@ -20,6 +20,7 @@ import com.benayn.ustyle.logger.Log;
 import com.benayn.ustyle.logger.Loggers;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.SimpleTimeLimiter;
@@ -98,7 +99,7 @@ public final class Retryer<R> {
      * @return
      */
     public Retryer<R> timeout(final TimeLimiter timeLimiter, final long duration, final TimeUnit timeUnit) {
-        return withTryTimeout(new TryTimeout<R>() {
+        return withTimelimiter(new AttemptTimelimit<R>() {
 
             @Override public R call(Callable<R> callable) throws Exception {
                 return checkNotNull(timeLimiter, "TimeLimiter cannot be null")
@@ -169,14 +170,23 @@ public final class Retryer<R> {
     }
     
     /**
+     * Retry if the result is <code>null</code>
+     * 
+     * @param decision
+     * @return
+     */
+    public Retryer<R> retryIfResultIsNull() {
+        return retryIfResult(Predicates.<R>isNull());
+    }
+    
+    /**
      * Executes the given callable quietly
      * 
      * @param callable
      * @return
      */
     public R quietCall(Callable<R> callable) {
-        this.delegate(callable);
-        return quietCall();
+        return this.delegate(callable).quietCall();
     }
     
     /**
@@ -188,8 +198,7 @@ public final class Retryer<R> {
      * @throws RetryException
      */
     public R call(Callable<R> callable) throws ExecutionException, RetryException {
-        this.delegate(callable);
-        return call();
+        return this.delegate(callable).call();
     }
     
     /**
@@ -201,9 +210,9 @@ public final class Retryer<R> {
         try {
             return call();
         } catch (ExecutionException e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
         } catch (RetryException e) {
-            log.error(e);
+            log.warn(e.getMessage());
         }
         
         return null;
@@ -219,36 +228,52 @@ public final class Retryer<R> {
      * @throws RetryException
      */
     public R call() throws ExecutionException, RetryException {
+        long elapsed = 0;
+        TimeUnit unit = TimeUnit.MILLISECONDS;
         Stopwatch watch = Stopwatch.createStarted();
-        try {
-            for (int attempt = 1; ; attempt++) {
-                Tried<R> target = null;
+        
+        for (int attempt = 1; ; attempt++) {
+            Tried<R> target = null;
+            if (!this.rejection.apply(target = oneCall())) {
+                elapsed = watch.stop().elapsed(unit);
+                
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Retrying %s at %s attempt. elapsed: %s ms", 
+                            target.hasResult() ? "successfully" : "rejection with exception", attempt, elapsed));
+                }
+                
+                return target.get();
+            }
+            
+            if (this.getStopStrategy().shouldStop(attempt, watch.elapsed(unit))) {
+                elapsed = watch.stop().elapsed(unit);
+                
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Retrying stopped at %s attempt. elapsed: %s ms", attempt, elapsed));
+                }
+                
+                throw new RetryException(attempt, target);
+            } else {
+                long sleepTime = this.getWaitStrategy()
+                        .computeSleepTime(attempt, watch.elapsed(unit));
                 
                 try {
-                    target = Tried.of(this.getTryTimeout().call(this.delegate.get()));
-                } catch (Throwable t) {
-                    target = Tried.of(t);
-                }
-                
-                if (!this.rejection.apply(target)) {
-                    return target.get();
-                }
-                
-                if (this.getStopStrategy().shouldStop(attempt, watch.elapsed(TimeUnit.MILLISECONDS))) {
-                    throw new RetryException(attempt, target);
-                } else {
-                    long sleepTime = this.getWaitStrategy()
-                            .computeSleepTime(attempt, watch.elapsed(TimeUnit.MILLISECONDS));
-                    try {
-                        this.getBlockStrategy().block(sleepTime);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        throw new RetryException(attempt, target);
+                    this.getBlockStrategy().block(sleepTime);
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Retrying blocked %s ms at %s attempt", sleepTime, attempt));
                     }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    elapsed = watch.stop().elapsed(unit);
+                    
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format(
+                                "Retrying interrupted at %s attempt. elapsed: %s ms. %s", attempt, elapsed, e.getMessage()));
+                    }
+                    
+                    throw new RetryException(attempt, target);
                 }
             }
-        } finally {
-            watch.stop();
         }
     }
     
@@ -258,7 +283,7 @@ public final class Retryer<R> {
      * @param tryTimeout
      * @return
      */
-    public Retryer<R> withTryTimeout(TryTimeout<R> tryTimeout) {
+    public Retryer<R> withTimelimiter(AttemptTimelimit<R> tryTimeout) {
         this.tryTimeout = checkNotNull(tryTimeout, "TryTimeout cannot be null");
         return this;
     }
@@ -592,7 +617,7 @@ public final class Retryer<R> {
     /**
      *
      */
-    public interface TryTimeout<V> {
+    public interface AttemptTimelimit<V> {
 
         /**
          * Invokes a specified {@link Callable}, timing out after the specified time limit
@@ -657,17 +682,18 @@ public final class Retryer<R> {
     /**
      * 
      */
-    private void delegate(Callable<R> callable) {
+    private Retryer<R> delegate(Callable<R> callable) {
         this.delegate = Optional.of(callable);
+        return this;
     }
     
     /**
-     * Returns current {@link TryTimeout} instance
+     * Returns current {@link AttemptTimelimit} instance
      * 
      * @return
      */
-    public TryTimeout<R> getTryTimeout() {
-        return this.tryTimeout = (null == this.tryTimeout ? new TryTimeout<R>() {
+    public AttemptTimelimit<R> getTimelimiter() {
+        return this.tryTimeout = (null == this.tryTimeout ? new AttemptTimelimit<R>() {
             //An implementation which actually does not attempt to limit time at all
             @Override public R call(Callable<R> callable) throws Exception {
                 return checkNotNull(callable).call();
@@ -840,6 +866,21 @@ public final class Retryer<R> {
     }
     
     /**
+     * 
+     */
+    protected Tried<R> oneCall() {
+        Tried<R> target = null;
+        
+        try {
+            target = Tried.of(this.getTimelimiter().call(this.delegate.get()));
+        } catch (Throwable t) {
+            target = Tried.of(t);
+        }
+        
+        return target;
+    }
+    
+    /**
      *
      */
     private static final class CompositeWaitStrategy implements WaitStrategy {
@@ -859,7 +900,7 @@ public final class Retryer<R> {
         }
     }
     
-    private TryTimeout<R> tryTimeout = null;
+    private AttemptTimelimit<R> tryTimeout = null;
     private StopStrategy stopStrategy = null;
     private BlockStrategy blockStrategy = null;
     private Predicate<Tried<R>> rejection = alwaysFalse();
