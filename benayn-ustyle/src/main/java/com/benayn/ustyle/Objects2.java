@@ -328,15 +328,17 @@ public class Objects2 {
          * @see Resolves#get(TypeDescrib, Object)
          * @see Reflecter#val(String, Object)
          */
-        public void setResolvedValue(String propName, Object propVal) {
+        public FacadeObject<T> setResolvedValue(String propName, Object propVal) {
             setValue(propName, Resolves.get(getType(propName), propVal));
+            return this;
         }
         
         /**
          * @see Reflecter#val(String, Object)
          */
-        public <V> void setValue(String propName, V propVal) {
+        public <V> FacadeObject<T> setValue(String propName, V propVal) {
             this.reflection().val(propName, propVal);
+            return this;
         }
         
         /**
@@ -370,49 +372,55 @@ public class Objects2 {
         /**
          * @see Reflecter#populate(Map)
          */
-        public <V> void populate(Map<String, V> properties) {
+        public <V> FacadeObject<T> populate(Map<String, V> properties) {
             this.reflection().populate(properties);
+            return this;
         }
         
         /**
          * @see Reflecter#populate(Map, String...)
          */
-        public <V> void populate(Map<String, V> properties, String... excludes) {
+        public <V> FacadeObject<T> populate(Map<String, V> properties, String... excludes) {
             this.reflection().populate(properties, excludes);
+            return this;
         }
         
         /**
          * @see Reflecter#populate(Map, List)
          */
-        public <V> void populate(Map<String, V> properties, List<String> excludes) {
+        public <V> FacadeObject<T> populate(Map<String, V> properties, List<String> excludes) {
             this.reflection().populate(properties, excludes);
+            return this;
         }
         
         /**
          * @see Reflecter#populate(String)
          */
-        public void populate(String json) {
+        public FacadeObject<T> populate(String json) {
             this.reflection().populate(json);
+            return this;
         }
         
         /**
          * @see Reflecter#populate(String, String...)
          */
-        public void populate(String json, String... excludes) {
+        public FacadeObject<T> populate(String json, String... excludes) {
             this.reflection().populate(json, excludes);
+            return this;
         }
         
         /**
          * {@link Reflecter#populate4Test()}
          */
-        public void populate4Test() {
+        public FacadeObject<T> populate4Test() {
             this.reflection().populate4Test();
+            return this;
         }
         
         /**
          * Log the delegate target as an easy-to-read JSON string
          */
-        public void info() {
+        public FacadeObject<T> info() {
             if (log.isInfoEnabled()) {
                 StringBuilder builder = new StringBuilder()
                     .append(defaultTostring(this.delegate()))
@@ -420,6 +428,7 @@ public class Objects2 {
                     .append(JsonW.of(this.delegate()).dateFmt(DateStyle.DEFAULT).readable().asJson());
                 log.info(builder.toString());
             }
+            return this;
         }
         
         /**
