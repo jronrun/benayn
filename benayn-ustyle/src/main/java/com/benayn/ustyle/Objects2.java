@@ -1,6 +1,8 @@
 package com.benayn.ustyle;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Predicates.not;
 import static com.google.common.primitives.Primitives.allPrimitiveTypes;
 import static com.google.common.primitives.Primitives.allWrapperTypes;
 import static com.google.common.primitives.Primitives.isWrapperType;
@@ -507,6 +509,38 @@ public class Objects2 {
 	public static boolean isEqual(Object obj1, Object obj2) {
 		return EqualValueBehavior.is(obj1, obj2);
 	}
+	
+	/**
+     * Performs emptiness and nullness check. Supports the following types:
+     * String, CharSequence, Optional, Iterator, Iterable, Collection, Map, Object[], primitive[]
+     */
+    public static <T> T checkNotEmpty(T reference,
+                                       String errorMessageTemplate,
+                                       Object... errorMessageArgs) {
+        checkNotNull(reference, errorMessageTemplate, errorMessageArgs);
+        checkArgument(not(Decisions.isEmpty()).apply(reference), errorMessageTemplate, errorMessageArgs);
+        return reference;
+    }
+
+    /**
+     * Performs emptiness and nullness check.
+     * @see #checkNotEmpty(Object, String, Object...)
+     */
+    public static <T> T checkNotEmpty(T reference,  Object errorMessage) {
+        checkNotNull(reference, "Expected not null object, got '%s'", reference);
+        checkNotEmpty(reference, String.valueOf(errorMessage), Arrays2.EMPTY_ARRAY);
+        return reference;
+    }
+
+    /**
+     * Performs emptiness and nullness check.
+     * @see #checkNotEmpty(Object, String, Object...)
+     */
+    public static <T> T checkNotEmpty(T reference) {
+        checkNotNull(reference, "Expected not null object, got '%s'", reference);
+        checkNotEmpty(reference, "Expected not empty object, got '%s'", reference);
+        return reference;
+    }
 	
 	/**
 	 * 

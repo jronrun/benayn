@@ -5,10 +5,13 @@ package com.benayn.ustyle;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 
 import com.benayn.ustyle.string.Strs;
 import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import com.google.common.collect.ForwardingObject;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Floats;
@@ -19,6 +22,52 @@ import com.google.common.primitives.Longs;
  */
 public class Funcs {
 	
+	/**
+     * Returns a function that adds its argument to the given collection.
+     */
+    public static <T> Function<T, Void> addTo(final Collection<T> collection) {
+        return new Function<T, Void>() {
+            public Void apply(T arg) {
+                collection.add(arg);
+                return null;
+            }
+        };
+    }
+    
+    /**
+     * Returns a function that adds its argument to a map, using a supplied function to determine the key.
+     * 
+     * @param map The map to modify
+     * @param keyBuilder A function to determine a key for each value
+     * @return A new function that adds its argument to <code>map</code> by using
+     * <code>keyBuilder.apply(argument)</code> to determine the key. 
+     */
+    public static <T,K> Function<T,Void> addTo(final Map<K,T> map, 
+                                               final Function<? super T, ? extends K> keyMaker) {
+        return new Function<T,Void>() {
+            public Void apply(T arg) {
+                map.put(keyMaker.apply(arg), arg);
+                return null;
+            }
+        };
+    }
+    
+    /**
+     * Wraps {@link Functions#forMap(Map)}; returns a function that looks up its
+     * argument in a map.
+     */
+    public static <K,V> Function<K,V> lookup(Map<K, V> map) {
+        return Functions.forMap(map);
+    }
+    
+    /**
+     * Wraps {@link Functions#forMap(Map, Object)}; returns a function that looks up its
+     * argument in a map, using the given default value if the map does not contain that key.
+     */
+    public static <K,V> Function<K,V> lookup(Map<K, ? extends V> map, V defaultValue) {
+        return Functions.forMap(map, defaultValue);
+    }
+    
 	/**
 	 * Parses the argument as a string
 	 */

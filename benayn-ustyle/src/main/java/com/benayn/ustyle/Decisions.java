@@ -3,20 +3,26 @@ package com.benayn.ustyle;
 import static com.google.common.base.Predicates.assignableFrom;
 import static com.google.common.base.Predicates.instanceOf;
 import static com.google.common.base.Predicates.isNull;
+import static com.google.common.base.Predicates.not;
 import static com.google.common.base.Predicates.or;
 import static com.google.common.primitives.Primitives.isWrapperType;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
-import com.google.common.base.CharMatcher;
+import com.benayn.ustyle.string.Strs;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 
 public final class Decisions {
 	
 	private Decisions() {}
-
+	
 	/**
 	 * Returns a predicate that evaluates to {@code true} 
 	 * if the object reference being tested is null or empty collection or empty map or empty string ("").
@@ -147,6 +153,39 @@ public final class Decisions {
 		return true;
 	}
 	
+	public static <T> Predicate<T> nor(Decision<? super T> first, Decision<? super T> second) {
+        return not(or(first, second));
+    }
+
+    public static <T> Predicate<T> nor(@SuppressWarnings("unchecked") Decision<? super T>... components) {
+        return not(or(components));
+    }
+	
+	/**
+     * Returns a stateful decision that returns true if its argument has been passed to the decision before, else false.
+     */
+    public static <T> Decision<T> unique() {
+        return new Decision<T>() {
+            private Set<T> seen = Sets.newHashSet();
+            private boolean sawNull = false;
+            
+            @Override public boolean apply(T arg) {
+                if (arg == null) {
+                    boolean result = !sawNull;
+                    sawNull = true;
+                    return result;
+                } 
+                else if (seen.contains(arg)) { 
+                    return false;
+                }
+                else {
+                    seen.add(arg);
+                    return true;
+                }
+            }
+        };        
+    }
+	
 	public enum ClazzDecision implements Decision<Class<?>> {
 		IS_MAP_CLASS {
 			@Override public boolean apply(Class<?> input) {
@@ -193,16 +232,33 @@ public final class Decisions {
 				return or(isNull(), new Decision<Object>() {
 					
 					@Override public boolean apply(Object input) {
-						if (IS_STRING.apply(input)) {
-							return ((String) input).length() == 0;
-						}
-						
-						if (IS_COLLECTION.apply(input)) {
+						//CharSequence
+						if (input instanceof CharSequence) {
+							return ((CharSequence) input).length() == 0;
+						} 
+						//Collection
+						else if (IS_COLLECTION.apply(input)) {
 							return ((Collection<?>) input).isEmpty();
-						}
-						
-						if (IS_MAP.apply(input)) {
+						} 
+						//Map
+						else if (IS_MAP.apply(input)) {
 							return ((Map<?, ?>) input).isEmpty();
+						} 
+						//Optional
+						else if (input instanceof Optional) {
+							return !((Optional<?>) input).isPresent();
+						} 
+						//Iterable
+						else if (input instanceof Iterable) {
+							return !((Iterable<?>) input).iterator().hasNext();
+						} 
+						//Iterator
+						else if (input instanceof Iterator) {
+							return !((Iterator<?>) input).hasNext();
+						}
+						//Array
+						else if (IS_ARRAY.apply(input)) {
+							return Arrays2.wraps(input).length == 0;
 						}
 						
 						return false;
@@ -220,7 +276,7 @@ public final class Decisions {
 							return false;
 						}
 						
-						return CharMatcher.WHITESPACE.matchesAllOf((String) input);
+						return Strs.WHITESPACE.matchesAllOf((String) input);
 					}
 				}).apply(input);
 			}
@@ -246,7 +302,8 @@ public final class Decisions {
 		
 		IS_ARRAY {
 			@Override public boolean apply(Object input) {
-				return instanceOf(Object[].class).apply(input);
+				//return instanceOf(Object[].class).apply(input);
+				return null == input ? false : input.getClass().isArray();
 			}
 		},
 		

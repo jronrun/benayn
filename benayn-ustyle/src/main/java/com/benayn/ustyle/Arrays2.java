@@ -19,6 +19,11 @@ import com.google.common.primitives.Primitives;
 public final class Arrays2 {
 	
 	/**
+	 * 
+	 */
+	public static final Object[] EMPTY_ARRAY = new Object[0];
+	
+	/**
 	 * Returns an list containing all of the given elements
 	 * 
 	 * @param target

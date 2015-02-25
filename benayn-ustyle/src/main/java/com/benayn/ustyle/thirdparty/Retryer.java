@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.benayn.ustyle;
+package com.benayn.ustyle.thirdparty;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
