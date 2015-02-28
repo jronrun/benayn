@@ -1,6 +1,7 @@
 package com.benayn;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.CoreMatchers.is;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -15,6 +16,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,18 +31,18 @@ import com.benayn.ustyle.Decision;
 import com.benayn.ustyle.Decisional;
 import com.benayn.ustyle.Decisions;
 import com.benayn.ustyle.Expiring;
+import com.benayn.ustyle.Expiring.ExpiringSet;
 import com.benayn.ustyle.Funcs;
 import com.benayn.ustyle.Gather;
 import com.benayn.ustyle.JsonR;
 import com.benayn.ustyle.JsonW;
 import com.benayn.ustyle.Objects2;
-import com.benayn.ustyle.Triple;
-import com.benayn.ustyle.Expiring.ExpiringSet;
 import com.benayn.ustyle.Objects2.FacadeObject;
 import com.benayn.ustyle.Pair;
 import com.benayn.ustyle.Randoms;
 import com.benayn.ustyle.Reflecter;
 import com.benayn.ustyle.Resolves;
+import com.benayn.ustyle.Triple;
 import com.benayn.ustyle.TypeRefer.TypeDescrib;
 import com.benayn.ustyle.metest.generics.ManualTicker;
 import com.benayn.ustyle.string.Betner;
@@ -51,14 +53,18 @@ import com.benayn.ustyle.thirdparty.EnumLookup;
 import com.benayn.ustyle.thirdparty.Language;
 import com.benayn.ustyle.thirdparty.NetProtocol;
 import com.benayn.ustyle.thirdparty.Retryer;
-import com.benayn.ustyle.thirdparty.Threads;
-import com.benayn.ustyle.thirdparty.UriEscaper;
-import com.benayn.ustyle.thirdparty.Uris;
 import com.benayn.ustyle.thirdparty.Retryer.BlockStrategy;
 import com.benayn.ustyle.thirdparty.Retryer.RetryException;
 import com.benayn.ustyle.thirdparty.Retryer.WaitStrategy;
-import com.benayn.ustyle.thirdparty.Threads.AsyncRunner;
 import com.benayn.ustyle.thirdparty.SizeUnit;
+import com.benayn.ustyle.thirdparty.Threads;
+import com.benayn.ustyle.thirdparty.Threads.AsyncRunner;
+import com.benayn.ustyle.thirdparty.UriEscaper;
+import com.benayn.ustyle.thirdparty.Uris;
+import com.benayn.ustyle.thirdparty.Wills;
+import com.benayn.ustyle.thirdparty.Wills.Action;
+import com.benayn.ustyle.thirdparty.Wills.Will;
+import com.benayn.ustyle.thirdparty.Wills.WillExecutorService;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
@@ -69,6 +75,10 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.escape.Escaper;
+import com.google.common.util.concurrent.FutureFallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.UncheckedTimeoutException;
 
 
@@ -1602,5 +1612,125 @@ public class Me4Test extends Me3Test {
         set.remove("b");
         assertEquals(set, Sets.newHashSet("c", "d"));
         
+    }
+    
+    //
+//see https://github.com/avarabyeu/wills
+    
+    private static final String TEST_STRING = "test";
+    static class DemoTask implements Runnable {
+
+        private AtomicInteger counter = new AtomicInteger();
+
+        @Override
+        public void run() {
+            counter.incrementAndGet();
+        }
+
+        public AtomicInteger getCounter() {
+            return counter;
+        }
+
+        public boolean executed() {
+            return counter.get() > 0;
+        }
+    }   
+    
+    @Test
+    public void testWills() {
+        //testGuavaDecorator
+        WillExecutorService willExecutorService = Wills.willDecorator(MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1)));
+        DemoTask task = new DemoTask();
+        Will<?> submit = willExecutorService.submit(task);
+        submit.obtain();
+        assertTrue(task.executed());
+        
+        //testJdkDecorator
+        willExecutorService = Wills.willDecorator(Executors.newFixedThreadPool(1));
+        task = new DemoTask();
+        submit = willExecutorService.submit(task);
+        submit.obtain();
+        assertTrue(task.executed());
+        
+        //testWill
+        Will<String> will = Wills.of(TEST_STRING);
+        assertTrue(will.isDone());
+        assertFalse(will.isCancelled());
+        assertEquals(TEST_STRING, will.obtain());
+        
+        //testMap
+        will = Wills.of(TEST_STRING).map(new Function<String, String>() {
+
+            @Override
+            public String apply(String input) {
+                assert input != null;
+                return input.toUpperCase();
+            }
+        });
+        assertEquals(TEST_STRING.toUpperCase(), will.obtain());
+        
+        //testwhenSuccessful
+        final List<String> results = Lists.newArrayList();
+        will = Wills.of(TEST_STRING).whenSuccessful(new Action<String>() {
+            @Override public void apply(String s) {
+                results.add(s);
+            }
+        });
+        
+        /* waits for done */
+        will.obtain();
+        assertTrue(results.contains(TEST_STRING));
+        
+        //testWhenFailed
+        final List<Throwable> results2 = Lists.newArrayList();
+        RuntimeException throwable = new RuntimeException("");
+        will = Wills.<String>failedWill(throwable).whenFailed(new Action<Throwable>() {
+            @Override public void apply(Throwable throwable) {
+                results2.add(throwable);
+            }
+        });
+
+        try {
+            /* waits for done */
+            will.obtain();
+        } catch (RuntimeException e) {
+            assertThat(e, is(throwable));
+        }
+        assertTrue(results2.contains(throwable));
+        
+        //testWhenCompletedSuccessful
+        final AtomicBoolean result = new AtomicBoolean();
+        Wills.of("successful").whenDone(new Action<Boolean>() {
+            @Override public void apply(Boolean aBoolean) {
+                result.set(aBoolean);
+            }
+        });
+        assertTrue(result.get());
+        
+        //testWhenCompletedFailed
+        final AtomicBoolean result2 = new AtomicBoolean(true);
+        Wills.failedWill(new RuntimeException()).whenDone(new Action<Boolean>() {
+            @Override public void apply(Boolean aBoolean) {
+                result2.set(aBoolean);
+            }
+        });
+        assertFalse(result2.get());
+        
+        //testReplaceFailed
+        final String ok = "OK";
+        Will<String> okWillFallback = Wills.<String>failedWill(new RuntimeException()).replaceFailed(new FutureFallback<String>() {
+            @Override
+            public ListenableFuture<String> create(Throwable t) throws Exception {
+                return Futures.immediateFuture(ok);
+            }
+        });
+        assertEquals(ok, okWillFallback.obtain());
+
+
+        Will<String> okWill = Wills.<String>failedWill(new RuntimeException()).replaceFailed(Wills.of(ok));
+        assertEquals(ok, okWill.obtain());
+
+        Will<String> okWillListenableFuture = Wills.<String>failedWill(new RuntimeException()).replaceFailed(Futures.immediateFuture(ok));
+        assertEquals(ok, okWillListenableFuture.obtain());
     }
 }
