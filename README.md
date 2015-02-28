@@ -1,6 +1,15 @@
 # benayn
 Guava, Berkeley DB JE, Usage, Utilities
 
+## Maven Dependencies
+```xml
+<dependency>
+	<groupId>com.benayn</groupId>
+	<artifactId>benayn-ustyle</artifactId>
+	<version>${benayn.version}</version>
+</dependency>
+```
+
 ## Usage
 
 ```java
