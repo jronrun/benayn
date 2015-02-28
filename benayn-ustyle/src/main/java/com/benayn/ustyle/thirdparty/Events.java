@@ -61,14 +61,14 @@ public class Events {
      * Returns a new AddEvent instance
      */
     public static <S extends Subscribable, E> AddEvent<S, E> addEvent(final S source, final E element) {
-        return new AddEvent<>(source, element);
+        return new AddEvent<S, E>(source, element);
     }
     
     /**
      * Returns a new RemoveEvent instance
      */
     public static <S extends Subscribable, E> RemoveEvent<S, E> removeEvent(final S source, final E element) {
-        return new RemoveEvent<>(source, element);
+        return new RemoveEvent<S, E>(source, element);
     }
     
     /**
@@ -76,7 +76,7 @@ public class Events {
      */
     public static <S extends Subscribable, E> ModifyEvent<S, E> modifyEvent(
     		final S source, final E element, final E oldValue) {
-        return new ModifyEvent<>(source, element, oldValue);
+        return new ModifyEvent<S, E>(source, element, oldValue);
     }
     
     /**
@@ -84,7 +84,7 @@ public class Events {
      */
     public static <S extends Subscribable, X extends Throwable> ExceptionEvent<S, X> 
     	exceptionEvent(final S source, final X exception) {
-        return new ExceptionEvent<>(source, exception);
+        return new ExceptionEvent<S, X>(source, exception);
     }
     
     /**

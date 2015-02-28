@@ -29,7 +29,7 @@ public class EnumLookup<K extends Enum<K> & EnumLookup.Findable, V> extends Forw
      * If this is a Keyed<String> enumerate, the finding will happen case-insensitively
      */
     public static <K extends Enum<K> & Keyed<V>, V> EnumLookup<K, V> of(final Class<K> enumClass) {
-        return new EnumLookup<>(enumClass, -1, false);
+        return new EnumLookup<K, V>(enumClass, -1, false);
     }
 
     /**
@@ -37,7 +37,7 @@ public class EnumLookup<K extends Enum<K> & EnumLookup.Findable, V> extends Forw
      */
     public static <K extends Enum<K> & Keyed<String>> EnumLookup<K, String> of(final Class<K> enumClass,
                                                                                final boolean caseSensitive) {
-        return new EnumLookup<>(enumClass, -1, caseSensitive);
+        return new EnumLookup<K, String>(enumClass, -1, caseSensitive);
     }
 
     /**
@@ -45,7 +45,7 @@ public class EnumLookup<K extends Enum<K> & EnumLookup.Findable, V> extends Forw
      * If this is a MultiKeyed<String> enumerate, the finding will happen case-insensitively
      */
     public static <K extends Enum<K> & MultiKeyed, V> EnumLookup<K, V> of(final Class<K> enumClass, final int idx) {
-        return new EnumLookup<>(enumClass, idx, false);
+        return new EnumLookup<K, V>(enumClass, idx, false);
     }
 
     /**
@@ -53,7 +53,7 @@ public class EnumLookup<K extends Enum<K> & EnumLookup.Findable, V> extends Forw
      */
     public static <K extends Enum<K> & MultiKeyed> EnumLookup<K, String> of(
     		final Class<K> enumClass, final int idx, final boolean caseSensitive) {
-        return new EnumLookup<>(enumClass, idx, caseSensitive);
+        return new EnumLookup<K, String>(enumClass, idx, caseSensitive);
     }
     
 	/**

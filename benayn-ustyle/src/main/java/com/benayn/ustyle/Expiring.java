@@ -107,10 +107,10 @@ public final class Expiring<T> {
 	 * Returns a new {@link ExpiringSet} instance
 	 */
 	public ExpiringSet<T> buildSet() {
-		Set<T> target = (Set<T>) (handleExistEls ? Sets.<T>newHashSet() : 
+		Set<T> target = (Set<T>) (handleExistEls ? Sets.<T>newHashSet() :
 				(elements instanceof Set ? elements : Sets.newHashSet(elements)));
 		
-		ExpiringSet<T> expiringSet = new ExpirationSet<>(target, ticker.or(systemTicker()),
+		ExpiringSet<T> expiringSet = new ExpirationSet<T>(target, ticker.or(systemTicker()),
 				defaultExpireTime.orNull(), defaultExpireUnit.orNull());
 		
 		if (handleExistEls) {
@@ -217,7 +217,7 @@ public final class Expiring<T> {
 		}
 
 		@Override public Iterator<T> iterator() {
-			return new ExpiringIterator<>(delegate().iterator(), expireTarget);
+			return new ExpiringIterator<T>(delegate().iterator(), expireTarget);
 		}
 
 		@Override public int size() {

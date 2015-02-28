@@ -102,7 +102,6 @@ import com.sleepycat.persist.raw.RawStore;
  * @ClassName: Berkeley
  * @Description: 
  * @author: paulo.ye
- * @date 2014年7月16日 下午1:30:42
  * 
  */
 public abstract class Berkeley<M> extends ForwardingObject {

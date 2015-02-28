@@ -81,7 +81,7 @@ public class Threads {
         private final Runnable runnable;
 
         /** An atomic reference that we can synchronize on */
-        private final AtomicReference<ListenableFuture<?>> pending = new AtomicReference<>();
+        private final AtomicReference<ListenableFuture<?>> pending = new AtomicReference<ListenableFuture<?>>();
 
         /**
          * Returns whether or not this async runner is currently running.

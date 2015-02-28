@@ -7,6 +7,10 @@
     <groupId>com.benayn</groupId>
     <artifactId>benayn</artifactId>
     <version>1.0</version>
+    <name>benayn</name>
+	<description>Guava extension, Berkeley DB JE Tools, Usage, Utilities</description>
+	<url>https://github.com/jronrun/benayn</url>
+	
     <modules>
         <module>benayn-ustyle</module>
         <module>benayn-ustyle-slf4j</module>
@@ -14,8 +18,29 @@
         <module>benayn-ustyle-test</module>
         <module>benayn-berkeley</module>
     </modules>
-
+    
     <packaging>pom</packaging>
+    
+    <licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Paulo</name>
+			<email>furonglang@gmail.com</email>
+		</developer>
+	</developers>
+	
+	<scm>
+		<connection>scm:git@github.com:jronrun/benayn.git</connection>
+		<developerConnection>scm:git@github.com:jronrun/benayn.git</developerConnection>
+		<url>git@github.com:jronrun/benayn.git</url>
+	</scm>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <benayn.version>1.0</benayn.version>
@@ -39,9 +64,72 @@
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
+					<encoding>${project.build.sourceEncoding}</encoding> 
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+	
+	<profiles>
+		<profile>
+			<id>release</id>
+			<distributionManagement>
+				<snapshotRepository>
+					<id>oss</id>
+					<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+				</snapshotRepository>
+				<repository>
+					<id>oss</id>
+					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+				</repository>
+			</distributionManagement>
+			<build>
+				<plugins>
+					<!-- Source -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.2.1</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- Javadoc -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.9.1</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.5</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	
 </project>
