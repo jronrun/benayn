@@ -2,6 +2,7 @@
 Guava, Berkeley DB JE, Usage, Utilities
 
 ## Maven Dependencies
+<a href="http://search.maven.org/#browse%7C-1501833162">Maven Central</a>
 ```xml
 <dependency>
 	<groupId>com.benayn</groupId>
