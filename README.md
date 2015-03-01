@@ -1,4 +1,4 @@
-# benayn [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.benayn/benayn/badge.svg)](http://search.maven.org/#browse%7C-1501833162)
+# Benayn [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.benayn/benayn/badge.svg)](http://search.maven.org/#browse%7C-1501833162)
 Guava, Berkeley DB JE, Usage, Utilities
 
 ## Maven Dependencies
