@@ -16,6 +16,7 @@
         <module>benayn-ustyle-slf4j</module>
         <module>benayn-ustyle-apache-logging</module>
         <module>benayn-berkeley</module>
+        <module>benayn-ustyle-test</module>
     </modules>
     
     <packaging>pom</packaging>
