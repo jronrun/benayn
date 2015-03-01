@@ -1,9 +1,7 @@
-# benayn
+# benayn [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.benayn/benayn/badge.svg)](http://search.maven.org/#browse%7C-1501833162)
 Guava, Berkeley DB JE, Usage, Utilities
 
 ## Maven Dependencies
-<a href="http://search.maven.org/#browse%7C-1501833162">Maven Central</a>
- 
 <a href="https://oss.sonatype.org/content/groups/public/com/benayn/">sonatype repository</a>
 ```xml
 <dependency>
