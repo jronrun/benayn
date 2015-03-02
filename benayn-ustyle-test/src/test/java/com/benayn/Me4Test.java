@@ -27,7 +27,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.benayn.pre.ManualTicker;
-import com.benayn.ustyle.Dater;
 import com.benayn.ustyle.Decision;
 import com.benayn.ustyle.Decisional;
 import com.benayn.ustyle.Decisions;
@@ -127,11 +126,6 @@ public class Me4Test extends Me3Test {
 
         //same as jsonMap.get("address.lonlat.lat")
         assertEquals(0.10, jsonMap.get("lat"));                 
-
-        //date
-        String dateStr = "2015-03-10 20:02:57";
-        long dateMs = (Long) jsonMap.get("birth");
-        assertEquals(dateStr, Dater.of(dateMs).asText());
 
         //populate with map
         User user2 = Reflecter.from(User.class).populate(jsonMap).get();
