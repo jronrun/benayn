@@ -1,4 +1,4 @@
-# Benayn [![Build Status](https://api.travis-ci.org/jronrun/benayn.svg?branch=master)](https://travis-ci.org/jronrun/benayn) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.benayn/benayn/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.benayn/benayn)
+# Benayn [![Build Status](https://api.travis-ci.org/jronrun/benayn.svg?branch=master)](https://travis-ci.org/jronrun/benayn) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.benayn/benayn/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.benayn/benayn) [![License](http://img.shields.io/badge/license-apache%202-brightgreen.svg)](https://github.com/jronrun/benayn/blob/master/LICENSE)
 
 Guava, Berkeley DB JE, Usage, Utilities
 
