@@ -1,6 +1,6 @@
 language: java
 
-script: mvn clean install test -pl benayn-ustyle-test -Dtest=Me5Test -X
+script: mvn test -pl benayn-ustyle-test -Dtest=Me5Test -X
 
 jdk:
   - oraclejdk8
