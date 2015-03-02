@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.benayn</groupId>
 		<artifactId>benayn</artifactId>
-		<version>${benayn.version}</version>
+		<version>1.0.2</version>
 	</parent>
 	<artifactId>benayn-ustyle-test</artifactId>
 	<name>benayn-ustyle-test</name>
