@@ -1,4 +1,4 @@
-package com.benayn.ustyle.metest.generics;
+package com.benayn.pre.ref;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

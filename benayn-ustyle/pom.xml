@@ -3,7 +3,7 @@
     <parent>
         <artifactId>benayn</artifactId>
         <groupId>com.benayn</groupId>
-        <version>1.0</version>
+        <version>${benayn.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

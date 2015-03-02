@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.benayn.ustyle.metest.generics;
+package com.benayn.pre.ref;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +45,7 @@ public class GenericBean<T>
 
     private List<Map<Integer, Long>> listOfMaps;
 
+    @SuppressWarnings("rawtypes")
     private Map plainMap;
 
     private Map<Short, Integer> shortMap;
@@ -91,6 +92,7 @@ public class GenericBean<T>
         this.resourceList = Collections.singletonList(resource);
     }
 
+    @SuppressWarnings("rawtypes")
     public GenericBean(Map plainMap, Map<Short, Integer> shortMap)
     {
         this.plainMap = plainMap;
@@ -158,6 +160,7 @@ public class GenericBean<T>
         this.listOfMaps = listOfMaps;
     }
 
+    @SuppressWarnings("rawtypes")
     public Map getPlainMap()
     {
         return plainMap;
@@ -244,36 +247,43 @@ public class GenericBean<T>
     }
 
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static GenericBean createInstance(Set<Integer> integerSet)
     {
         return new GenericBean(integerSet);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static GenericBean createInstance(Set<Integer> integerSet, List<String> resourceList)
     {
         return new GenericBean(integerSet, resourceList);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static GenericBean createInstance(HashSet<Integer> integerSet, Map<Short, Integer> shortMap)
     {
         return new GenericBean(integerSet, shortMap);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static GenericBean createInstance(Map<Short, Integer> shortMap, String resource)
     {
         return new GenericBean(shortMap, resource);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static GenericBean createInstance(Map map, Map<Short, Integer> shortMap)
     {
         return new GenericBean(map, shortMap);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static GenericBean createInstance(HashMap<Long, ?> longMap)
     {
         return new GenericBean(longMap);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static GenericBean createInstance(boolean someFlag, Map<Number, Collection<? extends Object>> collectionMap)
     {
         return new GenericBean(someFlag, collectionMap);

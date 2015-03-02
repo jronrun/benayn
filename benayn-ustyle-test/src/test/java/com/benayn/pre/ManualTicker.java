@@ -1,4 +1,4 @@
-package com.benayn.ustyle.metest.generics;
+package com.benayn.pre;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;

@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.benayn.ustyle.metest.generics;
+package com.benayn.pre.ref;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -29,6 +29,7 @@ public class MethodParameter
 
     private Method method;
 
+    @SuppressWarnings("rawtypes")
     private Constructor constructor;
 
     private final int parameterIndex;
@@ -50,6 +51,7 @@ public class MethodParameter
      */
     private Map<Integer, Integer> typeIndexesPerLevel;
 
+    @SuppressWarnings("rawtypes")
     Map<TypeVariable, Type> typeVariableMap;
 
 
@@ -88,6 +90,7 @@ public class MethodParameter
      * @param constructor    the Constructor to specify a parameter for
      * @param parameterIndex the index of the parameter
      */
+    @SuppressWarnings("rawtypes")
     public MethodParameter(Constructor constructor, int parameterIndex)
     {
         this(constructor, parameterIndex, 1);
@@ -102,6 +105,7 @@ public class MethodParameter
      *                       (typically 1; e.g. in case of a List of Lists, 1 would indicate the
      *                       nested List, whereas 2 would indicate the element of the nested List)
      */
+    @SuppressWarnings("rawtypes")
     public MethodParameter(Constructor constructor, int parameterIndex, int nestingLevel)
     {
         this.constructor = constructor;
@@ -143,6 +147,7 @@ public class MethodParameter
      *
      * @return the Constructor, or <code>null</code> if none
      */
+    @SuppressWarnings("rawtypes")
     public Constructor getConstructor()
     {
         return this.constructor;
@@ -151,6 +156,7 @@ public class MethodParameter
     /**
      * Return the class that declares the underlying Method or Constructor.
      */
+    @SuppressWarnings("rawtypes")
     public Class getDeclaringClass()
     {
         return (this.method != null ? this.method.getDeclaringClass() : this.constructor.getDeclaringClass());
@@ -399,6 +405,7 @@ public class MethodParameter
      * @param parameterIndex      the index of the parameter
      * @return the corresponding MethodParameter instance
      */
+    @SuppressWarnings("rawtypes")
     public static MethodParameter forMethodOrConstructor(Object methodOrConstructor, int parameterIndex)
     {
         if (methodOrConstructor instanceof Method)

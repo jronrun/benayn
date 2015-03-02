@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.benayn.ustyle.metest.generics;
+package com.benayn.pre.ref;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;

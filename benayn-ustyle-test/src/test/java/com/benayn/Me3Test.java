@@ -15,6 +15,8 @@ import java.util.Set;
 import org.junit.Test;
 
 import com.benayn.berkeley.Person;
+import com.benayn.pre.ShowGenerics;
+import com.benayn.pre.ref.GenericsUtils;
 import com.benayn.ustyle.Arrays2;
 import com.benayn.ustyle.Decisions;
 import com.benayn.ustyle.Gather;
@@ -34,8 +36,6 @@ import com.benayn.ustyle.base.Domain;
 import com.benayn.ustyle.base.EnumType;
 import com.benayn.ustyle.base.JsonJacksonPO;
 import com.benayn.ustyle.behavior.ValueBehavior;
-import com.benayn.ustyle.metest.generics.GenericsUtils;
-import com.benayn.ustyle.metest.generics.TestGenerics;
 import com.benayn.ustyle.string.Strs;
 import com.google.common.base.Defaults;
 import com.google.common.collect.ImmutableMap;
@@ -804,7 +804,7 @@ public class Me3Test extends Me2Test {
 		log.info(c3);
 		log.info(GenericsUtils.getCollectionFieldType(f, 3));
 		
-		String typeStr = TestGenerics.typeToString(f.getGenericType());
+		String typeStr = ShowGenerics.typeToString(f.getGenericType());
 		log.info(typeStr);
 	}
 	

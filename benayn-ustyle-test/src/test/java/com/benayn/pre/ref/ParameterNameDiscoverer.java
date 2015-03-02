@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.benayn.ustyle.metest.generics;
+package com.benayn.pre.ref;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -43,6 +43,7 @@ public interface ParameterNameDiscoverer
      * @return an array of parameter names if the names can be resolved,
      *         or <code>null</code> if they cannot
      */
+    @SuppressWarnings("rawtypes")
     String[] getParameterNames(Constructor ctor);
 
 }

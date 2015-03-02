@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.benayn.ustyle.metest.generics;
+package com.benayn.pre.ref;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
@@ -35,6 +35,7 @@ public abstract class GenericTypeResolver
     /**
      * Cache from Class to TypeVariable Map
      */
+    @SuppressWarnings({ "rawtypes"})
     private static final Map<Class, Reference<Map<TypeVariable, Type>>> typeVariableCache =
             Collections.synchronizedMap(new WeakHashMap<Class, Reference<Map<TypeVariable, Type>>>());
 
@@ -76,6 +77,7 @@ public abstract class GenericTypeResolver
      * @param clazz       the class to resolve type variables against
      * @return the corresponding generic parameter or return type
      */
+    @SuppressWarnings("rawtypes")
     public static Class<?> resolveParameterType(MethodParameter methodParam, Class clazz)
     {
         Type genericType = getTargetType(methodParam);
@@ -94,6 +96,7 @@ public abstract class GenericTypeResolver
      * @param clazz  the class to resolve type variables against
      * @return the corresponding generic parameter or return type
      */
+    @SuppressWarnings("rawtypes")
     public static Class<?> resolveReturnType(Method method, Class clazz)
     {
         Type genericType = method.getGenericReturnType();
@@ -111,6 +114,7 @@ public abstract class GenericTypeResolver
      * @param genericIfc the generic interface to resolve the type argument from
      * @return the resolved type of the argument, or <code>null</code> if not resolvable
      */
+    @SuppressWarnings("rawtypes")
     public static Class<?> resolveTypeArgument(Class clazz, Class genericIfc)
     {
         Class[] typeArgs = resolveTypeArguments(clazz, genericIfc);
@@ -136,11 +140,13 @@ public abstract class GenericTypeResolver
      * @return the resolved type of each argument, with the array size matching the
      *         number of actual type arguments, or <code>null</code> if not resolvable
      */
+    @SuppressWarnings("rawtypes")
     public static Class[] resolveTypeArguments(Class clazz, Class genericIfc)
     {
         return doResolveTypeArguments(clazz, clazz, genericIfc);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private static Class[] doResolveTypeArguments(Class ownerClass, Class classToIntrospect, Class genericIfc)
     {
         while (classToIntrospect != null)
@@ -190,6 +196,7 @@ public abstract class GenericTypeResolver
      * @param typeVariableMap the TypeVariable Map to resolved against
      * @return the type if it resolves to a Class, or <code>Object.class</code> otherwise
      */
+    @SuppressWarnings("rawtypes")
     static Class resolveType(Type genericType, Map<TypeVariable, Type> typeVariableMap)
     {
         Type rawType = getRawType(genericType, typeVariableMap);
@@ -203,6 +210,7 @@ public abstract class GenericTypeResolver
      * @param typeVariableMap the TypeVariable Map to resolved against
      * @return the resolved raw type
      */
+    @SuppressWarnings("rawtypes")
     static Type getRawType(Type genericType, Map<TypeVariable, Type> typeVariableMap)
     {
         Type resolvedType = genericType;
@@ -230,6 +238,7 @@ public abstract class GenericTypeResolver
      * {@link Class} for the specified {@link Class}. Searches all super types,
      * enclosing types and interfaces.
      */
+    @SuppressWarnings("rawtypes")
     static Map<TypeVariable, Type> getTypeVariableMap(Class clazz)
     {
         Reference<Map<TypeVariable, Type>> ref = typeVariableCache.get(clazz);
@@ -279,6 +288,7 @@ public abstract class GenericTypeResolver
     /**
      * Extracts the bound <code>Type</code> for a given {@link TypeVariable}.
      */
+    @SuppressWarnings("rawtypes")
     static Type extractBoundForTypeVariable(TypeVariable typeVariable)
     {
         Type[] bounds = typeVariable.getBounds();
@@ -294,6 +304,7 @@ public abstract class GenericTypeResolver
         return bound;
     }
 
+    @SuppressWarnings("rawtypes")
     private static void extractTypeVariablesFromGenericInterfaces(Type[] genericInterfaces, Map<TypeVariable, Type> typeVariableMap)
     {
         for (Type genericInterface : genericInterfaces)
@@ -332,6 +343,7 @@ public abstract class GenericTypeResolver
      * For '<code>FooImpl</code>' the following mappings would be added to the {@link Map}:
      * {S=java.lang.String, T=java.lang.Integer}.
      */
+    @SuppressWarnings("rawtypes")
     private static void populateTypeMapFromParameterizedType(ParameterizedType type, Map<TypeVariable, Type> typeVariableMap)
     {
         if (type.getRawType() instanceof Class)

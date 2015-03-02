@@ -44,12 +44,12 @@ import com.sleepycat.persist.model.EntityModel;
 import com.sleepycat.persist.raw.RawObject;
 import com.sleepycat.persist.raw.RawStore;
 
-public class BerkeleyTest extends Assert {
+public class BerkeleyUsage extends Assert {
     
     /**
      * 
      */
-    static Log log = Loggers.from(BerkeleyTest.class);
+    static Log log = Loggers.from(BerkeleyUsage.class);
 
     static String home = null;
     static BerkeleyEnv env = null;

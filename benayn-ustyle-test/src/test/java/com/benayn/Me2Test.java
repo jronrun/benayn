@@ -15,12 +15,12 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import com.benayn.pre.ref.GenericsUtils;
 import com.benayn.ustyle.Dater;
 import com.benayn.ustyle.Objects2;
 import com.benayn.ustyle.Randoms;
 import com.benayn.ustyle.Reflecter;
 import com.benayn.ustyle.base.Domain;
-import com.benayn.ustyle.metest.generics.GenericsUtils;
 import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
 

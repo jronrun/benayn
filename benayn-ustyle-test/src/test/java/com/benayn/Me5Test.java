@@ -11,6 +11,7 @@ public class Me5Test extends Me4Test {
     public void testTmp() {
         FacadeObject<User> fo = Objects2.wrapObj(User.class);
         fo.populate4Test().info();
+       
         
     }
     

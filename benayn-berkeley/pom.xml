@@ -3,7 +3,7 @@
     <parent>
         <artifactId>benayn</artifactId>
         <groupId>com.benayn</groupId>
-        <version>1.0</version>
+        <version>${benayn.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -29,6 +29,15 @@
     
     <properties>
         <berkeley.version>6.2.31</berkeley.version>
-        <junit.version>4.11</junit.version>
     </properties>
+    
+    <repositories>
+		<repository>
+			<id>oracleReleases</id>
+			<name>Oracle Released Java Packages</name>
+			<url>http://download.oracle.com/maven</url>
+			<layout>default</layout>
+		</repository>
+	</repositories>
+
 </project>

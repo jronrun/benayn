@@ -26,6 +26,7 @@ import junit.framework.AssertionFailedError;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.benayn.pre.ManualTicker;
 import com.benayn.ustyle.Dater;
 import com.benayn.ustyle.Decision;
 import com.benayn.ustyle.Decisional;
@@ -44,7 +45,6 @@ import com.benayn.ustyle.Reflecter;
 import com.benayn.ustyle.Resolves;
 import com.benayn.ustyle.Triple;
 import com.benayn.ustyle.TypeRefer.TypeDescrib;
-import com.benayn.ustyle.metest.generics.ManualTicker;
 import com.benayn.ustyle.string.Betner;
 import com.benayn.ustyle.string.Finder;
 import com.benayn.ustyle.string.Indexer;

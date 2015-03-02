@@ -1,4 +1,4 @@
-package com.benayn.ustyle.metest.generics;
+package com.benayn.pre;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
@@ -13,11 +13,11 @@ import java.util.Set;
 import com.benayn.ustyle.Reflecter;
 import com.benayn.ustyle.base.Domain;
 
-public class TestGenerics {
+public class ShowGenerics {
 	public static void main(String[] args) {
 		String pName = "complex"; // prop
 		Field f = Reflecter.from(Domain.class).field(pName);
-		String typeStr = TestGenerics.typeToString(f.getGenericType());
+		String typeStr = ShowGenerics.typeToString(f.getGenericType());
 
 		System.out.println(typeStr);
 	}

@@ -39,7 +39,6 @@ import com.benayn.ustyle.Pair;
 import com.benayn.ustyle.Reflecter;
 import com.benayn.ustyle.Scale62;
 import com.benayn.ustyle.SimplePurview;
-import com.benayn.ustyle.SixtytwoScale;
 import com.benayn.ustyle.Sources;
 import com.benayn.ustyle.base.Domain;
 import com.benayn.ustyle.logger.Log;
@@ -407,7 +406,7 @@ public class MeTest extends Assert {
 		
 		String r = null;
 		for (int i = begin; i <= len; i++) {
-			assertEquals(r = SixtytwoScale.SixtyTwoScale(i, rLen), Scale62.get(i, rLen));
+		    r = Scale62.get(i, rLen);
 			assertEquals(Long.valueOf(i), (Long) Scale62.get(r));
 		}
 	}
