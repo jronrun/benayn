@@ -1,4 +1,7 @@
-# Benayn [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.benayn/benayn/badge.svg)](http://search.maven.org/#browse%7C-1501833162)
+# Benayn 
+[![Build Status](https://api.travis-ci.org/jronrun/benayn.svg?branch=master)](https://travis-ci.org/jronrun/benayn)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.benayn/benayn/badge.svg)](http://search.maven.org/#browse%7C-1501833162)
+
 Guava, Berkeley DB JE, Usage, Utilities
 
 ## Maven Dependencies
@@ -79,11 +82,6 @@ Guava, Berkeley DB JE, Usage, Utilities
 
         //same as jsonMap.get("address.lonlat.lat")
         assertEquals(0.10, jsonMap.get("lat"));                 
-
-        //date
-        String dateStr = "2015-03-10 20:02:57";
-        long dateMs = (Long) jsonMap.get("birth");
-        assertEquals(dateStr, Dater.of(dateMs).asText());
 
         //populate with map
         User user2 = Reflecter.from(User.class).populate(jsonMap).get();
