@@ -917,7 +917,7 @@ public final class Reflecter<T> {
     /**
      * 
      */
-    public static class MethodOptions<T, R> extends Options<Reflecter<T>, MethodOptions<T, R>> {
+    public static class MethodOptions<T> extends Options<Reflecter<T>, MethodOptions<T>> {
         
         Method method;
         
@@ -927,18 +927,88 @@ public final class Reflecter<T> {
         }
         
         /**
+         * Returns the {@link Method} instance
+         */
+        public Method get() {
+        	return this.method;
+        }
+        
+        /**
          * @see Suppliers2#call(Object, Method, Object...)
          */
-        @SuppressWarnings("unchecked") public R call(Object... parameters) {
-            return (R) Suppliers2.call(this.outerRef.delegate.get(), method, parameters).get();
+        @SuppressWarnings("unchecked") public <R> R call(Object... parameters) {
+            return (R) Suppliers2.call(this.outerRef.delegate.get(), get(), parameters).get();
+        }
+        
+        /**
+         * @see Modifier#isPublic(int)
+         */
+        public boolean isPublic() {
+        	return Modifier.isPublic(get().getModifiers());
+        }
+        
+        /**
+         * @see Modifier#isProtected(int)
+         */
+        public boolean isProtected() {
+        	return Modifier.isProtected(get().getModifiers());
+        }
+        
+        /**
+         * @see Modifier#isPrivate(int)
+         */
+        public boolean isPrivate() {
+        	return Modifier.isPrivate(get().getModifiers());
+        }
+        
+        /**
+         * @see Modifier#isAbstract(int)
+         */
+        public boolean isAbstract() {
+        	return Modifier.isAbstract(get().getModifiers());
+        }
+        
+        /**
+         * @see Modifier#isStatic(int)
+         */
+        public boolean isStatic() {
+        	return Modifier.isStatic(get().getModifiers());
+        }
+        
+        /**
+         * @see Modifier#isFinal(int)
+         */
+        public boolean isFinal() {
+        	return Modifier.isFinal(get().getModifiers());
+        }
+        
+        /**
+         * @see Modifier#isSynchronized(int)
+         */
+        public boolean isSynchronized() {
+        	return Modifier.isSynchronized(get().getModifiers());
+        }
+        
+        /**
+         * @see Modifier#isNative(int)
+         */
+        public boolean isNative() {
+        	return Modifier.isNative(get().getModifiers());
+        }
+        
+        /**
+         * @see Modifier#isStrict(int)
+         */
+        public boolean isStrict() {
+        	return Modifier.isStrict(get().getModifiers());
         }
     }
     
     /**
      * Returns a new MethodOptions instance
      */
-    public <R> MethodOptions<T, R> method(String methodName) {
-        return new MethodOptions<T, R>(this, getMethod(methodName));
+    public MethodOptions<T> method(String methodName) {
+        return new MethodOptions<T>(this, getMethod(methodName));
     }
     
     /**
@@ -948,6 +1018,15 @@ public final class Reflecter<T> {
      */
     public Gather<Method> methodGather() {
         return Gather.from(methods().values());
+    }
+    
+    /**
+     * Returns the methods {@link Mapper}
+     * 
+     * @return
+     */
+    public Mapper<String, Method> methodMapper() {
+    	return Mapper.from(methods());
     }
     
     /**
@@ -964,7 +1043,8 @@ public final class Reflecter<T> {
      * Returns the {@link Method} instance with given name
      */
     public Method getMethod(String methodName) {
-        return methods().get(checkNotNull(methodName));
+        return checkNotNull(methods().get(checkNotNull(methodName)), 
+        		"The method %s is not exists of object %s", methodName, delegateClass().getName());
     }
     
     /**

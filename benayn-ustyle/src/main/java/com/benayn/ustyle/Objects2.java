@@ -10,6 +10,7 @@ import static com.google.common.primitives.Primitives.wrap;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -23,6 +24,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.benayn.ustyle.Reflecter.ConstructorOptions;
+import com.benayn.ustyle.Reflecter.MethodOptions;
 import com.benayn.ustyle.TypeRefer.TypeDescrib;
 import com.benayn.ustyle.behavior.StructBehavior;
 import com.benayn.ustyle.behavior.ValueBehavior;
@@ -304,6 +306,20 @@ public class Objects2 {
          */
         public Constructor<T> getConstructor(Class<?>... parameterTypes) {
             return this.reflection().getConstructor(parameterTypes);
+        }
+        
+        /**
+         * @see Reflecter#getMethod(String)
+         */
+        public Method getMethod(String methodName) {
+        	return this.reflection().getMethod(methodName);
+        }
+        
+        /**
+         * @see Reflecter#method(String)
+         */
+        public MethodOptions<T> method(String methodName) {
+        	return this.reflection().method(methodName);
         }
         
         /**

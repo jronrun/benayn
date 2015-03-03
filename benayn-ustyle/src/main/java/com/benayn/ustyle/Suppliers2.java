@@ -205,15 +205,15 @@ public final class Suppliers2 {
 	/**
      * Returns a supplier that always supplies the given method invoke result
      */
-    public static <T, R> Supplier<R> call(T target, Method method, Object... parameters) {
-        return new MethodSupplier<T, R>(target, method, parameters);
+    public static <R> Supplier<R> call(Object target, Method method, Object... parameters) {
+        return new MethodSupplier<R>(target, method, parameters);
     }
 	
-	private static class MethodSupplier<T, R> implements Supplier<R> {
+	private static class MethodSupplier<R> implements Supplier<R> {
 	    
-	    T target; Method method; Object[] parameters;
+		Object target; Method method; Object[] parameters;
         
-        private MethodSupplier(T target, Method method, Object... parameters) {
+        private MethodSupplier(Object target, Method method, Object... parameters) {
             this.target = target;
             this.method = method;
             this.parameters = parameters;
