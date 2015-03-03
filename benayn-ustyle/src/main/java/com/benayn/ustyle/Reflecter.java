@@ -6,7 +6,9 @@ import static com.google.common.primitives.Primitives.allPrimitiveTypes;
 import static com.google.common.primitives.Primitives.isWrapperType;
 import static com.google.common.primitives.Primitives.wrap;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.benayn.ustyle.inner.Options;
 import com.benayn.ustyle.logger.Log;
 import com.benayn.ustyle.logger.Loggers;
 import com.benayn.ustyle.string.Strs;
@@ -47,6 +50,7 @@ public final class Reflecter<T> {
 	private Optional<Gather<Field>> fieldHolder = Optional.absent();
 	private Optional<Mapper<String, Object>> nameValMap = Optional.absent();
 	
+	private Reflecter() { }
 	private Reflecter(T target) {
 		this.delegate = Optional.fromNullable(target);
 		intlFields();
@@ -59,12 +63,18 @@ public final class Reflecter<T> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked") public static <T> Reflecter<T> from(T target) {
-		if (Decisions.isClass().apply(target)) {
-			return new Reflecter<T>((T) Suppliers2.toInstance((Class<?>) target).get());
-		}
-		
-		return new Reflecter<T>(target);
+		return Decisions.isClass().apply(target) ? from((Class<T>) target) : new Reflecter<T>(target);
 	}
+	
+	/**
+     * Returns a new {@link Reflecter} instance with given {@link Class}
+     * 
+     * @param target
+     * @return
+     */
+	@SuppressWarnings("unchecked") public static <T> Reflecter<T> from(Class<T> target) {
+        return new Reflecter<T>((T) Suppliers2.toInstance((Class<?>) target).get());
+    }
 	
 	/**
 	 * Returns the property value to which the specified property name
@@ -118,7 +128,7 @@ public final class Reflecter<T> {
 	 * @return
 	 */
 	public <Dest> Dest clones() {
-		return copyTo(delegate.get().getClass());
+		return copyTo(delegateClass());
 	}
 	
 	/**
@@ -620,7 +630,7 @@ public final class Reflecter<T> {
 			}
 			
 			if (traceAble) {
-				log.info(String.format("transform %s to map for property %s.%s", clzN, delegate.get().getClass().getName(), k));
+				log.info(String.format("transform %s to map for property %s.%s", clzN, delegateClass().getName(), k));
 			}
 			
 			nameValueMap.put(k, (V) from(v).asMap());
@@ -655,7 +665,7 @@ public final class Reflecter<T> {
 		}
 		
 		List<Field> fields = Lists.newLinkedList();
-		Class<?> clazz = delegate.get().getClass();
+		Class<?> clazz = delegateClass();
 		
 		while (clazz != null) {
 			fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
@@ -671,7 +681,7 @@ public final class Reflecter<T> {
 	 * @return
 	 */
     public boolean isInnerClass() {
-        return delegate.isPresent() && delegate.get().getClass().getEnclosingClass() != null;
+        return delegate.isPresent() && delegateClass().getEnclosingClass() != null;
     }
 	
 	/**
@@ -703,7 +713,7 @@ public final class Reflecter<T> {
 	private <V> void setPropVal(Field field, String propName, V propVal) {
 		try {
 			if (this.trace) {
-				log.info(String.format("set %s.%s = %s (%s)", delegate.get().getClass().getName(), 
+				log.info(String.format("set %s.%s = %s (%s)", delegateClass().getName(), 
 						propName, propVal, (null == propVal ? "null" : propVal.getClass().getName())));
 			}
 			
@@ -799,6 +809,194 @@ public final class Reflecter<T> {
 		@Override public boolean apply(Field input) { return allPrimitiveTypes().contains(input.getType()); }
 	};
 	
+	/**
+	 * Determines whether the delegate has a default constructor
+	 */
+	public boolean hasDefaultConstructor() {
+	    if (!delegate.isPresent()) {
+	        return false;
+	    }
+	    
+	    final Constructor<?>[] constructors = delegateClass().getConstructors();
+        for (final Constructor<?> constructor : constructors) {
+            if (constructor.getParameterTypes().length == 0) {
+                return true;
+            }
+        }
+        
+        return false;
+	}
+	
+	/**
+	 * 
+	 */
+	public static class ConstructorOptions<T> extends Options<Reflecter<T>, ConstructorOptions<T>> {
+
+	    Class<?>[] parameterTypes;
+	    
+        public ConstructorOptions(Reflecter<T> reflecter, Class<?>[] parameterTypes) {
+            this.reference(reflecter, this);
+            this.parameterTypes = parameterTypes;
+        }
+        
+        /**
+         * @see Reflecter#getConstructor(Class...)
+         */
+        public Constructor<T> get() {
+            return this.outerRef.getConstructor(parameterTypes);
+        }
+	    
+        /**
+         * @see Suppliers2#newInstance(Constructor, Object...)
+         */
+        public T newInstance(Object... parameters) {
+            return Suppliers2.newInstance(get(), parameters).get();
+        }
+        
+        /**
+         * @see Modifier#isPrivate(int)
+         */
+        public boolean isPrivate() {
+            return Modifier.isPrivate(get().getModifiers());
+        }
+        
+        /**
+         * @see Modifier#isPublic(int)
+         */
+        public boolean isPublic() {
+            return Modifier.isPublic(get().getModifiers());
+        }
+        
+        /**
+         * @see Modifier#isPublic(int)
+         */
+        public boolean isProtected() {
+            return Modifier.isProtected(get().getModifiers());
+        }
+	}
+	
+	/**
+	 * Returns a new ConstructorOptions instance
+	 */
+    public ConstructorOptions<T> constructor(Class<?>... parameterTypes) {
+	    return new ConstructorOptions<T>(this, parameterTypes);
+	}
+	
+	/**
+	 * @see Class#getDeclaredConstructors()
+	 * @see Class#getDeclaredConstructor(Class...)
+	 */
+    public Constructor<T> getConstructor(Class<?>... parameterTypes) {
+	    return Suppliers2.constructor(delegateClass(), parameterTypes).get();
+	}
+	
+    /**
+     * Only supports all the constructor arguments type has no primitive type or default constructor
+     * 
+     * @see #getConstructor(Class...)
+     * @see Constructor#newInstance(Object...)
+     */
+	public T newInstance(Object... parameters) {
+	    return Suppliers2.newInstance(delegateClass(), parameters).get();
+	}
+	
+	/**
+     * @see Decisions#instantiatable()
+     */
+    public boolean instantiatable() {
+        return Decisions.instantiatable().apply(delegateClass());
+    }
+    
+    /**
+     * @see Decisions#notInstantiatable()
+     */
+    public boolean notInstantiatable() {
+        return Decisions.notInstantiatable().apply(delegateClass());
+    }
+    
+    /**
+     * 
+     */
+    public static class MethodOptions<T, R> extends Options<Reflecter<T>, MethodOptions<T, R>> {
+        
+        Method method;
+        
+        private MethodOptions(Reflecter<T> reflecter, Method method) {
+            this.reference(reflecter, this);
+            this.method = method;
+        }
+        
+        /**
+         * @see Suppliers2#call(Object, Method, Object...)
+         */
+        @SuppressWarnings("unchecked") public R call(Object... parameters) {
+            return (R) Suppliers2.call(this.outerRef.delegate.get(), method, parameters).get();
+        }
+    }
+    
+    /**
+     * Returns a new MethodOptions instance
+     */
+    public <R> MethodOptions<T, R> method(String methodName) {
+        return new MethodOptions<T, R>(this, getMethod(methodName));
+    }
+    
+    /**
+     * Returns the methods {@link Gather}
+     * 
+     * @return
+     */
+    public Gather<Method> methodGather() {
+        return Gather.from(methods().values());
+    }
+    
+    /**
+     * Returns the method {@link Gather#loop(Decision)}
+     * 
+     * @param decision
+     * @return
+     */
+    public Gather<Method> methodLoop(Decision<Method> decision) {
+        return methodGather().loop(decision);
+    }
+    
+    /**
+     * Returns the {@link Method} instance with given name
+     */
+    public Method getMethod(String methodName) {
+        return methods().get(checkNotNull(methodName));
+    }
+    
+    /**
+     * Returns the {@link Method} map of the delegate
+     */
+    public Map<String, Method> methods() {
+        if (this.methodHolder.isPresent()) {
+            return this.methodHolder.get();
+        }
+        
+        Map<String, Method> methodMap = Maps.newHashMap();
+        Class<?> currentClass = delegateClass();
+        
+        while (currentClass != null) {
+            for (Method m : currentClass.getDeclaredMethods()) {
+                m.setAccessible(true);
+                methodMap.put(m.getName(), m);
+            }
+            
+            currentClass = currentClass.getSuperclass();
+        }
+        
+        return (this.methodHolder = Optional.of(methodMap)).get();
+    }
+	
+	/**
+	 * Returns the delegate class
+	 */
+	@SuppressWarnings("unchecked")
+    public Class<T> delegateClass() {
+	    return delegate.isPresent() ? (Class<T>) delegate.get().getClass() : null;
+	}
 
 	//<delegate target prop, populate map key>
 	private Map<String, String> exchangeProps = Maps.newHashMap();
@@ -810,4 +1008,5 @@ public final class Reflecter<T> {
 	private Set<String> excludePackagePath = Sets.newHashSet("com.google.common", "ch.qos.logback", "com.benayn.ustyle");
 	private boolean trace = Boolean.FALSE;
 	protected static final String TIER_SEP = ".";
+	private Optional<Map<String, Method>> methodHolder = Optional.absent();
 }

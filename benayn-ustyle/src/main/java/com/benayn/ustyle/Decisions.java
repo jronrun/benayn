@@ -7,6 +7,9 @@ import static com.google.common.base.Predicates.not;
 import static com.google.common.base.Predicates.or;
 import static com.google.common.primitives.Primitives.isWrapperType;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -160,6 +163,56 @@ public final class Decisions {
     public static <T> Predicate<T> nor(@SuppressWarnings("unchecked") Decision<? super T>... components) {
         return not(or(components));
     }
+    
+    /**
+     * Returns true if the given {@link Class} to provide a public constructor, else false
+     */
+    public static Decision<Class<?>> instantiatable() {
+        return INSTANTIATABLE;
+    }
+    
+    /**
+     * Returns true if the given {@link Class} to not provide a public constructor, else false
+     */
+    public static Decision<Class<?>> notInstantiatable() {
+        return NOT_INSTANTIATABLE;
+    }
+    
+    private static final Decision<Class<?>> INSTANTIATABLE = new Decision<Class<?>>() {
+        
+        @Override public boolean apply(Class<?> input) {
+            return !NOT_INSTANTIATABLE.apply(input);
+        }
+    };
+    
+    private static final Decision<Class<?>> NOT_INSTANTIATABLE = new Decision<Class<?>>() {
+
+        @Override public boolean apply(Class<?> input) {
+            try {
+                if (null == input) {
+                    return true;
+                }
+                
+                final Constructor<?> constructor = input.getDeclaredConstructor();
+                if (constructor.isAccessible() || !Modifier.isPrivate(constructor.getModifiers())) {
+                    return false;
+                }
+
+                constructor.setAccessible(true);
+                constructor.newInstance();
+            } catch (NoSuchMethodException e) {
+                return false;
+            } catch (InstantiationException e) {
+                return true;
+            } catch (InvocationTargetException e) {
+                return true;
+            } catch (IllegalAccessException e) {
+                return true;
+            }
+
+            return true;
+        }
+    };
 	
 	/**
      * Returns a stateful decision that returns true if its argument has been passed to the decision before, else false.

@@ -8,6 +8,7 @@ import static com.google.common.primitives.Primitives.allWrapperTypes;
 import static com.google.common.primitives.Primitives.isWrapperType;
 import static com.google.common.primitives.Primitives.wrap;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -21,6 +22,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import com.benayn.ustyle.Reflecter.ConstructorOptions;
 import com.benayn.ustyle.TypeRefer.TypeDescrib;
 import com.benayn.ustyle.behavior.StructBehavior;
 import com.benayn.ustyle.behavior.ValueBehavior;
@@ -210,7 +212,6 @@ public class Objects2 {
                 case 16: return Modifier.isFinal(mod);
                 case 512: return Modifier.isInterface(mod);
                 case 1024: return Modifier.isAbstract(mod);
-                case -1: return clazz.getName().indexOf(Reflecter.INNER_CLASS_SEPARATOR_CHAR) != Strs.INDEX_NONE_EXISTS;
                 default: return false;
             }
         }
@@ -296,6 +297,48 @@ public class Objects2 {
          */
         public TypeDescrib getType(String propName) {
             return TypeRefer.of(getField(propName)).asTypeDesc();
+        }
+        
+        /**
+         * @see Reflecter#getConstructor(Class...)
+         */
+        public Constructor<T> getConstructor(Class<?>... parameterTypes) {
+            return this.reflection().getConstructor(parameterTypes);
+        }
+        
+        /**
+         * @see Reflecter#newInstance(Object...)
+         */
+        public T newInstance(Object... parameters) {
+            return this.reflection().newInstance(parameters);
+        }
+        
+        /**
+         * @see Reflecter#hasDefaultConstructor()
+         */
+        public boolean hasDefaultConstructor() {
+            return this.reflection().hasDefaultConstructor();
+        }
+        
+        /**
+         * @see Reflecter#constructor(Class...)
+         */
+        public ConstructorOptions<T> constructor(Class<?>... parameterTypes) {
+            return this.reflection().constructor(parameterTypes);
+        }
+        
+        /**
+         * @see Reflecter#instantiatable()
+         */
+        public boolean instantiatable() {
+            return this.reflection().instantiatable();
+        }
+        
+        /**
+         * @see Reflecter#notInstantiatable()
+         */
+        public boolean notInstantiatable() {
+            return this.reflection().notInstantiatable();
         }
         
         /**
