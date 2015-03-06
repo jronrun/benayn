@@ -20,8 +20,8 @@ import com.benayn.pre.ref.GenericsUtils;
 import com.benayn.ustyle.Arrays2;
 import com.benayn.ustyle.Decisions;
 import com.benayn.ustyle.Gather;
-import com.benayn.ustyle.JsonR;
-import com.benayn.ustyle.JsonW;
+import com.benayn.ustyle.JSONer;
+import com.benayn.ustyle.JSONer.ReadJSON;
 import com.benayn.ustyle.Mapper;
 import com.benayn.ustyle.Objects2;
 import com.benayn.ustyle.Objects2.FacadeObject;
@@ -105,7 +105,7 @@ public class Me3Test extends Me2Test {
         
         Person p2 = Randoms.get(Person.class);
         assertFalse(Objects2.isEqual(wo1, p2));
-        wrapObj1.populate(JsonW.toJson(p2));
+        wrapObj1.populate(JSONer.toJson(p2));
         assertTrue(Objects2.isEqual(wo1, p2));
         wrapObj1.info();
         
@@ -279,26 +279,26 @@ public class Me3Test extends Me2Test {
         assertNotNull(jt);
         JsonTest jt3 = Reflecter.from(jt).copyTo(JsonTest.class);
         assertTrue(Objects2.isEqual(jt, jt3));
-        json = JsonW.toJson(jt);
-        log.info(JsonW.fmtJson(json));
-        JsonTest jt2 = JsonR.of(json).asObject(JsonTest.class);
+        json = JSONer.toJson(jt);
+        log.info(JSONer.fmtJson(json));
+        JsonTest jt2 = JSONer.read(json).asObject(JsonTest.class);
         assertNotNull(jt2);
         log.info(jt);
         log.info(jt2);
         assertTrue(Objects2.isEqual(jt, jt2));
         
         Domain d = Randoms.get(Domain.class);
-        json = JsonW.toJson(d);
-        log.info(JsonW.fmtJson(json));
-        Domain d2 = JsonR.of(json).asObject(Domain.class);
+        json = JSONer.toJson(d);
+        log.info(JSONer.fmtJson(json));
+        Domain d2 = JSONer.read(json).asObject(Domain.class);
         assertTrue(Objects2.isEqual(d, d2));
         Domain d3 = Reflecter.from(d2).copyTo(Domain.class);
         assertTrue(Objects2.isEqual(d, d3));
         
         Person p = Randoms.get(Person.class);
-        json = JsonW.toJson(p);
-        log.info(JsonW.fmtJson(json));
-        Person p2 = JsonR.of(json).asObject(Person.class);
+        json = JSONer.toJson(p);
+        log.info(JSONer.fmtJson(json));
+        Person p2 = JSONer.read(json).asObject(Person.class);
         assertTrue(Objects2.isEqual(p, p2));
         Person p3 = Reflecter.from(p).copyTo(Person.class);
         assertTrue(Objects2.isEqual(p, p3));
@@ -321,8 +321,20 @@ public class Me3Test extends Me2Test {
     
     @Test
     public void testResolves() {
+        assertTrue(new byte[]{(byte)1}.getClass().isArray());
+        assertTrue(new User[]{new User()}.getClass().isArray());
+        assertTrue(new Object[]{new Object(), 1, 2.1, "cc", 'c'}.getClass().isArray());
+        assertTrue(Byte[].class == Arrays2.wraps(new Object[]{115, 67}, Byte.class).getClass());
+        assertTrue(Byte[].class == Arrays2.wraps(9, Byte[].class).getClass());
+        assertTrue(Byte[].class == Resolves.get(Byte[].class, new Object[]{115, 67}).getClass());
+        assertTrue(short[].class == Arrays2.unwrapArrayType(Short[].class));
+        assertTrue(Long[].class == Arrays2.wrapArrayType(long[].class));
+        
         ResolveTest rt = Randoms.get(ResolveTest.class);
         Reflecter<ResolveTest> ref = Reflecter.from(rt);
+        
+        assertTrue(Resolves.get(ref.field("shortWarr"), rt.shortParr) instanceof Short[]);
+        assertTrue(Resolves.get(ref.field("shortParr"), rt.shortWarr) instanceof short[]);
         
         log.info(TypeRefer.of(String.class).asTypeDesc());
         log.info(TypeRefer.of(ref.field("shortParr")).asTypeDesc().rawClazz().getComponentType());
@@ -334,9 +346,6 @@ public class Me3Test extends Me2Test {
         assertTrue(Resolves.get(ref.field("booleanW"), "false") instanceof Boolean);
         assertTrue(Resolves.get(ref.field("booleanP"), Boolean.TRUE) instanceof Boolean);
         assertTrue(Resolves.get(ref.field("byte1"), 1) instanceof Byte);
-        
-        assertTrue(Resolves.get(ref.field("shortParr"), rt.shortWarr) instanceof short[]);
-        assertTrue(Resolves.get(ref.field("shortWarr"), rt.shortParr) instanceof Short[]);
         
         assertTrue(Resolves.get(ref.field("stringArr"), 1) instanceof String[]);
         
@@ -844,7 +853,7 @@ public class Me3Test extends Me2Test {
 	@Test
     public void testJsonJackson() {
         String json = null;
-        JsonR jr = null;
+        ReadJSON jr = null;
         
         JsonJacksonPO jjt = Randoms.get(JsonJacksonPO.class);
         log.info(jjt);
@@ -852,7 +861,7 @@ public class Me3Test extends Me2Test {
         json = toJson(jjt);
         log.info(json);
         
-        jr = JsonR.of(json);
+        jr = JSONer.read(json);
         
         JsonJacksonPO jjt2 = jr.asObject(JsonJacksonPO.class);
         log.info(jjt2);
@@ -868,11 +877,11 @@ public class Me3Test extends Me2Test {
         String json = Sources.asString(Me2Test.class, "/test.json");
         log.info(json);
         
-        JsonR.of(json).mapper().info();
-        JsonR.of(json).gather().info();
+        JSONer.read(json).mapper().info();
+        JSONer.read(json).gather().info();
         
         String json2 = Sources.asString(Me2Test.class, "/test2.json");
-        log.info(JsonR.of(json2).list());
+        log.info(JSONer.readList(json2));
 		
 		Object[] o = new Object[]{false, true, false};
 		Boolean[] b = Arrays2.convert(o, Boolean.class);

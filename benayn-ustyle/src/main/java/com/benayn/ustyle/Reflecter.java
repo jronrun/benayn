@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.benayn.ustyle.JSONer.ReadJSON;
 import com.benayn.ustyle.inner.Options;
 import com.benayn.ustyle.logger.Log;
 import com.benayn.ustyle.logger.Loggers;
@@ -28,6 +29,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.ObjectArrays;
 import com.google.common.collect.Sets;
 
 public final class Reflecter<T> {
@@ -63,7 +65,10 @@ public final class Reflecter<T> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked") public static <T> Reflecter<T> from(T target) {
-		return Decisions.isClass().apply(target) ? from((Class<T>) target) : new Reflecter<T>(target);
+		return Decisions.isClass().apply(target) 
+		        ? (((Class<T>) target).isArray() 
+		                ? (Reflecter<T>) from(ObjectArrays.newArray(((Class<T>) target).getComponentType(), 0)) 
+		                        : from((Class<T>) target)) : new Reflecter<T>(target);
 	}
 	
 	/**
@@ -190,7 +195,7 @@ public final class Reflecter<T> {
 	/**
      * Populate the JavaBeans properties of this delegate object, based on the JSON string
      * 
-     * @see JsonR#asObject(Object)
+     * @see ReadJSON#asObject(Object)
      */
     public <V> Reflecter<T> populate(String json) {
         return populate(json, new String[]{});
@@ -199,10 +204,10 @@ public final class Reflecter<T> {
 	/**
 	 * Populate the JavaBeans properties of this delegate object, based on the JSON string
      * 
-     * @see JsonR#asObject(Object)
+     * @see ReadJSON#asObject(Object)
 	 */
 	public <V> Reflecter<T> populate(String json, String... excludes) {
-	    return JsonR.addJsonExchangeFunc(this).populate(JsonR.of(json).noneNullMap(), excludes);
+	    return JSONer.addJsonExchangeFunc(this).populate(JSONer.readNoneNullMap(json), excludes);
 	}
 	
 	/**
@@ -216,19 +221,18 @@ public final class Reflecter<T> {
 			return this;
 		}
 		
+		if (this.delegate.get().getClass().isArray()) {
+		    Object els = null;
+		    
+		    if (null != (els = properties.get(JSONer.ReadJSON.itemsF))) {
+		        this.delegate = Optional.fromNullable(Resolves.<T>get(this.delegate.get().getClass(), els));
+		    }
+		    
+		    return this;
+		}
+		
 		if (this.autoExchange) {
-			exchange(Funcs.TO_BOOLEAN, booleanD);
-			exchange(Funcs.TO_BYTE, byteD);
-			exchange(Funcs.TO_DOUBLE, doubleD);
-			exchange(Funcs.TO_FLOAT, floatD);
-			exchange(Funcs.TO_INTEGER, integerD);
-			exchange(Funcs.TO_LONG, longD);
-			exchange(Funcs.TO_SHORT, shortD);
-			exchange(Funcs.TO_DATE, dateD);
-			exchange(Funcs.TO_CHARACTER, characterD);
-			exchange(Funcs.TO_STRING, stringD);
-			exchange(Funcs.TO_BIGDECIMAL, bigDecimalD);
-			exchange(Funcs.TO_BIGINTEGER, bigIntegerD);
+			autoExchange();
 		}
 		
 		fieldLoop(new TransformMap2ObjVal<V>(properties, excludes));
@@ -317,6 +321,32 @@ public final class Reflecter<T> {
 	public Reflecter<T> noneAutoExchange() {
 		this.autoExchange = Boolean.FALSE;
 		return this;
+	}
+	
+	/**
+     * Auto exchange when the Field class type is primitive or wrapped primitive or Date
+     * 
+     * @return
+     */
+	public Reflecter<T> autoExchange() {
+	    if (!this.autoExchangeAdd) {
+	        exchange(Funcs.TO_BOOLEAN, booleanD);
+	        exchange(Funcs.TO_BYTE, byteD);
+	        exchange(Funcs.TO_DOUBLE, doubleD);
+	        exchange(Funcs.TO_FLOAT, floatD);
+	        exchange(Funcs.TO_INTEGER, integerD);
+	        exchange(Funcs.TO_LONG, longD);
+	        exchange(Funcs.TO_SHORT, shortD);
+	        exchange(Funcs.TO_DATE, dateD);
+	        exchange(Funcs.TO_CHARACTER, characterD);
+	        exchange(Funcs.TO_STRING, stringD);
+	        exchange(Funcs.TO_BIGDECIMAL, bigDecimalD);
+	        exchange(Funcs.TO_BIGINTEGER, bigIntegerD);
+	        this.autoExchangeAdd = true;
+	    }
+	    
+	    this.autoExchange = Boolean.TRUE;
+	    return this;
 	}
 
 	/**
@@ -725,10 +755,10 @@ public final class Reflecter<T> {
 			field.set(delegate.get(), propVal);
 		} catch (IllegalArgumentException e) {
 			log.error(String.format("set the value %s %s to the property %s %s error.", 
-					propVal.getClass().getName(), propVal, field.getType().getName(), propName));
+					null != propVal ? propVal.getClass().getName() : Strs.EMPTY, propVal, field.getType().getName(), propName));
 		} catch (IllegalAccessException e) {
 			log.error(String.format("set the value %s %s to the property %s %s error.", 
-					propVal.getClass().getName(), propVal, field.getType().getName(), propName));
+			        null != propVal ? propVal.getClass().getName() : Strs.EMPTY, propVal, field.getType().getName(), propName));
 		}
 	}
 	
@@ -1084,6 +1114,7 @@ public final class Reflecter<T> {
 	private Map<String, Function<?, ?>> exchangeFuncs = Maps.newHashMap();
 	private Map<String, Function<?, ?>> exchangeFieldFuncs = Maps.newHashMap();
 	private boolean autoExchange = Boolean.TRUE;
+	private boolean autoExchangeAdd = Boolean.FALSE;
 	private boolean isChanged = false;
 	private Set<String> excludePackagePath = Sets.newHashSet("com.google.common", "ch.qos.logback", "com.benayn.ustyle");
 	private boolean trace = Boolean.FALSE;

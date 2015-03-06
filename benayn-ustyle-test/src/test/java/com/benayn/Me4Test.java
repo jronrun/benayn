@@ -34,8 +34,7 @@ import com.benayn.ustyle.Expiring;
 import com.benayn.ustyle.Expiring.ExpiringSet;
 import com.benayn.ustyle.Funcs;
 import com.benayn.ustyle.Gather;
-import com.benayn.ustyle.JsonR;
-import com.benayn.ustyle.JsonW;
+import com.benayn.ustyle.JSONer;
 import com.benayn.ustyle.Objects2;
 import com.benayn.ustyle.Objects2.FacadeObject;
 import com.benayn.ustyle.Pair;
@@ -113,14 +112,14 @@ public class Me4Test extends Me3Test {
          } 
          */
         userWrap.info();
-        assertEquals(JsonW.of(user).asJson(), userWrap.getJson());
+        assertEquals(JSONer.toJson(user), userWrap.getJson());
 
         //{"birth":1425988977384,"address":{"detail":"moon",
         //"lonlat":{"lon":0.12,"lat":0.10},"code":30},"age":18,"name":"jack"}
         String json = "{\"birth\":1425988977384,\"address\":{\"detail\":\"moon\",\"lonlat\":"
                 + "{\"lon\":0.12,\"lat\":0.10},\"code\":30},\"age\":18,\"name\":\"jack\"}";
 
-        Map<String, Object> jsonMap = JsonR.of(json).deepTierMap();
+        Map<String, Object> jsonMap = JSONer.readDeepTierMap(json);
         //same as jsonMap.get("lon")
         assertEquals(0.12, jsonMap.get("address.lonlat.lon"));  
 

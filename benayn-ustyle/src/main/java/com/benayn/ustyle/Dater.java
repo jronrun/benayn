@@ -682,6 +682,14 @@ public final class Dater {
 	}
 	
 	/**
+	 * @see Date#getTime()
+	 * @return
+	 */
+	public long getTime() {
+	    return get().getTime();
+	}
+	
+	/**
 	 * Returns the year of the delegate date
 	 * 
 	 * @see Calendar.YEAR

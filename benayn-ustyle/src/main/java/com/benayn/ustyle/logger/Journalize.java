@@ -17,7 +17,7 @@ import com.benayn.ustyle.Decision;
 import com.benayn.ustyle.Decisions;
 import com.benayn.ustyle.Funcs;
 import com.benayn.ustyle.Gather;
-import com.benayn.ustyle.JsonW;
+import com.benayn.ustyle.JSONer;
 import com.benayn.ustyle.Objects2;
 import com.benayn.ustyle.string.Strs;
 import com.google.common.base.Strings;
@@ -182,8 +182,8 @@ public abstract class Journalize<S> extends ForwardingObject implements Log {
         if (null == tgt) { log(l, null, t); return; }
         
 		switch (logStyle) {
-            case JSON_LINE: jsonOmit(l, JsonW.toJson(tgt), tgt, t); return;
-            case JSON_FORMATTED: jsonOmit(l, JsonW.of(tgt).readable().asJson(), tgt, t); return;
+            case JSON_LINE: jsonOmit(l, JSONer.toJson(tgt), tgt, t); return;
+            case JSON_FORMATTED: jsonOmit(l, JSONer.write(tgt).readable().asJson(), tgt, t); return;
             case MORE_INFO: default: break;
         }
 		

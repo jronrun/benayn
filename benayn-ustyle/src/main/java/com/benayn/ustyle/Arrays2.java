@@ -9,6 +9,9 @@ import java.util.List;
 import com.benayn.ustyle.Objects2.Exchanging;
 import com.benayn.ustyle.behavior.StructBehavior;
 import com.google.common.base.Defaults;
+import com.google.common.base.Function;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ObjectArrays;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Floats;
@@ -22,7 +25,41 @@ public final class Arrays2 {
 	 * 
 	 */
 	public static final Object[] EMPTY_ARRAY = new Object[0];
+	private static BiMap<Class<?>, Class<?>> primToWrapArrayClasses = HashBiMap.create();
 	
+	static {
+        primToWrapArrayClasses.put(boolean[].class,     Boolean[].class);
+        primToWrapArrayClasses.put(byte[].class,        Byte[].class);
+        primToWrapArrayClasses.put(char[].class,        Character[].class);
+        primToWrapArrayClasses.put(double[].class,      Double[].class);
+        primToWrapArrayClasses.put(float[].class,       Float[].class);
+        primToWrapArrayClasses.put(int[].class,         Integer[].class);
+        primToWrapArrayClasses.put(long[].class,        Long[].class);
+        primToWrapArrayClasses.put(short[].class,       Short[].class);
+	}
+	
+	/**
+	 * Returns the wrapper array type or {@code type} itself if not matched.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static Class<?> wrapArrayType(Class<?> type) {
+        Class<?> clazz = primToWrapArrayClasses.get(type);
+	    return null != clazz ? clazz : type;
+	}
+	
+	/**
+	 * Returns the primitive array type or {@code type} itself if not matched.
+     *
+	 * @param type
+	 * @return
+	 */
+	public static Class<?> unwrapArrayType(Class<?> type) {
+        Class<?> clazz = (Class<?>) primToWrapArrayClasses.inverse().get(type);
+        return null != clazz ? clazz : type;
+    }
+
 	/**
 	 * Returns an list containing all of the given elements
 	 * 
@@ -327,18 +364,57 @@ public final class Arrays2 {
 	}
 	
 	/**
+     * Converts the given target as an array of primitive to object.
+     * 
+     * @param target
+     * @return
+     */
+    public static <T> T[] wraps(Object target) {
+        return wraps(target, null);
+    }
+	
+	/**
 	 * Converts the given target as an array of primitive to object.
 	 * 
 	 * @param target
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T[] wraps(Object target) {
+	public static <T> T[] wraps(Object target, Class<?> expectClazz) {
 		if (null == target) {
 			return null;
 		}
 		
 		Class<?> clazz = target.getClass();
+		
+		if (null != expectClazz) {
+		    expectClazz = expectClazz.isArray() ? expectClazz.getComponentType() : expectClazz;
+		    Function<Object, T> func = (Function<Object, T>) Funcs.getParseFunction(expectClazz);
+		    
+		    if (null != func) {
+		        expectClazz = Primitives.wrap(expectClazz);
+		        T[] expectArray = null;
+		        
+		        //target is array
+		        if (clazz.isArray()) {
+		            Object[] providArray = wraps(target);
+		            expectArray = (T[]) ObjectArrays.newArray(expectClazz, providArray.length);
+		            
+                    for (int i = 0; i < providArray.length; i++) {
+                        expectArray[i] = func.apply(providArray[i]);
+                    }
+                }
+		        //target is not array
+		        else {
+		            expectArray = (T[]) ObjectArrays.newArray(expectClazz, 1);
+		            expectArray[0] = func.apply(target);
+		        }
+		        
+		        return expectArray;
+		    }
+		    
+		}
+		
 		if (!clazz.isArray()) {
 			T[] a = (T[]) ObjectArrays.newArray(clazz, 1);
 			a[0] = (T) target;

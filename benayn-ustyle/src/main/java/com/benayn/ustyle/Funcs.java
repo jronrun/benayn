@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 
+import com.benayn.ustyle.behavior.StructBehavior;
+import com.benayn.ustyle.behavior.ValueBehaviorAdapter;
 import com.benayn.ustyle.string.Strs;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
@@ -74,10 +76,11 @@ public class Funcs {
 	public static final Function<Object, String> TO_STRING = new Function<Object, String>() {
 		
 		@Override public String apply(Object input) {
-			if (null == input) { return null; }
-			if (input instanceof String) { return (String) input; }
-			if (Objects2.is8Type(input.getClass())) { return String.valueOf(input); }
-			return input.toString();
+//			if (null == input) { return null; }
+//			if (input instanceof String) { return (String) input; }
+//			if (Objects2.is8Type(input.getClass())) { return String.valueOf(input); }
+//			return input.toString();
+		    return Objects2.toString(input);
 		}
 	};
 	
@@ -274,5 +277,86 @@ public class Funcs {
             };
         }
     };
+    
+    /**
+     * Returns the parse {@link Function} with given class type.
+     * Supports: {@link Byte}, {@link Short}, {@link Integer}, {@link Long}, 
+     * {@link Float}, {@link Double}, {@link BigInteger}, {@link BigDecimal}, {@link Date}
+     * 
+     * @param type
+     * @return
+     */
+    public static <O> Function<Object, O> getParseFunction(Class<O> type) {
+        return new StructBehavior<Function<Object, O>>(type) {
+
+            @SuppressWarnings("unchecked")
+            @Override protected Function<Object, O> booleanIf() {
+                return (Function<Object, O>) TO_BOOLEAN; 
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override protected Function<Object, O> byteIf() {
+                return (Function<Object, O>) TO_BYTE;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override protected Function<Object, O> characterIf() {
+                return (Function<Object, O>) TO_CHARACTER;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override protected Function<Object, O> doubleIf() {
+                return (Function<Object, O>) TO_DOUBLE;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override protected Function<Object, O> floatIf() {
+                return (Function<Object, O>) TO_FLOAT;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override protected Function<Object, O> integerIf() {
+                return (Function<Object, O>) TO_INTEGER;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override protected Function<Object, O> longIf() {
+                return (Function<Object, O>) TO_LONG;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override protected Function<Object, O> shortIf() {
+                return (Function<Object, O>) TO_SHORT;
+            }
+
+            @Override protected Function<Object, O> nullIf() {
+                return null;
+            }
+
+            @Override protected Function<Object, O> noneMatched() {
+                return new ValueBehaviorAdapter<Function<Object, O>>(delegate) {
+                    
+                    @SuppressWarnings("unchecked")
+                    @Override protected Function<Object, O> dateIf(Date resolvedP) {
+                        return (Function<Object, O>) TO_DATE;
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    @Override protected Function<Object, O> bigDecimalIf(BigDecimal resolvedP) {
+                        return (Function<Object, O>) TO_BIGDECIMAL;
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    @Override protected Function<Object, O> bigIntegerIf(BigInteger resolvedP) {
+                        return (Function<Object, O>) TO_BIGINTEGER;
+                    }
+
+                    @Override protected Function<Object, O> defaultBehavior() {
+                        return null;
+                    }
+                }.doDetect();
+            }
+        }.doDetect();
+    }
 
 }

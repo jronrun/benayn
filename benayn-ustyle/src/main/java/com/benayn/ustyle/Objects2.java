@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import com.benayn.ustyle.JSONer.WriteJSON;
 import com.benayn.ustyle.Reflecter.ConstructorOptions;
 import com.benayn.ustyle.Reflecter.MethodOptions;
 import com.benayn.ustyle.TypeRefer.TypeDescrib;
@@ -94,6 +95,16 @@ public class Objects2 {
 	public static boolean isPrimitive(Class<?> input) {
 		return allPrimitiveTypes().contains(input);
 	}
+	
+	/**
+     * Checks if the given input class is primitive array
+     * 
+     * @param input
+     * @return
+     */
+    public static boolean isPrimitiveArray(Class<?> input) {
+        return input.isArray() && isPrimitive(input.getComponentType());
+    }
 	
 	/**
 	 * Returns the default {@link Object#toString()} result
@@ -486,17 +497,17 @@ public class Objects2 {
                 StringBuilder builder = new StringBuilder()
                     .append(defaultTostring(this.delegate()))
                     .append(" (").append(Modifier.toString(getClazz().getModifiers())).append(") ")
-                    .append(JsonW.of(this.delegate()).dateFmt(DateStyle.DEFAULT).readable().asJson());
+                    .append(JSONer.write(this.delegate()).readable().dateFmt(DateStyle.DEFAULT).asJson());
                 log.info(builder.toString());
             }
             return this;
         }
         
         /**
-         * @see JsonW#asJson()
+         * @see WriteJSON#asJson()
          */
         public String getJson() {
-            return JsonW.toJson(this.delegate());
+            return JSONer.toJson(this.delegate());
         }
         
         /**
@@ -504,10 +515,10 @@ public class Objects2 {
          * then return is { "code" : 33, "street" : "road sky" }
          * 
          * @see FacadeObject#getJsonProperty(String)
-         * @see JsonW#asJson()
+         * @see WriteJSON#asJson()
          */
         public String getJson(String propName) {
-            return JsonW.toJson(this.getValue(propName));
+            return JSONer.toJson(this.getValue(propName));
         }
         
         /**
@@ -515,12 +526,12 @@ public class Objects2 {
          * then return is { "address" : { "code" : 33, "street" : "road sky" } }
          * 
          * @see FacadeObject#getJson(String)
-         * @see JsonW#asJson()
+         * @see WriteJSON#asJson()
          */
         public String getJsonProperty(String propName) {
             String name = checkNotNull(propName).contains(Reflecter.TIER_SEP) 
                     ? Finder.of(propName).afters(Reflecter.TIER_SEP).getLast() : propName;
-            return JsonW.toJson(ImmutableMap.of(name, this.getValue(propName)));
+            return JSONer.toJson(ImmutableMap.of(name, this.getValue(propName)));
         }
         
         /**
@@ -753,7 +764,7 @@ public class Objects2 {
 				@Override protected Object longIf() { return unwrap((Long) this.delegate); }
 				@Override protected Object shortIf() { return unwrap((Short) this.delegate); }
 				@Override protected Object nullIf() { return null; }
-				@Override protected Object noneMatched() { return null; }
+				@Override protected Object noneMatched() { return this.delegate; }
 			}.doDetect();
 		}
 		

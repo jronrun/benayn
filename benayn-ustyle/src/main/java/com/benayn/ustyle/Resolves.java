@@ -149,7 +149,7 @@ public final class Resolves {
                     return Arrays2.unwraps((Object[]) input);
                 }
                 
-                return Arrays2.wraps(input);
+                return Arrays2.wraps(input, type.rawClazz());
             }
             
             return Arrays2.wraps(get(type.rawClazz().getComponentType(), input));
@@ -186,7 +186,7 @@ public final class Resolves {
             try {
                 //input JSON object string
                 if (input instanceof String && isJSONObject((String) input)) {
-                    return JsonR.of((String) input).asObject(type.rawClazz());
+                    return JSONer.read((String) input).asObject(type.rawClazz());
                 } else if (Map.class.isAssignableFrom(input.getClass())) {
                     return Reflecter.from(this.clazz).populate((Map<String, ?>) input).get();
                 }
@@ -256,7 +256,7 @@ public final class Resolves {
                     }
                     //value JSON array string
                     else if (value instanceof String && isJSONArray((String) value)) {
-                        List<?> list = JsonR.of((String) value).list();
+                        List<?> list = JSONer.readList((String) value);
                         for (Object obj : list) {
                             set.add(resolveValue(type.next(), obj));
                         }
@@ -295,7 +295,7 @@ public final class Resolves {
                     }
                     //value JSON array string
                     else if (value instanceof String && isJSONArray((String) value)) {
-                        List<?> l2 = JsonR.of((String) value).list();
+                        List<?> l2 = JSONer.readList((String) value);
                         for (Object obj : l2) {
                             list.add(resolveValue(type.next(), obj));
                         }
