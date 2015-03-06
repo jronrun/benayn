@@ -34,34 +34,42 @@ public class Me5Test extends Me4Test {
     
     @Test
     public void testTmp() {
-//        final JSONer jsoner2 = JSONer.build();
-//        
-//        FacadeObject<A> fo = FacadeObject.wrap(A.class);
-//        fo.populate4Test();
-//        
-//        jsoner2.register(new JSONer.GenericConverter<String, Float>() {
-//
-//            @Override
-//            protected Float forward(String input) {
-//                String oo = (String) JSONer.readMap(input).get("xx");
-//                return Float.valueOf(oo.replace("xx", ""));
-//            }
-//
-//            @Override
-//            protected String backward(Float input) {
-//                return String.format("{\"%s\" : \"xx%s\"}", "xx", input);
-//            }
-//        }, float.class);
-//        
-//        String jstr = jsoner2.update(fo.get()).asJson();
-//        log.info("after converter: " + jstr);
-//        A jt2 = jsoner2.update(jstr).asObject(A.class);
-//        assertDeepEqual(fo.get(), jt2);
+        
     }
     
     public static class A {
-//        Float floata;
+        Float floata;
         float floatp;
+        Set<Float> sFloats;
+        List<Float> floatList;
+        Map<Float, Float> floatMap;
+        Float[] aFloatWarr;
+        float[] aFloatParr;
+    }
+    
+    @Test
+    public void testTypeConverter() {
+    	final JSONer jsoner2 = JSONer.build();
+        
+        FacadeObject<A> fo = FacadeObject.wrap(A.class);
+        fo.populate4Test();
+        
+        jsoner2.register(new JSONer.GenericConverter<String, Float>() {
+
+            @Override protected Float forward(String input) {
+                String oo = (String) JSONer.readMap(input).get("xx");
+                return Float.valueOf(oo.replace("xx", ""));
+            }
+
+            @Override protected String backward(Float input) {
+                return String.format("{\"%s\" : \"xx%s\"}", "xx", input);
+            }
+        }, float.class, Float.class);
+        
+        String jstr = jsoner2.update(fo.get()).asJson();
+        log.info("after converter: " + jstr);
+        A jt2 = jsoner2.update(jstr).asObject(A.class);
+        assertDeepEqual(fo.get(), jt2);
     }
     
     @Test
@@ -72,19 +80,28 @@ public class Me5Test extends Me4Test {
         
         final JSONer jsoner2 = JSONer.build();
         
-//        jsoner2.register(new JSONer.GenericConverter<String, Float>() {
-//
-//            @Override
-//            protected Float forward(String input) {
-//                String oo = (String) JSONer.readMap(input).get("xx");
-//                return Float.valueOf(input.replace("xx", ""));
-//            }
-//
-//            @Override
-//            protected String backward(Float input) {
-//                return String.format("{\"%s\" : \"xx%s\"}", "xx", input);
-//            }
-//        }, Float.class);
+        jsoner2.register(new JSONer.GenericConverter<String, Float>() {
+
+        	@Override protected Float forward(String input) {
+                String oo = (String) JSONer.readMap(input).get("xx");
+                return Float.valueOf(oo.replace("xx", ""));
+            }
+
+            @Override protected String backward(Float input) {
+                return String.format("{\"%s\" : \"xx%s\"}", "xx", input);
+            }
+        }, Float.class, float.class);
+        
+        jsoner2.register(new JSONer.GenericConverter<String, Short[]>() {
+
+			@Override protected Short[] forward(String input) {
+				return JSONer.read(input).asObject(Short[].class);
+			}
+
+			@Override protected String backward(Short[] input) {
+				return JSONer.toJson(input);
+			}
+		}, Short[].class);
         
         jsoner2.register(new JSONer.GenericConverter<String, short[]>() {
 

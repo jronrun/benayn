@@ -316,8 +316,15 @@ public final class JSONer {
             this.jsoner = Optional.fromNullable(jsoner);
         }
         
+        //Decides convert or not convert the value with the register Converter
+        //e.g: avoid convert nested type
+        private boolean convertSwitch = true;
+        private void switchConvert() {
+        	this.convertSwitch = !convertSwitch;
+        }
+        
         private <R, W> R convert(Class<?> type, W typeValue) {
-            if (!jsoner.isPresent()) {
+            if (!convertSwitch || !jsoner.isPresent()) {
                 return null;
             }
             
@@ -327,7 +334,7 @@ public final class JSONer {
         
         @SuppressWarnings("unchecked")
         private <R, W> R convert(String property, W propertyValue) {
-            if (!jsoner.isPresent()) {
+            if (!convertSwitch || !jsoner.isPresent()) {
                 return null;
             }
             
@@ -342,14 +349,16 @@ public final class JSONer {
          */
         private class JsonWriteStructBehavior extends StructBehavior<StringBuilder> {
             private StringBuilder strB;
+            private Class<?> fieldClass = null;
 
-            public JsonWriteStructBehavior(Object delegate) {
+            public JsonWriteStructBehavior(Object delegate, Class<?> fieldClass) {
                 super(delegate);
                 strB = new StringBuilder();
+                this.fieldClass = fieldClass;
             }
             
             private <T, R> StringBuilder doConvert(Class<?> type, T defaultValue) {
-                R result = convert(type, this.delegate);
+                R result = convert(null != fieldClass ? fieldClass : type, this.delegate);
                 return null != result ? strB.append(result) : (null != defaultValue ? strB.append(defaultValue) : null);
             }
 
@@ -399,13 +408,16 @@ public final class JSONer {
          */
         private class JsonWriteValueBehaivor extends ValueBehavior<StringBuilder> {
             private StringBuilder strB = null;
-            public JsonWriteValueBehaivor(Object delegate) {
+            private Class<?> fieldClass = null;
+            
+            public JsonWriteValueBehaivor(Object delegate, Class<?> fieldClass) {
                 super(delegate);
                 strB = new StringBuilder();
+                this.fieldClass = fieldClass;
             }
 
             private <T, R> StringBuilder doConvert(Class<?> type, T defaultValue) {
-                R result = convert(type, this.delegate);
+                R result = convert(null != fieldClass ? fieldClass : type, this.delegate);
                 return null != result ? strB.append(result) : (null != defaultValue ? strB.append(defaultValue) : null);
             }
             
@@ -422,7 +434,7 @@ public final class JSONer {
             }
 
             @Override protected StringBuilder eightWrapIf() {
-                return new JsonWriteStructBehavior(this.delegate).doDetect();
+                return new JsonWriteStructBehavior(this.delegate, fieldClass).doDetect();
             }
 
             @Override protected StringBuilder dateIf(Date resolvedP) {
@@ -471,7 +483,9 @@ public final class JSONer {
                 int no = 0;
                 strB.append(arrayL);
                 for (T t : resolvedP) {
+                	switchConvert();
                     strB.append(asStrBuild(t));
+                    switchConvert();
                     if (++no < resolvedP.length) {
                         strB.append(comma);
                     }
@@ -505,7 +519,9 @@ public final class JSONer {
                 strB.append(objL);
                 for (K k : resolvedP.keySet()) {
                     V v = resolvedP.get(k);
+                    switchConvert();
                     strB.append(asStrBuild(k, true)).append(colon).append(asStrBuild(v));
+                    switchConvert();
                     if (++no < resolvedP.size()) {
                         strB.append(comma);
                     }
@@ -522,7 +538,9 @@ public final class JSONer {
                 int no = 0;
                 strB.append(arrayL);
                 for (T t : resolvedP) {
+                	switchConvert();
                     strB.append(asStrBuild(t));
+                    switchConvert();
                     if (++no < resolvedP.size()) {
                         strB.append(comma);
                     }
@@ -539,7 +557,9 @@ public final class JSONer {
                 int no = 0;
                 strB.append(arrayL);
                 for (T t : resolvedP) {
+                	switchConvert();
                     strB.append(asStrBuild(t));
+                    switchConvert();
                     if (++no < resolvedP.size()) {
                         strB.append(comma);
                     }
@@ -559,7 +579,8 @@ public final class JSONer {
                 }
                 
                 int no = 0;
-                Map<String, Object> props = Reflecter.from(this.delegate).asMap();
+                Reflecter<Object> ref = Reflecter.from(this.delegate);
+                Map<String, Object> props = ref.asMap();
                 strB.append(objL);
                 if (readabilityO.isPresent() && readabilityO.get().showClassName) {
                     props.put("class", this.clazz.getName());
@@ -570,7 +591,8 @@ public final class JSONer {
                     Object v = props.get(k);
                     
                     strB.append(asStrBuild(k, true)).append(colon)
-                        .append(null != (convertR = convert(k, v)) ? convertR : asStrBuild(v));
+                        .append(null != (convertR = convert(k, v)) 
+                        ? convertR : asStrBuild(v, ref.field(k).getType()));
                     
                     if (++no < props.size()) {
                         strB.append(comma);
@@ -596,7 +618,11 @@ public final class JSONer {
         }
         
         private StringBuilder asStrBuild(Object obj) {
-            return new JsonWriteValueBehaivor(obj).doDetect();
+        	return asStrBuild(obj, null);
+        }
+        
+        private StringBuilder asStrBuild(Object obj, Class<?> fieldClass) {
+            return new JsonWriteValueBehaivor(obj, fieldClass).doDetect();
         }
         
         private String doFmt(String fmtTgt) {

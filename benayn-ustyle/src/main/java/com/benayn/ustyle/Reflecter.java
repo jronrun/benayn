@@ -721,7 +721,7 @@ public final class Reflecter<T> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private <V> V getPropVal(Field field, String propName) {
+	protected <V> V getPropVal(Field field, String propName) {
 		try {
 			field.setAccessible(true);
 			return (V) field.get(delegate.get());
