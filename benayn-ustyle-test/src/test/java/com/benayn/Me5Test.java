@@ -37,7 +37,7 @@ public class Me5Test extends Me4Test {
         
     }
     
-    public static class A {
+    public static class Item {
         Float floata;
         float floatp;
         Set<Float> sFloats;
@@ -49,12 +49,12 @@ public class Me5Test extends Me4Test {
     
     @Test
     public void testTypeConverter() {
-    	final JSONer jsoner2 = JSONer.build();
+    	final JSONer jsoner = JSONer.build();
         
-        FacadeObject<A> fo = FacadeObject.wrap(A.class);
+        FacadeObject<Item> fo = FacadeObject.wrap(Item.class);
         fo.populate4Test();
         
-        jsoner2.register(new JSONer.GenericConverter<String, Float>() {
+        jsoner.register(new JSONer.GenericConverter<String, Float>() {
 
             @Override protected Float forward(String input) {
                 String oo = (String) JSONer.readMap(input).get("xx");
@@ -66,10 +66,10 @@ public class Me5Test extends Me4Test {
             }
         }, float.class, Float.class);
         
-        String jstr = jsoner2.update(fo.get()).asJson();
-        log.info("after converter: " + jstr);
-        A jt2 = jsoner2.update(jstr).asObject(A.class);
-        assertDeepEqual(fo.get(), jt2);
+        String json = jsoner.update(fo.get()).asJson();
+        Item item = jsoner.update(json).asObject(Item.class);
+        
+        assertDeepEqual(fo.get(), item);
     }
     
     @Test

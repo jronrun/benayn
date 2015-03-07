@@ -38,6 +38,34 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Primitives;
 
+/**
+ * JSONer custom Converter usage:
+ * 
+ * <pre>
+ * JSONer jsoner = JSONer.build();
+ *       
+ * FacadeObject<Item> fo = FacadeObject.wrap(Item.class);
+ * fo.populate4Test();
+ *       
+ * jsoner.register(new JSONer.GenericConverter<String, short[]>() {
+ *
+ *     @Override 
+ *     protected short[] forward(String input) {
+ *         Short[] s = JSONer.read(input).asObject(Short[].class);
+ *         return Arrays2.unwrap(s);
+ *     }
+ *
+ *     @Override 
+ *     protected String backward(short[] input) {
+ *         return JSONer.toJson(input);
+ * }}, short[].class);
+ *      
+ * String json = jsoner.update(fo.get()).asJson();
+ * Item item = jsoner.update(json).asObject(Item.class);
+ *      
+ * assertDeepEqual(fo.get(), item);
+ * </pre>
+ */
 public final class JSONer {
 
     /**
