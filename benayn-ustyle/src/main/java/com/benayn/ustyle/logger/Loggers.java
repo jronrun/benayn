@@ -80,6 +80,13 @@ public final class Loggers {
 	}
 	
 	/**
+	 * @see #journal(Object)
+	 */
+	public static Loggers log(Object target) {
+	    return journal(target);
+	}
+	
+	/**
 	 * Returns a {@link Loggers} instance
 	 * 
 	 * @return
