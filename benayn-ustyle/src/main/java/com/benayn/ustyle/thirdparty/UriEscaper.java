@@ -194,7 +194,7 @@ public class UriEscaper extends Escaper {
                     return URLEncoder.encode(Character.toString(c), "UTF-8");
                 }
             } catch (UnsupportedEncodingException e) {
-                throw new AssertionError("UTF-8 always exists", e);
+                throw new AssertionError("UTF-8 always exists, " + e.getMessage());
             }
         }
         

@@ -6,7 +6,7 @@ package com.benayn.ustyle.string;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public final class Indexer extends AbstrStrMatcher<Indexer> {
 	

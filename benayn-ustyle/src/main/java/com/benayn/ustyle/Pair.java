@@ -3,10 +3,8 @@
  */
 package com.benayn.ustyle;
 
-
-
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public class Pair<L, R> {
 

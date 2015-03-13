@@ -10,7 +10,6 @@ import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -48,7 +47,6 @@ import com.benayn.ustyle.string.Finder;
 import com.benayn.ustyle.string.Indexer;
 import com.benayn.ustyle.string.Replacer;
 import com.benayn.ustyle.thirdparty.EnumLookup;
-import com.benayn.ustyle.thirdparty.Language;
 import com.benayn.ustyle.thirdparty.NetProtocol;
 import com.benayn.ustyle.thirdparty.Retryer;
 import com.benayn.ustyle.thirdparty.Retryer.BlockStrategy;
@@ -890,11 +888,11 @@ public class Me4Test extends Me3Test {
         };
     }
 
-	static <T> void check(Iterable<T> seq, @SuppressWarnings("unchecked") T... expecteds) {
+	static <T> void check(Iterable<T> seq, T... expecteds) {
         check(seq.iterator(), expecteds);
     }
     
-    static <T> void check(Iterator<T> seq, @SuppressWarnings("unchecked") T... expecteds) {
+    static <T> void check(Iterator<T> seq, T... expecteds) {
         List<T> actuals = newArrayList(seq);
         assertEquals(expecteds.length, actuals.size());
         Iterator<T> actual = actuals.iterator();
@@ -904,7 +902,7 @@ public class Me4Test extends Me3Test {
         assertFalse(actual.hasNext());
     }
     
-	static <T> void check(Map<T,T> map, @SuppressWarnings("unchecked") T... expecteds) {
+	static <T> void check(Map<T,T> map, T... expecteds) {
         assertEquals(expecteds.length / 2, map.size());
         for (int i = 0; i < expecteds.length; i += 2) {
             assertEquals(expecteds[i+1], map.get(expecteds[i]));
@@ -1446,61 +1444,6 @@ public class Me4Test extends Me3Test {
     }
     
     static URI u(final String u) throws URISyntaxException { return new URI(u); }
-    
-    @SuppressWarnings("unchecked")
-	@Test
-    public void testLanguage() {
-    	Gather.<Pair<Locale, Language>>from(Pair.of(Locale.ENGLISH, Language.ENGLISH),
-    			Pair.of(Locale.FRENCH, Language.FRENCH),
-    			Pair.of(Locale.GERMAN, Language.GERMAN),
-    			Pair.of(Locale.ITALIAN, Language.ITALIAN),
-    			Pair.of(Locale.JAPANESE, Language.JAPANESE),
-    			Pair.of(Locale.KOREAN, Language.KOREAN),
-    			Pair.of(Locale.SIMPLIFIED_CHINESE, Language.CHINESE_SIMP),
-    			Pair.of(Locale.TRADITIONAL_CHINESE, Language.CHINESE_TRAD),
-    			Pair.of(Locale.FRANCE, Language.FRENCH),
-    			Pair.of(Locale.GERMANY, Language.GERMAN),
-    			Pair.of(Locale.ITALY, Language.ITALIAN),
-    			Pair.of(Locale.JAPAN, Language.JAPANESE),
-    			Pair.of(Locale.KOREA, Language.KOREAN),
-    			Pair.of(Locale.CHINA, Language.CHINESE_SIMP),
-    			Pair.of(Locale.PRC, Language.CHINESE_SIMP),
-    			Pair.of(Locale.TAIWAN, Language.CHINESE_TRAD),
-    			Pair.of(Locale.UK, Language.ENGLISH),
-    			Pair.of(Locale.US, Language.ENGLISH),
-    			Pair.of(Locale.CANADA, Language.ENGLISH),
-    			Pair.of(Locale.CANADA_FRENCH, Language.FRENCH),
-    			Pair.of(Locale.ROOT, Language.UNKNOWN))
-    			
-    		.loop(new Decisional<Pair<Locale,Language>>() {
-
-				@Override protected void decision(Pair<Locale, Language> input) {
-					Locale locale = input.getL();
-					Language language = input.getR();
-					
-					assertEquals(Language.find(locale), language);
-			        assertEquals(Language.find(locale.toLanguageTag()), language);
-				}
-			});
-    	
-    	assertEquals(Language.find(new Locale("en", "US")), Language.ENGLISH);
-        assertEquals(Language.find(new Locale("EN", "us")), Language.ENGLISH);
-        assertEquals(Language.find(new Locale("es")), Language.SPANISH);
-        
-        assertEquals(Language.find("en-US"), Language.ENGLISH);
-        assertEquals(Language.find("es-mx"), Language.SPANISH);
-        assertEquals(Language.find("es"), Language.SPANISH);
-        
-        assertEquals(Language.find("zh-Hant"), Language.CHINESE_TRAD);
-        assertEquals(Language.find("zh-hAnS"), Language.CHINESE_SIMP);
-        assertEquals(Language.find("zh-Hans-CN"), Language.CHINESE_SIMP);
-        assertEquals(Language.find("zh-Hant-CN"), Language.CHINESE_TRAD);
-        assertEquals(Language.find("en-cyrl"), Language.ENGLISH);
-        
-        assertNull(Language.find(new Locale("xx")));
-        assertNull(Language.find("xx"));
-        assertNull(Language.find(Locale.CHINESE));
-    }
     
     @Test
     public void testAsyncRunner() {

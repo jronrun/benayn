@@ -32,6 +32,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.ObjectArrays;
 import com.google.common.collect.Sets;
 
+/**
+ * https://github.com/jronrun/benayn
+ */
 public final class Reflecter<T> {
 	
 	/**

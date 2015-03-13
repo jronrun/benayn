@@ -18,7 +18,7 @@ import com.benayn.ustyle.string.Strs;
 import com.google.common.base.Optional;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public final class Dater {
 	

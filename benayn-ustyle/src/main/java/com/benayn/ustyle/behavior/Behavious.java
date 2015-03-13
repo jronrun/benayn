@@ -1,5 +1,8 @@
 package com.benayn.ustyle.behavior;
 
+/**
+ * https://github.com/jronrun/benayn
+ */
 public abstract class Behavious<O> {
 	
 	protected Object delegate;

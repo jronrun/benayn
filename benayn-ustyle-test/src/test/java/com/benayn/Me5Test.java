@@ -66,7 +66,7 @@ public class Me5Test extends Me4Test {
         assertDeepEqual((byte) 88, root.get("test4.priarr[1]"));
         assertTrue(((byte[]) root.get("test4.priarr")).length == 2);
         
-        assertTrue((byte) 15 == (byte) root.remove("test4.priarr[0]"));
+        assertTrue((byte) 15 == (Byte) root.remove("test4.priarr[0]"));
         assertTrue(((byte[]) root.get("test4.priarr")).length == 1);
         assertTrue(root.containsKey("test4.priarr[0]"));
         assertDeepEqual((byte) 88, root.get("test4.priarr[0]"));
@@ -102,7 +102,7 @@ public class Me5Test extends Me4Test {
         assertDeepEqual((byte) 21, root.get("test2.set[1]"));
         assertTrue(((Set<?>) root.get("test2.set")).size() == 2);
         
-        assertTrue((byte) 1 == (byte) root.remove("test2.set[0]")); 
+        assertTrue((byte) 1 == (Byte) root.remove("test2.set[0]")); 
         assertTrue(((Set<?>) root.get("test2.set")).size() == 1);
         assertTrue(root.containsKey("test2.set[0]"));
         assertDeepEqual((byte) 21, root.get("test2.set[0]"));

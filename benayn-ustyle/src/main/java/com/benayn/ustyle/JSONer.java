@@ -65,6 +65,8 @@ import com.google.common.primitives.Primitives;
  *      
  * assertDeepEqual(fo.get(), item);
  * </pre>
+ * 
+ * https://github.com/jronrun/benayn
  */
 public final class JSONer {
 

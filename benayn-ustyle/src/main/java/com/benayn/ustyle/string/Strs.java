@@ -14,7 +14,7 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public final class Strs extends CharMatcher {
 	

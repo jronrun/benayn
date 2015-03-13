@@ -23,6 +23,9 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Ordering;
 
+/**
+ * https://github.com/jronrun/benayn
+ */
 public final class Gather<T> {
 
 	/**
@@ -37,7 +40,7 @@ public final class Gather<T> {
 	 * @return
 	 */
 	public static <T> Gather<T> empty() {
-		return from(Collections.<T>emptyIterator());
+	    return from(Objects2.<T>emptyIterator());
 	}
 	
 	/**
@@ -46,7 +49,7 @@ public final class Gather<T> {
 	 * @param targets
 	 * @return
 	 */
-	public static <T> Gather<T> from(@SuppressWarnings("unchecked") T... elements) {
+	public static <T> Gather<T> from(T... elements) {
 		return null == elements 
 				? Gather.<T>empty() : from(Arrays.asList(elements));
 	}

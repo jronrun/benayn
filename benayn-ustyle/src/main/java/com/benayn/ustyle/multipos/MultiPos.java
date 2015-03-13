@@ -3,10 +3,7 @@ package com.benayn.ustyle.multipos;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * 
- * @param <E>
- * @param <L>
- * @param <R>
+ * https://github.com/jronrun/benayn
  */
 public abstract class MultiPos<E, L, R> {
 		

@@ -9,7 +9,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.benayn.ustyle.multipos.MultiPos;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public final class Replacer extends FindingReplacing<Replacer> {
 	

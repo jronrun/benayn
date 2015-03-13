@@ -23,6 +23,9 @@ import com.google.common.collect.MapConstraints;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Ints;
 
+/**
+ * https://github.com/jronrun/benayn
+ */
 public final class Mapper<K, V> {
 	
 	/**
@@ -533,7 +536,9 @@ public final class Mapper<K, V> {
 		    
 		    Matcher m = COLL_KEY_PATTERN.matcher((String) k);
 		    if (m.matches()) {
-		        return Triple.of(m.group("key"), 0, Ints.tryParse(m.group("idx")));
+		        //jdk7
+		        //return Triple.of(m.group("key"), 0, Ints.tryParse(m.group("idx")));
+		        return Triple.of(m.group(1), 0, Ints.tryParse(m.group(2)));
 		    }
 		    
 		    return null;
@@ -553,7 +558,9 @@ public final class Mapper<K, V> {
 	}
 	
 	private static final String TIER_SEP = ".";
-	private static final Pattern COLL_KEY_PATTERN = Pattern.compile("(?<key>.*)\\[(?<idx>.*)\\]");
+	//jdk7
+	//private static final Pattern COLL_KEY_PATTERN = Pattern.compile("(?<key>.*)\\[(?<idx>.*)\\]");
+	private static final Pattern COLL_KEY_PATTERN = Pattern.compile("(.*)\\[(.*)\\]");
 	private static final Pattern COLL_KEY_CHECK_PATTERN = Pattern.compile("\\[[0-9]+\\]");
 	
 	/**

@@ -25,7 +25,7 @@ import com.google.common.collect.ForwardingObject;
 import com.google.common.collect.Iterables;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public abstract class Journalize<S> extends ForwardingObject implements Log {
     

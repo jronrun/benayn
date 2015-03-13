@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * https://github.com/jronrun/benayn
+ */
 public abstract class ValueBehaviorAdapter<O> extends ValueBehavior<O> {
 
 	public ValueBehaviorAdapter(Object delegate) {

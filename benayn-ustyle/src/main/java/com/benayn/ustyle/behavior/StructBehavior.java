@@ -2,7 +2,9 @@ package com.benayn.ustyle.behavior;
 
 import com.google.common.primitives.Primitives;
 
-
+/**
+ * https://github.com/jronrun/benayn
+ */
 public abstract class StructBehavior<O> extends Behavious<O> {
 
 	protected Class<?> clazz;

@@ -34,7 +34,7 @@ import com.google.common.collect.Sets;
 
 
 /**
- * 
+ * https://github.com/jronrun/benayn
  */
 public final class Expiring<T> {
 	
@@ -50,7 +50,7 @@ public final class Expiring<T> {
 	 * @return
 	 */
 	public static <T> Expiring<T> empty() {
-		return of(Collections.<T>emptyIterator());
+		return of(Objects2.<T>emptyIterator());
 	}
 	
 	/**
@@ -59,7 +59,7 @@ public final class Expiring<T> {
 	 * @param targets
 	 * @return
 	 */
-	public static <T> Expiring<T> of(@SuppressWarnings("unchecked") T... elements) {
+	public static <T> Expiring<T> of(T... elements) {
 		return of(Arrays.asList(checkNotNull(elements)));
 	}
 	

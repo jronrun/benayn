@@ -23,6 +23,9 @@ import com.google.common.collect.ObjectArrays;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Primitives;
 
+/**
+ * https://github.com/jronrun/benayn
+ */
 public final class Randoms {
 	
 	/**

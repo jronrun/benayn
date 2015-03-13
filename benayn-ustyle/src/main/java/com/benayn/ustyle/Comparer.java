@@ -8,7 +8,7 @@ import com.benayn.ustyle.logger.Loggers;
 import com.google.common.collect.ComparisonChain;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public final class Comparer<T> {
 	
@@ -36,7 +36,7 @@ public final class Comparer<T> {
 	 * @param expects
 	 * @return
 	 */
-	public static <C> boolean expect(C target, @SuppressWarnings("unchecked") C... expects) {
+	public static <C> boolean expect(C target, C... expects) {
 		if (null == expects) { return null == target; }
 		for (C expect : expects) { if (expect == target) { return true; } }
 		return false;

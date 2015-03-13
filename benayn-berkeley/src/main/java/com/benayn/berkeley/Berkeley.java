@@ -99,10 +99,7 @@ import com.sleepycat.persist.model.SecondaryKey;
 import com.sleepycat.persist.raw.RawStore;
 
 /**
- * @ClassName: Berkeley
- * @Description: 
- * @author: paulo.ye
- * 
+ * https://github.com/jronrun/benayn
  */
 public abstract class Berkeley<M> extends ForwardingObject {
     
@@ -2950,7 +2947,7 @@ public abstract class Berkeley<M> extends ForwardingObject {
         /**
          * Returns the items with given key array, one key returns one item
          */
-        public List<E> gets(@SuppressWarnings("unchecked") PK... keys) {
+        public List<E> gets(PK... keys) {
             return gets(Arrays.asList(checkNotNull(keys)));
         }
         
@@ -2975,7 +2972,7 @@ public abstract class Berkeley<M> extends ForwardingObject {
         /**
          * Returns the items with given field and key array
          */
-        public <SK> List<E> gets(String keyName, @SuppressWarnings("unchecked") SK... keys) {
+        public <SK> List<E> gets(String keyName, SK... keys) {
             return gets(keyName, Arrays.asList(checkNotNull(keys)));
         }
         

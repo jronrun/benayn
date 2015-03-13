@@ -8,7 +8,9 @@ import java.util.logging.Logger;
 import com.benayn.ustyle.Suppliers2;
 import com.benayn.ustyle.string.Strs;
 
-
+/**
+ * https://github.com/jronrun/benayn
+ */
 public final class Loggers {
 	
 	/**

@@ -20,7 +20,7 @@ import com.google.common.primitives.Floats;
 import com.google.common.primitives.Longs;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public class Funcs {
 	

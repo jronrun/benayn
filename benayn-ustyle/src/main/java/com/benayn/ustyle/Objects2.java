@@ -17,9 +17,11 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -43,6 +45,9 @@ import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.ForwardingObject;
 import com.google.common.collect.ImmutableMap;
 
+/**
+ * https://github.com/jronrun/benayn
+ */
 public class Objects2 {
 	
 	/**
@@ -1232,5 +1237,20 @@ public class Objects2 {
 	protected static final Exchanging<Short> Shorts = new Exchanging<Short>() { };
 	protected static final Exchanging<Object> PRIMITIVE_EXCHANGING = new Exchanging<Object>() { };
 
-	
+	/**
+	 * Returns an iterator that has no elements
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked") public static <T> Iterator<T> emptyIterator() {
+        return (Iterator<T>) EmptyIterator.EMPTY_ITERATOR;
+    }
+
+    private static class EmptyIterator<E> implements Iterator<E> {
+        static final EmptyIterator<Object> EMPTY_ITERATOR = new EmptyIterator<Object>();
+
+        public boolean hasNext() { return false; }
+        public E next() { throw new NoSuchElementException(); }
+        public void remove() { throw new IllegalStateException(); }
+    }
 }

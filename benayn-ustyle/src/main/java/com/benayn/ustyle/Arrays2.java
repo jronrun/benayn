@@ -19,6 +19,9 @@ import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.Primitives;
 
+/**
+ * https://github.com/jronrun/benayn
+ */
 public final class Arrays2 {
 	
 	/**
@@ -77,7 +80,7 @@ public final class Arrays2 {
 	 * @param target
 	 * @return
 	 */
-	public static <T> T[] asArray(@SuppressWarnings("unchecked") T... target) {
+	public static <T> T[] asArray(T... target) {
 		return target;
 	}
 	
@@ -519,7 +522,7 @@ public final class Arrays2 {
 		return r;
 	}
 	
-	private static <T> Object doUnwrap(Exchanging<T> exch, @SuppressWarnings("unchecked") T... target) {
+	private static <T> Object doUnwrap(Exchanging<T> exch, T... target) {
 		if (null == target) {
 			return null;
 		}

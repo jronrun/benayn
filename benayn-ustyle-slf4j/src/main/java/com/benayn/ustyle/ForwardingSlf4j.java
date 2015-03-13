@@ -11,7 +11,7 @@ import com.benayn.ustyle.logger.Journalize;
 import com.benayn.ustyle.string.Strs;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public class ForwardingSlf4j extends Journalize<ForwardingSlf4j> implements Logger {
 

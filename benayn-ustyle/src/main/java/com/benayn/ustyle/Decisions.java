@@ -22,6 +22,9 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
+/**
+ * https://github.com/jronrun/benayn
+ */
 public final class Decisions {
 	
 	private Decisions() {}
@@ -160,7 +163,7 @@ public final class Decisions {
         return not(or(first, second));
     }
 
-    public static <T> Predicate<T> nor(@SuppressWarnings("unchecked") Decision<? super T>... components) {
+    public static <T> Predicate<T> nor(Decision<? super T>... components) {
         return not(or(components));
     }
     

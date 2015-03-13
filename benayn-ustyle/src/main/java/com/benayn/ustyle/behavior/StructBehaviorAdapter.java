@@ -1,5 +1,8 @@
 package com.benayn.ustyle.behavior;
 
+/**
+ * https://github.com/jronrun/benayn
+ */
 public abstract class StructBehaviorAdapter<O> extends StructBehavior<O> {
 
 	public StructBehaviorAdapter(Object delegate) {

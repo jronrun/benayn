@@ -23,6 +23,9 @@ import com.google.common.io.Closer;
 import com.google.common.io.LineProcessor;
 import com.google.common.io.Resources;
 
+/**
+ * https://github.com/jronrun/benayn
+ */
 public final class Sources {
 	
 	protected static final Log log = Loggers.from(Sources.class);

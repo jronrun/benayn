@@ -14,7 +14,7 @@ import com.google.common.base.Supplier;
 import com.google.common.collect.Lists;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public final class Suppliers2 {
 	

@@ -8,10 +8,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.benayn.ustyle.string.Strs;
 
 /**
- * 
- * @param <E>
- * @param <L>
- * @param <R>
+ * https://github.com/jronrun/benayn
  */
 public abstract class AsymmMultiPos<E, L, R> extends InclusMultiPos<E, L, R> {
 	

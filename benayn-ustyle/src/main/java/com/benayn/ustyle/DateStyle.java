@@ -17,7 +17,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public abstract class DateStyle {
 	

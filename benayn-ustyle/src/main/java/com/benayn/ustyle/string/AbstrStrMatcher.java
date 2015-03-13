@@ -20,7 +20,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public abstract class AbstrStrMatcher<M> {
 

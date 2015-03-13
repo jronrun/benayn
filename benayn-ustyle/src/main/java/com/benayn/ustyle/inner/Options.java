@@ -1,5 +1,8 @@
 package com.benayn.ustyle.inner;
 
+/**
+ * https://github.com/jronrun/benayn
+ */
 public abstract class Options<H, C> {
 	
 	/**

@@ -10,7 +10,7 @@ import com.benayn.ustyle.logger.Journalize;
 import com.benayn.ustyle.string.Strs;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public class ForwardingApacheLogging extends Journalize<ForwardingApacheLogging> implements Log {
 	

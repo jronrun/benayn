@@ -13,7 +13,7 @@ import com.google.common.hash.Hashing;
 import com.google.common.math.LongMath;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public final class Scale62 {
 	

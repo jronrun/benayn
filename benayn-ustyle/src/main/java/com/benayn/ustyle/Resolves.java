@@ -24,6 +24,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+/**
+ * https://github.com/jronrun/benayn
+ */
 public final class Resolves {
     
     /**

@@ -4,7 +4,7 @@
 package com.benayn.ustyle;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public abstract class Decisional<T> implements Decision<T> {
 

@@ -515,7 +515,7 @@ public class Uris {
         try {
             return newUri(url, strict);
         } catch (URISyntaxException e) {
-            throw new AssertionError("Error creating URI", e);
+            throw new AssertionError("Error creating URI: " + e.getMessage());
         }
     }
 

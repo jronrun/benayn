@@ -10,6 +10,9 @@ import java.util.Set;
 import com.benayn.ustyle.Arrays2;
 import com.google.common.primitives.Primitives;
 
+/**
+ * https://github.com/jronrun/benayn
+ */
 public abstract class ValueBehavior<O> extends Behavious<O> {
 	
 	protected Class<?> clazz;

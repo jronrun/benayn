@@ -5,11 +5,7 @@ package com.benayn.ustyle;
 
 
 /**
- * @ClassName: Triple
- * @Description: 
- * @author: paulo.ye
- * @date Feb 8, 2015 2:23:38 AM
- *
+ * https://github.com/jronrun/benayn
  */
 public class Triple<L, C, R> {
 	

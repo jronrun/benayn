@@ -8,7 +8,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import com.google.common.math.LongMath;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public final class SimplePurview {
 	

@@ -21,7 +21,7 @@ import com.google.common.collect.Ordering;
 import com.google.common.primitives.Doubles;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public final class Betner extends AbstrStrMatcher<Betner> {
 	

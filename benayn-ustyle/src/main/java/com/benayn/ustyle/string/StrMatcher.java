@@ -7,7 +7,7 @@ import static com.benayn.ustyle.string.Strs.EMPTY;
 import static com.benayn.ustyle.string.Strs.WHITE_SPACE;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public class StrMatcher extends AbstrStrMatcher<StrMatcher> {
 	

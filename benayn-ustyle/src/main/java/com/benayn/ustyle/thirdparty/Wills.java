@@ -31,7 +31,7 @@ public class Wills {
     /**
      * Creates chain from provided Wills
      */
-    public static <A> Will<List<A>> when(@SuppressWarnings("unchecked") Will<? extends A>... wills) {
+    public static <A> Will<List<A>> when(Will<? extends A>... wills) {
         return when(asList(wills));
     }
 

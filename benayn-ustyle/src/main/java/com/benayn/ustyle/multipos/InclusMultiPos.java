@@ -6,10 +6,7 @@ package com.benayn.ustyle.multipos;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * 
- * @param <E>
- * @param <L>
- * @param <R>
+ * https://github.com/jronrun/benayn
  */
 public abstract class InclusMultiPos<E, L, R> extends NegateMultiPos<E, L, R>  {
 	

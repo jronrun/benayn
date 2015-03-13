@@ -6,7 +6,7 @@ package com.benayn.ustyle.logger;
 
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public interface Log {
 	

@@ -19,6 +19,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 
+/**
+ * https://github.com/jronrun/benayn
+ */
 public final class TypeRefer {
 	
 	/**

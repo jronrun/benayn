@@ -26,7 +26,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
- *
+ * https://github.com/jronrun/benayn
  */
 public abstract class FindingReplacing<S> extends AbstrStrMatcher<S> {
 	
