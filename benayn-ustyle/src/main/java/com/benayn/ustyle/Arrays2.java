@@ -372,6 +372,69 @@ public final class Arrays2 {
     public static <T> T[] wraps(Object target) {
         return wraps(target, null);
     }
+    
+    /**
+     * Adds the element at the specified position from the specified array
+     * 
+     * @param array
+     * @param index
+     * @param element
+     * @param clss
+     * @return
+     */
+    static Object add(Object array, int index, Object element, Class<?> clss) {
+        if (array == null) {
+            if (index != 0) {
+                throw new IndexOutOfBoundsException("Index: " + index + ", Length: 0");
+            }
+            Object joinedArray = Array.newInstance(clss, 1);
+            Array.set(joinedArray, 0, element);
+            return joinedArray;
+        }
+        int length = Array.getLength(array);
+        if (index > length || index < 0) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + length);
+        }
+        Object result = Array.newInstance(clss, length + 1);
+        System.arraycopy(array, 0, result, 0, index);
+        Array.set(result, index, element);
+        if (index < length) {
+            System.arraycopy(array, index, result, index + 1, length - index);
+        }
+        return result;
+    }
+    
+    /**
+     * Returns the length of the specified array object, as an int.
+     * 
+     * @param array
+     * @return
+     */
+    public static int length(Object array) {
+        return null == array ? 0 : Array.getLength(array);
+    }
+    
+    /**
+     * Removes the element at the specified position from the specified array
+     * 
+     * @param array
+     * @param index
+     * @return
+     */
+    public static Object remove(Object array, int index) {
+        int length = length(array);
+        if (index < 0 || index >= length) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + length);
+        }
+
+        Object result = Array.newInstance(array.getClass().getComponentType(), length - 1);
+        System.arraycopy(array, 0, result, 0, index);
+        if (index < length - 1) {
+            System.arraycopy(array, index + 1, result, index, length - index - 1);
+        }
+
+        return result;
+    }
 	
 	/**
 	 * Converts the given target as an array of primitive to object.

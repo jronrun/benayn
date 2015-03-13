@@ -40,7 +40,19 @@ public class Triple<L, C, R> {
 		return this.r;
 	}
 	
-	@Override public int hashCode() {
+	public void setL(L l) {
+        this.l = l;
+    }
+
+    public void setC(C c) {
+        this.c = c;
+    }
+
+    public void setR(R r) {
+        this.r = r;
+    }
+
+    @Override public int hashCode() {
 		return Objects2.hashCodes(this);
 	}
 

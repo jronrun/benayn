@@ -32,7 +32,15 @@ public class Pair<L, R> {
 		return this.r;
 	}
 	
-	@Override public int hashCode() {
+	public void setL(L l) {
+        this.l = l;
+    }
+
+    public void setR(R r) {
+        this.r = r;
+    }
+
+    @Override public int hashCode() {
 		return Objects2.hashCodes(this);
 	}
 

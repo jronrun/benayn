@@ -14,10 +14,13 @@ import com.benayn.ustyle.Arrays2;
 import com.benayn.ustyle.DateStyle;
 import com.benayn.ustyle.Dater;
 import com.benayn.ustyle.JSONer;
+import com.benayn.ustyle.Mapper;
 import com.benayn.ustyle.Objects2.FacadeObject;
 import com.benayn.ustyle.Randoms;
 import com.benayn.ustyle.Reflecter;
 import com.benayn.ustyle.Reflecter.MethodOptions;
+import com.benayn.ustyle.Resolves;
+import com.benayn.ustyle.Sources;
 import com.benayn.ustyle.Suppliers2;
 import com.benayn.ustyle.string.Indexer;
 import com.google.common.base.Converter;
@@ -27,6 +30,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.primitives.Longs;
 
 
@@ -34,6 +38,96 @@ public class Me5Test extends Me4Test {
     
     @Test
     public void testTmp() {
+        
+    }
+    
+    @Test
+    public void testTierKeyColl() {
+        String target = Sources.asString("test.json");
+        Map<String, Object> map = JSONer.readDeepTierMap(target);
+        assertTrue(88056 == Resolves.<Integer>get(int.class, map.get("result.items[1].shopId")));
+        assertTrue(116.668537d == (Double) map.get("result.items[0].loc[0]"));
+        assertTrue(39.127551d == (Double) map.get("result.items[1].loc[1]"));
+        assertTrue(3l == (Long) map.get("result.days[2]"));
+        
+        Map<String, Object> root = Mapper.deeplyTiers(Maps.<String, Object>newHashMap());
+        Mapper<String, Object> rootM = Mapper.from(root);
+        
+        //primitive array
+        root.put("test4.priarr", new byte[1]);
+        assertNotNull(root.get("test4.priarr"));
+        root.put("test4.priarr[0]", (byte) 15);
+        assertTrue(root.containsKey("test4.priarr[0]"));
+        assertDeepEqual((byte) 15, root.get("test4.priarr[0]"));
+        assertTrue(((byte[]) root.get("test4.priarr")).length == 1);
+        
+        root.put("test4.priarr[1]", (byte) 88);
+        assertTrue(root.containsKey("test4.priarr[1]"));
+        assertDeepEqual((byte) 88, root.get("test4.priarr[1]"));
+        assertTrue(((byte[]) root.get("test4.priarr")).length == 2);
+        
+        assertTrue((byte) 15 == (byte) root.remove("test4.priarr[0]"));
+        assertTrue(((byte[]) root.get("test4.priarr")).length == 1);
+        assertTrue(root.containsKey("test4.priarr[0]"));
+        assertDeepEqual((byte) 88, root.get("test4.priarr[0]"));
+        
+        //Object array
+        root.put("test3.objarr", new Float[1]);
+        assertNotNull(root.get("test3.objarr"));
+        root.put("test3.objarr[0]", 3.0f);
+        assertTrue(root.containsKey("test3.objarr[0]"));
+        assertDeepEqual(3.0f, root.get("test3.objarr[0]"));
+        assertTrue(((Object[]) root.get("test3.objarr")).length == 1);
+        
+        root.put("test3.objarr[1]", 22.3f);
+        assertTrue(root.containsKey("test3.objarr[1]"));
+        assertDeepEqual(22.3f, root.get("test3.objarr[1]"));
+        assertTrue(((Object[]) root.get("test3.objarr")).length == 2);
+        
+        assertTrue(3.0f == (Float) root.remove("test3.objarr[0]"));
+        assertTrue(((Object[]) root.get("test3.objarr")).length == 1);
+        assertTrue(root.containsKey("test3.objarr[0]"));
+        assertDeepEqual(22.3f, root.get("test3.objarr[0]"));
+        
+        //set
+        root.put("test2.set", Sets.newHashSet());
+        assertNotNull(root.get("test2.set"));
+        root.put("test2.set[0]", (byte) 1);
+        assertTrue(root.containsKey("test2.set[0]"));
+        assertDeepEqual((byte) 1, root.get("test2.set[0]"));
+        assertTrue(((Set<?>) root.get("test2.set")).size() == 1);
+        
+        root.put("test2.set[1]", (byte) 21);
+        assertTrue(root.containsKey("test2.set[1]"));
+        assertDeepEqual((byte) 21, root.get("test2.set[1]"));
+        assertTrue(((Set<?>) root.get("test2.set")).size() == 2);
+        
+        assertTrue((byte) 1 == (byte) root.remove("test2.set[0]")); 
+        assertTrue(((Set<?>) root.get("test2.set")).size() == 1);
+        assertTrue(root.containsKey("test2.set[0]"));
+        assertDeepEqual((byte) 21, root.get("test2.set[0]"));
+        
+        //list
+        root.put("test.list[0]", 11);
+        rootM.info();
+        
+        assertTrue(root.get("test") instanceof Map);
+        assertTrue(root.get("test.list") instanceof List);
+        assertTrue(((List<?>) root.get("test.list")).size() == 1);
+        assertDeepEqual(11, root.get("test.list[0]"));
+        assertTrue(root.containsKey("test.list[0]"));
+        
+        root.put("test.list[1]", 22);
+        assertTrue(((List<?>) root.get("test.list")).size() == 2);
+        assertDeepEqual(22, root.get("test.list[1]"));
+        assertTrue(root.containsKey("test.list[1]"));
+        
+        assertDeepEqual(11, root.remove("test.list[0]"));
+        rootM.info();
+        assertTrue(((List<?>) root.get("test.list")).size() == 1);
+        assertDeepEqual(22, root.get("test.list[0]"));
+        assertTrue(root.containsKey("test.list[0]"));
+        assertFalse(root.containsKey("test.list[1]"));
         
     }
     
