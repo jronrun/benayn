@@ -50,7 +50,7 @@ public class Me5Test extends Me4Test {
         assertTrue(39.127551d == (Double) map.get("result.items[1].loc[1]"));
         assertTrue(3l == (Long) map.get("result.days[2]"));
         
-        Map<String, Object> root = Mapper.deeplyTiers(Maps.<String, Object>newHashMap());
+        Map<String, Object> root = Mapper.asDeepTierMap(Maps.<String, Object>newHashMap());
         Mapper<String, Object> rootM = Mapper.from(root);
         
         //primitive array

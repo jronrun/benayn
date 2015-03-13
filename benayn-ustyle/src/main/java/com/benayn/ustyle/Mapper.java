@@ -55,7 +55,7 @@ public final class Mapper<K, V> {
 	 * @param map
 	 * @return
 	 */
-	public static <K, V> Map<K, V> deeply(Map<K, V> map) {
+	public static <K, V> Map<K, V> asDeepMap(Map<K, V> map) {
 		return from(map).deepLook().map();
 	}
 	
@@ -66,7 +66,7 @@ public final class Mapper<K, V> {
 	 * @param map
 	 * @return
 	 */
-	public static <K, V> Map<K, V> tiers(Map<K, V> map) {
+	public static <K, V> Map<K, V> asTierMap(Map<K, V> map) {
 		return from(map).tierKey().map();
 	}
 	
@@ -77,7 +77,7 @@ public final class Mapper<K, V> {
      * @param map
      * @return
      */
-    public static <K, V> Map<K, V> deeplyTiers(Map<K, V> map) {
+    public static <K, V> Map<K, V> asDeepTierMap(Map<K, V> map) {
         return from(map).deepLook().tierKey().map();
     }
 	
@@ -548,7 +548,7 @@ public final class Mapper<K, V> {
 		}
 		@SuppressWarnings("unchecked")
 		private <R> R asTierR(Object v) {
-			return (R) ((null != v && v instanceof Map) ? tiers((Map<K, V>) v) : v);
+			return (R) ((null != v && v instanceof Map) ? asTierMap((Map<K, V>) v) : v);
 		}
 	}
 	

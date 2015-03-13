@@ -473,7 +473,7 @@ public class MeTest extends Assert {
 		Map<Object, Object> tier = Maps.newHashMap();
 		tier.put(111, getTestMap());
 		
-		Map<Object, Object> tm = Mapper.tiers(tier);
+		Map<Object, Object> tm = Mapper.asTierMap(tier);
 		
 		//put
 		tm.put("a.b.c.d.e.tier", 888);
