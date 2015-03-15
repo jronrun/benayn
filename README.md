@@ -50,6 +50,7 @@ Guava, Berkeley DB JE, Usage, Utilities
         FacadeObject<User> userWrap = FacadeObject.wrap(user);
 
         //log as formatted JSON string, see below
+        userWrap.info();
         /*
          {
             "birth" : "2015-05-18 02:07:07",
@@ -66,15 +67,14 @@ Guava, Berkeley DB JE, Usage, Utilities
             "name" : "7f9c2734c2965c49fac9788c8dda8a2ace31"
          } 
          */
-        userWrap.info();
-        assertEquals(JsonW.of(user).asJson(), userWrap.getJson());
+        assertEquals(JSONer.toJson(user), userWrap.getJson());
 
         //{"birth":1425988977384,"address":{"detail":"moon",
         //"lonlat":{"lon":0.12,"lat":0.10},"code":30},"age":18,"name":"jack"}
         String json = "{\"birth\":1425988977384,\"address\":{\"detail\":\"moon\",\"lonlat\":"
                 + "{\"lon\":0.12,\"lat\":0.10},\"code\":30},\"age\":18,\"name\":\"jack\"}";
 
-        Map<String, Object> jsonMap = JsonR.of(json).deepTierMap();
+        Map<String, Object> jsonMap = JSONer.readDeepTierMap(json);
         //same as jsonMap.get("lon")
         assertEquals(0.12, jsonMap.get("address.lonlat.lon"));  
 
@@ -102,10 +102,10 @@ Guava, Berkeley DB JE, Usage, Utilities
         //nextPairType() same as next(1)
         assertEquals(List.class, testMapType.nextPairType().rawClazz());    
         assertEquals(Float.class, testMapType.next(1).next().rawClazz());
-        
+
         assertEquals(double.class, userWrap.getType("address.lonlat.lon").rawClazz());
         assertEquals(Integer.class, userWrap.getType("address.code").rawClazz());
-        
+
         assertEquals(user.getAddress().getLonlat().getLat(), 
                      userWrap.getValue("address.lonlat.lat"));
         assertEquals(user.getAddress().getDetail(), userWrap.getValue("address.detail"));
