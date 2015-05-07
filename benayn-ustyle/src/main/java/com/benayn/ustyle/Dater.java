@@ -162,6 +162,26 @@ public final class Dater {
 	public static Dater shortDay(Date date) {
 		return of(date, "yyyyMMdd");
 	}
+	
+	/**
+	 * Returns a new Dater instance with the given date and date style
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public static Dater of(Date date, DateStyle dateStyle) {
+		return of(date).with(dateStyle);
+	}
+	
+	/**
+	 * Returns a new Dater instance with the given date and date style
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public static Dater of(String date, DateStyle dateStyle) {
+		return from(date).with(dateStyle);
+	}
 
 	/**
 	 * Returns a new Dater instance with the given date and pattern
@@ -391,6 +411,15 @@ public final class Dater {
 	}
 	
 	/**
+	 * Returns the new {@link Date} that applies the {@link DateStyle}
+	 * 
+	 * @return
+	 */
+	public Date asDate() {
+		return from(asText()).get();
+	}
+	
+	/**
 	 * Returns a AddsOrSets instance that add the specified field to a delegate date
 	 * 
 	 * @return
@@ -498,6 +527,144 @@ public final class Dater {
 	public Date[] asRange(String beginClock, String endClock) {
 		String thisDay = null;
 		return new Date[]{of((thisDay = (asDayText() + " ")) + beginClock).get(), of(thisDay + endClock).get()};
+	}
+	
+	/**
+	 *  Returns the new {@link Date} that with the beginning clock
+	 *  
+	 * @return
+	 */
+	public Date asDayBegin() {
+		return asDayRange()[0];
+	}
+	
+	/**
+	 *  Returns the new {@link Date} that with the ending clock
+	 *  
+	 * @return
+	 */
+	public Date asDayEnd() {
+		return asDayRange()[1];
+	}
+	
+	/**
+	 * Tests if delegate date is before or same as the given date string with same date style
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public boolean beforeOrMeanwhile(String target) {
+		return pk(target, 'c');
+	}
+	
+	/**
+	 * Tests if delegate date is before or same as the given date with same date style
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public boolean beforeOrMeanwhile(Date target) {
+		return pk(target, 'c');
+	}
+	
+	/**
+	 * Tests if delegate date is before the given date string with same date style
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public boolean before(String target) {
+		return pk(target, 'b');
+	}
+	
+	/**
+	 * Tests if delegate date is before the given date with same date style
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public boolean before(Date target) {
+		return pk(target, 'b');
+	}
+	
+	/**
+	 * Tests if delegate date is same as the given date string with same date style
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public boolean meanwhile(String target) {
+		return pk(target, 's');
+	}
+	
+	/**
+	 * Tests if delegate date is same as the given date with same date style
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public boolean meanwhile(Date target) {
+		return pk(target, 's');
+	}
+	
+	/**
+	 * Tests if delegate date is after or same as the given date string with same date style
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public boolean afterOrMeanwhile(String target) {
+		return pk(target, 'z');
+	}
+	
+	/**
+	 * Tests if delegate date is after or same as the given date with same date style
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public boolean afterOrMeanwhile(Date target) {
+		return pk(target, 'z');
+	}
+	
+	/**
+	 * Tests if delegate date is after the given date string with same date style
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public boolean after(String target) {
+		return pk(target, 'a');
+	}
+	
+	/**
+	 * Tests if delegate date is after the given date with same date style
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public boolean after(Date target) {
+		return pk(target, 'a');
+	}
+	
+	/**
+	 * Returns the new {@link Date} that applied the using {@link DateStyle}
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public Date applyStyle(Date target) {
+		return of(target, using()).asDate();
+	}
+	
+	/**
+	 * Returns the new {@link Date} that applied the using {@link DateStyle}
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public Date applyStyle(String target) {
+		return from(target).with(using()).asDate();
 	}
 	
 	/**
@@ -815,6 +982,35 @@ public final class Dater {
 				c1.get(Calendar.DAY_OF_YEAR) == calendar.get(Calendar.DAY_OF_YEAR));
 	}
 	
+	private boolean pk(Object target, char expression) {
+		Date thiz = asDate();
+		Date that = (target instanceof Date) ? applyStyle((Date) target) : applyStyle((String) target);
+		switch (expression) {
+		case 'b': return thiz.before(that);
+		case 'c': return thiz.before(that) || thiz.equals(that);
+		case 'a': return thiz.after(that);
+		case 'z': return thiz.after(that) || thiz.equals(that);
+		case 's': return thiz.equals(that);
+		}
+		
+		return false;
+	}
+	
+	private void intlCalendar(boolean lenient) {
+		if (this.delegate.isPresent() && isSameInstant(this.target)) {
+			return;
+		}
+		
+		this.delegate = Optional.of(toCalendar(this.target, lenient));
+	}
+
+	private Calendar toCalendar(Date date, boolean lenient) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setLenient(lenient);
+		calendar.setTime(date);
+		return calendar;
+	}
+	
 	/**
 	 * Analyst date time string
 	 * 
@@ -853,21 +1049,6 @@ public final class Dater {
 		}
 		
 		return hasDiagonal ? r.set(style).lookups("-").with("/") : style;
-	}
-	
-	private void intlCalendar(boolean lenient) {
-		if (this.delegate.isPresent() && isSameInstant(this.target)) {
-			return;
-		}
-		
-		this.delegate = Optional.of(toCalendar(this.target, lenient));
-	}
-
-	private Calendar toCalendar(Date date, boolean lenient) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setLenient(lenient);
-		calendar.setTime(date);
-		return calendar;
 	}
 	
 }

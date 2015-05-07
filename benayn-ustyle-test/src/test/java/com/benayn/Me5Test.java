@@ -42,6 +42,50 @@ public class Me5Test extends Me4Test {
     }
     
     @Test
+    public void testDaterPK() {
+		DateStyle[] styles = new DateStyle[] {DateStyle.TIGHT, DateStyle.DAY, DateStyle.DEFAULT};
+		
+        for (DateStyle style : styles) {
+        	Dater dater = Dater.of(new Date(), style);
+            
+            Date now = new Date();
+            String nowStr = Dater.now().asText();
+            assertFalse(dater.before(now));
+            assertFalse(dater.after(now));
+            assertTrue(dater.meanwhile(now));
+            assertTrue(dater.beforeOrMeanwhile(now));
+            
+            assertFalse(dater.before(nowStr));
+            assertFalse(dater.after(nowStr));
+            assertTrue(dater.meanwhile(nowStr));
+            assertTrue(dater.beforeOrMeanwhile(nowStr));
+            
+            dater.add().day(-1);
+            assertTrue(dater.before(now));
+            assertFalse(dater.after(now));
+            assertFalse(dater.meanwhile(now));
+            assertTrue(dater.beforeOrMeanwhile(now));
+            
+            assertTrue(dater.before(nowStr));
+            assertFalse(dater.after(nowStr));
+            assertFalse(dater.meanwhile(nowStr));
+            assertTrue(dater.beforeOrMeanwhile(nowStr));
+            
+            dater.add().day(2);
+            assertFalse(dater.before(now));
+            assertTrue(dater.after(now));
+            assertFalse(dater.meanwhile(now));
+            assertFalse(dater.beforeOrMeanwhile(now));
+            
+            assertFalse(dater.before(nowStr));
+            assertTrue(dater.after(nowStr));
+            assertFalse(dater.meanwhile(nowStr));
+            assertFalse(dater.beforeOrMeanwhile(nowStr));
+            
+		}
+    }
+    
+    @Test
     public void testTierKeyColl() {
         String target = Sources.asString("test.json");
         Map<String, Object> map = JSONer.readDeepTierMap(target);
