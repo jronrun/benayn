@@ -50,8 +50,11 @@ public class Me5Test extends Me4Test {
 		Dater now = Dater.now();
 		assertEquals("just now", now.interval(add.get()));
 		
-		assertEquals("1 month ago", now.interval(add.month(-10).get()));
+		assertEquals("10 months ago", now.interval(add.month(-10).get()));
 		add.month(10);
+		
+		assertEquals("1 months ago", now.interval(add.days(-31).get()));
+		add.days(31);
 		
 		assertEquals("7 days ago", now.interval(add.days(-10).get()));
 		add.days(10);

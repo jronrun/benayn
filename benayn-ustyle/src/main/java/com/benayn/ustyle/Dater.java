@@ -46,29 +46,28 @@ public final class Dater {
      * Number of milliseconds in a standard day.
      */
     public static final long DAY = 24 * HOUR;
+    
+    /**
+     * Formats a Date into a date/time string with the {@link DateStyle#DEFAULT}
+     * 
+     * @param target
+     * @return
+     */
+    public static String asText(Date target) {
+    	return of(target).asText();
+    }
+    
+    /**
+     * Returns a new {@link Date} instance with given date string
+     * 
+     * @see #from(String)
+     * @param target
+     * @return
+     */
+    public static Date asDate(String target) {
+    	return from(target).get();
+    }
 	
-	protected Date target = null;
-	protected DateStyle style = null;
-	protected Optional<Calendar> delegate = Optional.absent();
-	
-	/**
-	 * 
-	 */
-	private Dater(Date date) {
-		this.target = date;
-		this.style = DateStyle.DEFAULT;
-	}
-	
-	private Dater(String date, String pattern) {
-		this.style = Strs.isBlank(pattern) ? DateStyle.DEFAULT : DateStyle.from(pattern);
-		this.target = style.from().apply(date);
-	}
-
-	private Dater(Calendar calendar) {
-		this(calendar.getTime());
-		this.delegate = Optional.of(calendar);
-	}
-
 	/**
 	 * Returns a new Dater instance with the present time
 	 * 
@@ -574,8 +573,11 @@ public final class Dater {
 		IntervalDesc desc = theIntervalDesc.get();
 		
 		if (interval >= 0.0D) {
+			if (interval / (12 * 30 * dayUnit) > 1.0D) {
+				return asText(target);
+			}
 			if (interval / (30 * dayUnit) > 1.0D) {
-				return String.format("1%s", desc.getMonthAgo());
+				return String.format("%s%s", (int) (interval / (30 * dayUnit)), desc.getMonthAgo());
 			}
 			if (interval / (7 * dayUnit) > 1.0D) {
 				return String.format("7%s", desc.getDayAgo());
@@ -589,9 +591,11 @@ public final class Dater {
 			if ((interval < hourUnit) && (interval >= minUnit)) {
 				return String.format("%s%s", (int) (interval / minUnit), desc.getMinuteAgo());
 			}
+			
+			return desc.getJustNow();
 		}
 		
-		return desc.getJustNow();
+		return asText(target);
 	}
 	
 	/**
@@ -1102,7 +1106,29 @@ public final class Dater {
 	 * 
 	 */
 	private Optional<IntervalDesc> theIntervalDesc = 
-			Optional.of(new IntervalDesc(" month ago", " days ago", " hours ago", " minutes ago", "just now")); 
+			Optional.of(new IntervalDesc(" months ago", " days ago", " hours ago", " minutes ago", "just now")); 
+	
+	protected Date target = null;
+	protected DateStyle style = null;
+	protected Optional<Calendar> delegate = Optional.absent();
+	
+	/**
+	 * 
+	 */
+	private Dater(Date date) {
+		this.target = date;
+		this.style = DateStyle.DEFAULT;
+	}
+	
+	private Dater(String date, String pattern) {
+		this.style = Strs.isBlank(pattern) ? DateStyle.DEFAULT : DateStyle.from(pattern);
+		this.target = style.from().apply(date);
+	}
+
+	private Dater(Calendar calendar) {
+		this(calendar.getTime());
+		this.delegate = Optional.of(calendar);
+	}
 	
 	public static class IntervalDesc {
 		private String monthAgo;
