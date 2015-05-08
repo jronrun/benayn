@@ -548,6 +548,53 @@ public final class Dater {
 	}
 	
 	/**
+	 * Sets the interval describe
+	 * 
+	 * @param intervalDesc
+	 * @return
+	 */
+	public Dater setIntervalDesc(IntervalDesc intervalDesc) {
+		theIntervalDesc = Optional.of(checkNotNull(intervalDesc));
+		return this;
+	}
+	
+	/**
+	 * Returns the interval describe since given date to the delegate date
+	 * 
+	 * @param target
+	 * @param desc
+	 * @return
+	 */
+	public String interval(Date target) {
+		double unit = 1000.0D;
+		double dayUnit = DAY / unit;
+		double hourUnit = HOUR / unit;
+		double minUnit = MINUTE / unit;
+		double interval = sinceMillis(target) / unit;
+		IntervalDesc desc = theIntervalDesc.get();
+		
+		if (interval >= 0.0D) {
+			if (interval / (30 * dayUnit) > 1.0D) {
+				return String.format("1%s", desc.getMonthAgo());
+			}
+			if (interval / (7 * dayUnit) > 1.0D) {
+				return String.format("7%s", desc.getDayAgo());
+			}
+			if ((interval / (7 * dayUnit) <= 1.0D) && (interval / dayUnit >= 1.0D)) {
+				return String.format("%s%s", (int) (interval / dayUnit), desc.getDayAgo());
+			}
+			if ((interval / dayUnit < 1.0D) && (interval / hourUnit >= 1.0D)) {
+				return String.format("%s%s", (int) (interval / hourUnit), desc.getHourAgo());
+			}
+			if ((interval < hourUnit) && (interval >= minUnit)) {
+				return String.format("%s%s", (int) (interval / minUnit), desc.getMinuteAgo());
+			}
+		}
+		
+		return desc.getJustNow();
+	}
+	
+	/**
 	 * Tests if delegate date is before or same as the given date string with same date style
 	 * 
 	 * @param target
@@ -1049,6 +1096,60 @@ public final class Dater {
 		}
 		
 		return hasDiagonal ? r.set(style).lookups("-").with("/") : style;
+	}
+	
+	/**
+	 * 
+	 */
+	private Optional<IntervalDesc> theIntervalDesc = 
+			Optional.of(new IntervalDesc(" month ago", " days ago", " hours ago", " minutes ago", "just now")); 
+	
+	public static class IntervalDesc {
+		private String monthAgo;
+		private String dayAgo;
+		private String hourAgo;
+		private String minuteAgo;
+		private String justNow;
+		
+		public IntervalDesc(String monthAgo, String dayAgo, String hourAgo, String minuteAgo, String justNow) {
+			this.monthAgo = monthAgo;
+			this.dayAgo = dayAgo;
+			this.hourAgo = hourAgo;
+			this.minuteAgo = minuteAgo;
+			this.justNow = justNow;
+		}
+		
+		public String getMonthAgo() {
+			return monthAgo;
+		}
+		public void setMonthAgo(String monthAgo) {
+			this.monthAgo = monthAgo;
+		}
+		public String getDayAgo() {
+			return dayAgo;
+		}
+		public void setDayAgo(String dayAgo) {
+			this.dayAgo = dayAgo;
+		}
+		public String getHourAgo() {
+			return hourAgo;
+		}
+		public void setHourAgo(String hourAgo) {
+			this.hourAgo = hourAgo;
+		}
+		public String getMinuteAgo() {
+			return minuteAgo;
+		}
+		public void setMinuteAgo(String minuteAgo) {
+			this.minuteAgo = minuteAgo;
+		}
+		public String getJustNow() {
+			return justNow;
+		}
+		public void setJustNow(String justNow) {
+			this.justNow = justNow;
+		}
+		
 	}
 	
 }

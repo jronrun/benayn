@@ -13,6 +13,7 @@ import org.junit.Test;
 import com.benayn.ustyle.Arrays2;
 import com.benayn.ustyle.DateStyle;
 import com.benayn.ustyle.Dater;
+import com.benayn.ustyle.Dater.DateUnit;
 import com.benayn.ustyle.JSONer;
 import com.benayn.ustyle.Mapper;
 import com.benayn.ustyle.Objects2.FacadeObject;
@@ -40,6 +41,36 @@ public class Me5Test extends Me4Test {
     public void testTmp() {
         
     }
+    
+    @Test
+	public void testDaterInterval() {
+		Dater dater = Dater.now();
+		DateUnit add = dater.add();
+		
+		Dater now = Dater.now();
+		assertEquals("just now", now.interval(add.get()));
+		
+		assertEquals("1 month ago", now.interval(add.month(-10).get()));
+		add.month(10);
+		
+		assertEquals("7 days ago", now.interval(add.days(-10).get()));
+		add.days(10);
+		
+		assertEquals("6 days ago", now.interval(add.days(-6).get()));
+		add.days(6);
+		
+		assertEquals("1 days ago", now.interval(add.hours(-24).get()));
+		add.hour(24);
+		
+		assertEquals("22 hours ago", now.interval(add.hour(-22).get()));
+		add.hour(22);
+		
+		assertEquals("1 hours ago", now.interval(add.minute(-60).get()));
+		add.minute(60);
+		
+		assertEquals("55 minutes ago", now.interval(add.minute(-55).get()));
+		add.minute(55);
+	}
     
     @Test
     public void testDaterPK() {
