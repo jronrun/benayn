@@ -5,8 +5,10 @@ package com.benayn.ustyle;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -340,6 +342,15 @@ public final class Dater {
 	}
 	
 	/**
+	 * Formats a Date into a date/time string with the "yyyyMMdd" style
+	 * 
+	 * @return
+	 */
+	public String asDayTightText() {
+		return asText(DateStyle.DAY_TIGHT);
+	}
+	
+	/**
 	 * Formats a Date into a date/time string with the "yyyy-MM-dd" style
 	 * 
 	 * @return
@@ -375,6 +386,9 @@ public final class Dater {
 	 */
 	public String asText(DateStyle dateStyle) {
 		DateStyle prevStyle = this.style;
+		
+		checkNotNull(dateStyle).setLocale(prevStyle.locale());
+		dateStyle.setFormatSymbols(prevStyle.formatSymbols());
 		String dayText = with(dateStyle).asText();
 		with(prevStyle);
 		return dayText;
@@ -416,6 +430,16 @@ public final class Dater {
 	 */
 	public Date asDate() {
 		return from(asText()).get();
+	}
+	
+	/**
+	 * Returns the delegate date is today
+	 * 
+	 * @see #isSameDay(Calendar)
+	 * @return
+	 */
+	public boolean isToday() {
+		return isSameDay(Calendar.getInstance());
 	}
 	
 	/**
@@ -554,6 +578,48 @@ public final class Dater {
 	 */
 	public Dater setIntervalDesc(IntervalDesc intervalDesc) {
 		theIntervalDesc = Optional.of(checkNotNull(intervalDesc));
+		return this;
+	}
+	
+	/**
+	 * Sets the {@link Locale#ENGLISH} to this date style
+	 * 
+	 * @return
+	 */
+	public Dater english() {
+		return setLocale(Locale.ENGLISH);
+	}
+	
+	/**
+	 * Sets the {@link Locale#CHINESE} to this date style
+	 * 
+	 * @return
+	 */
+	public Dater chinese() {
+		return setLocale(Locale.CHINESE);
+	}
+	
+	/**
+	 * Sets the {@link Locale} to this date style
+	 * 
+	 * @see DateStyle#setLocale(Locale)
+	 * @param locale
+	 * @return
+	 */
+	public Dater setLocale(Locale locale) {
+		using().setLocale(locale);
+		return this;
+	}
+	
+	/**
+	 * Sets the {@link DateFormatSymbols} to this date style
+	 * 
+	 * @see DateStyle#setFormatSymbols(DateFormatSymbols)
+	 * @param dateFormatSymbols
+	 * @return
+	 */
+	public Dater setFormatSymbols(DateFormatSymbols dateFormatSymbols) {
+		using().setFormatSymbols(dateFormatSymbols);
 		return this;
 	}
 	
@@ -930,6 +996,15 @@ public final class Dater {
 	}
 	
 	/**
+	 * Returns the month description of the delegate date.
+	 * 
+	 * @return
+	 */
+	public String getMonthText() {
+		return asText(DateStyle.MONTH);
+	}
+	
+	/**
 	 * Returns the week of the delegate date.
 	 * Sunday is the first day of the week
 	 * 
@@ -938,6 +1013,15 @@ public final class Dater {
 	 */
 	public int getWeek() {
 	    return asCalendar().get(Calendar.DAY_OF_WEEK);
+	}
+	
+	/**
+	 * Returns the week description of the delegate date.
+	 * 
+	 * @return
+	 */
+	public String getWeekText() {
+		return asText(DateStyle.WEEK);
 	}
 	
 	/**
@@ -1092,7 +1176,7 @@ public final class Dater {
 		else {
 		    switch (date.length()) {
 	        case 6: style = "HHmmss"; break;
-	        case 8: style = r.contain(":") ? DateStyle.HH_mm_ss : "yyyyMMdd"; break;
+	        case 8: style = r.contain(":") ? DateStyle.HH_mm_ss : DateStyle.yyyyMMdd; break;
 	        case 10: style = DateStyle.yyyy_MM_dd; break;
 	        case 14: style = DateStyle.yyyyMMddHHmmss; break;
 	        case 19: style = DateStyle.yyyy_MM_dd_HH_mm_ss; break;

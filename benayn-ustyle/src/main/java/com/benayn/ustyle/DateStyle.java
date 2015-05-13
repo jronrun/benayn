@@ -63,11 +63,38 @@ public abstract class DateStyle {
 	};
 	
 	/**
+	 * yyyyMMdd
+	 */
+	public static final DateStyle DAY_TIGHT = new DateStyle() {
+		@Override public String style() {
+			return yyyyMMdd;
+		}
+	};
+	
+	/**
 	 * yyyy-MM-dd
 	 */
 	public static final DateStyle DAY = new DateStyle() {
 		@Override public String style() {
 			return yyyy_MM_dd;
+		}
+	};
+	
+	/**
+	 * EEE, week
+	 */
+	public static final DateStyle WEEK = new DateStyle() {
+		@Override public String style() {
+			return WEEK_EEE;
+		}
+	};
+	
+	/**
+	 * MMM, month
+	 */
+	public static final DateStyle MONTH = new DateStyle() {
+		@Override public String style() {
+			return MONTH_MMM;
 		}
 	};
 	
@@ -117,7 +144,19 @@ public abstract class DateStyle {
 	 * @return
 	 */
 	protected Locale locale() {
-	    return null;
+	    return this.locale;
+	}
+	
+	/**
+	 * Sets the {@link Locale} to this date style
+	 * 
+	 * @param locale
+	 * @return
+	 */
+	public DateStyle setLocale(Locale locale) {
+		this.locale = locale;
+		this.dateFormatInst = Optional.absent();
+		return this;
 	}
 	
 	/**
@@ -126,7 +165,19 @@ public abstract class DateStyle {
 	 * @return
 	 */
 	protected DateFormatSymbols formatSymbols() {
-	    return null;
+	    return this.dateFormatSymbols;
+	}
+	
+	/**
+	 * Sets the {@link DateFormatSymbols} to this date style
+	 * 
+	 * @param dateFormatSymbols
+	 * @return
+	 */
+	public DateStyle setFormatSymbols(DateFormatSymbols dateFormatSymbols) {
+		this.dateFormatSymbols = dateFormatSymbols;
+		this.dateFormatInst = Optional.absent();
+		return this;
 	}
 	
 	/**
@@ -193,12 +244,17 @@ public abstract class DateStyle {
 	    return (dateFormatInst = Optional.of(new SimpleDateFormat(pattern))).get();
 	}
 	
+	private Locale locale = null;
+	private DateFormatSymbols dateFormatSymbols = null;
 	private Optional<SimpleDateFormat> dateFormatInst = Optional.absent();
 	
 	public static final String HH_mm_ss = "HH:mm:ss";
 	public static final String yyyy_MM_dd = "yyyy-MM-dd";
+	public static final String WEEK_EEE = "EEE";
+	public static final String MONTH_MMM = "MMM";
 	public static final String yyyy_MM_dd_HH_mm_ss = "yyyy-MM-dd HH:mm:ss";
 	public static final String yyyyMMddHHmmss = "yyyyMMddHHmmss";
+	public static final String yyyyMMdd = "yyyyMMdd";
 	public static final String ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 	public static final String CST_FORMAT = "EEE MMM dd HH:mm:ss zzz yyyy";
 	public static final String GMT_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z";

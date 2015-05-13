@@ -522,6 +522,17 @@ public class Me5Test extends Me4Test {
     	assertFalse(mo.isSynchronized());
     }
     
+    @Test
+    public void testDateStyleLocale() {
+    	Dater dater = Dater.from("2015-05-13");
+		
+		assertEquals("Wed", dater.getWeekText());
+		assertEquals("星期三", dater.chinese().getWeekText());
+		
+		assertEquals("May", dater.english().getMonthText());
+		assertEquals("五月", dater.chinese().getMonthText());
+    }
+    
     public void tReflectConstructor() {
         //public
         FacadeObject<ConstructorPublic> pubFo = FacadeObject.wrap(ConstructorPublic.class);

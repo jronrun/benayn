@@ -11,6 +11,7 @@ import java.util.List;
 import com.benayn.ustyle.logger.Log;
 import com.benayn.ustyle.logger.Loggers;
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 
 /**
@@ -344,7 +345,7 @@ public final class Strs extends CharMatcher {
 	 * @return
 	 */
 	public static StrMatcher matcher(String target) {
-		return StrMatcher.from(checkNotNull(target));
+		return matcherTarget.get().update(checkNotNull(target));
 	}
 	
 	/**
@@ -411,5 +412,10 @@ public final class Strs extends CharMatcher {
 	@Override public boolean matches(char c) {
 		return false;
 	}
+	
+	/**
+	 * 
+	 */
+	private static final Optional<StrMatcher> matcherTarget = Optional.of(StrMatcher.empty());
 
 }
