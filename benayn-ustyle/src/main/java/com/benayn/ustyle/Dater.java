@@ -1016,6 +1016,78 @@ public final class Dater {
 	}
 	
 	/**
+	 * Checks if the delegate is Sunday
+	 * 
+	 * @return
+	 */
+	public boolean isSunday() {
+		return Calendar.SUNDAY == getWeek();
+	}
+	
+	/**
+	 * Checks if the delegate is Monday
+	 * 
+	 * @return
+	 */
+	public boolean isMonday() {
+		return Calendar.MONDAY == getWeek();
+	}
+	
+	/**
+	 * Checks if the delegate is Tuesday
+	 * 
+	 * @return
+	 */
+	public boolean isTuesday() {
+		return Calendar.TUESDAY == getWeek();
+	}
+	
+	/**
+	 * Checks if the delegate is Wednesday
+	 * 
+	 * @return
+	 */
+	public boolean isWednesday() {
+		return Calendar.WEDNESDAY == getWeek();
+	}
+	
+	/**
+	 * Checks if the delegate is Thursday
+	 * 
+	 * @return
+	 */
+	public boolean isThursday() {
+		return Calendar.THURSDAY == getWeek();
+	}
+	
+	/**
+	 * Checks if the delegate is Friday
+	 * 
+	 * @return
+	 */
+	public boolean isFriday() {
+		return Calendar.FRIDAY == getWeek();
+	}
+	
+	/**
+	 * Checks if the delegate is Saturday
+	 * 
+	 * @return
+	 */
+	public boolean isSaturday() {
+		return Calendar.SATURDAY == getWeek();
+	}
+	
+	/**
+	 * Checks if the delegate is Weekend
+	 * 
+	 * @return
+	 */
+	public boolean isWeekend() {
+		return isSaturday() || isSunday();
+	}
+	
+	/**
 	 * Returns the week description of the delegate date.
 	 * 
 	 * @return
