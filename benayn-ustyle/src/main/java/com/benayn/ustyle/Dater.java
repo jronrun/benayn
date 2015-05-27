@@ -3,11 +3,13 @@
  */
 package com.benayn.ustyle;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import javax.xml.bind.DatatypeConverter;
@@ -18,6 +20,8 @@ import com.benayn.ustyle.logger.Loggers;
 import com.benayn.ustyle.string.Replacer;
 import com.benayn.ustyle.string.Strs;
 import com.google.common.base.Optional;
+import com.google.common.base.Splitter;
+import com.google.common.primitives.Ints;
 
 /**
  * https://github.com/jronrun/benayn
@@ -77,6 +81,26 @@ public final class Dater {
 	 */
 	public static Dater now() {
 		return of(System.currentTimeMillis());
+	}
+	
+	/**
+	 * Returns a new Dater instance with the present time and given {@link DateStyle}
+	 * 
+	 * @param dateStyle
+	 * @return
+	 */
+	public static Dater now(DateStyle dateStyle) {
+		return now().with(dateStyle);
+	}
+	
+	/**
+	 * Returns a new Dater instance with the present time and given date pattern
+	 * 
+	 * @param datePattern
+	 * @return
+	 */
+	public static Dater now(String datePattern) {
+		return now().with(datePattern);
 	}
 	
 	/**
@@ -463,6 +487,34 @@ public final class Dater {
 	}
 	
 	/**
+	 * Sets the hour, minute, second to the delegate date
+	 * 
+	 * @param hour
+	 * @param minute
+	 * @param second
+	 * @return
+	 */
+	public Dater setClock(int hour, int minute, int second) {
+		return set().hours(hour).minutes(minute).second(second);
+	}
+	
+	/**
+	 * Sets the hour, minute, second to the delegate date, format is {@link DateStyle#CLOCK}
+	 * 
+	 * @see #setClock(int, int, int)
+	 * @see DateStyle#CLOCK
+	 * @param clock
+	 * @return
+	 */
+	public Dater setClock(String clock) {
+		String tip = "clock format must HH:mm:ss";
+		checkArgument(checkNotNull(clock).length() == 8, tip);
+		List<String> pieces = Splitter.on(":").splitToList(clock);
+		checkArgument(pieces.size() == 3, tip);
+		return setClock(Ints.tryParse(pieces.get(0)), Ints.tryParse(pieces.get(1)), Ints.tryParse(pieces.get(2)));
+	}
+	
+	/**
 	 * Returns a AddsOrSets instance that set the specified field to a delegate date
 	 * 
 	 * @return
@@ -494,6 +546,67 @@ public final class Dater {
 	public boolean inThisDay(Date theTargetDate) {
 		Date[] thisDay = asDayRange();
 		return theTargetDate.compareTo(thisDay[0]) >= 0 && theTargetDate.compareTo(thisDay[1]) <= 0;
+	}
+	
+	/**
+	 * Tests if delegate date is before the given clock, format is {@link DateStyle#CLOCK}
+	 * 
+	 * @param clock
+	 * @return
+	 */
+	public boolean beforeClock(String clock) {
+		return pkClock(clock, 'b');
+	}
+	
+	/**
+	 * Tests if delegate date is before or meanwhile the given clock, format is {@link DateStyle#CLOCK}
+	 * 
+	 * @param clock
+	 * @return
+	 */
+	public boolean beforeOrSameClock(String clock) {
+		return pkClock(clock, 'c');
+	}
+	
+	/**
+	 * Tests if delegate date is after the given clock, format is {@link DateStyle#CLOCK}
+	 * 
+	 * @param clock
+	 * @return
+	 */
+	public boolean afterClock(String clock) {
+		return pkClock(clock, 'a');
+	}
+	
+	/**
+	 * Tests if delegate date is after or meanwhile the given clock, format is {@link DateStyle#CLOCK}
+	 * 
+	 * @param clock
+	 * @return
+	 */
+	public boolean afterOrSameClock(String clock) {
+		return pkClock(clock, 'z');
+	}
+	
+	/**
+	 * Tests if delegate date is meanwhile the given clock, format is {@link DateStyle#CLOCK}
+	 * 
+	 * @param clock
+	 * @return
+	 */
+	public boolean sameClock(String clock) {
+		return pkClock(clock, 's');
+	}
+	
+	/**
+	 * Checks if the delegate date clock in the given clock range
+	 * 
+	 * @param startClock
+	 * @param endClock
+	 * @return
+	 */
+	public boolean inClock(String startClock, String endClock) {
+		return beforeOrSameClock(endClock) && afterOrSameClock(startClock);
 	}
 	
 	/**
@@ -1201,6 +1314,10 @@ public final class Dater {
 		}
 		
 		return false;
+	}
+	
+	private boolean pkClock(String clock, char expression) {
+		return pk(of(get()).setClock(clock).get(), expression);
 	}
 	
 	private void intlCalendar(boolean lenient) {

@@ -76,6 +76,68 @@ public class Me5Test extends Me4Test {
 	}
     
     @Test
+	public void testClock() {
+		Dater dater = Dater.of("2015-05-27 19:56:07");
+		
+		String left = "19:55:00";
+		String right = "20:00:00";
+		String same = "19:56:07";
+		
+		assertTrue(dater.beforeClock(right));
+		assertTrue(dater.beforeOrSameClock(right));
+		assertTrue(dater.beforeOrSameClock(same));
+		assertFalse(dater.beforeClock(left));
+		
+		assertTrue(dater.sameClock(same));
+		
+		assertTrue(dater.afterClock(left));
+		assertTrue(dater.afterOrSameClock(left));
+		assertTrue(dater.afterOrSameClock(same));
+		assertFalse(dater.afterClock(right));
+		
+		assertTrue(dater.inClock(left, right));
+		
+		assertFalse(dater.isSunday());
+		assertFalse(dater.isSaturday());
+		assertFalse(dater.isMonday());
+		assertFalse(dater.isTuesday());
+		assertFalse(dater.isThursday());
+		assertFalse(dater.isFriday());
+		assertTrue(dater.isWednesday());
+		
+		dater.setClock("23:00:00");
+		assertFalse(dater.beforeClock(right));
+		assertFalse(dater.beforeOrSameClock(right));
+		assertFalse(dater.beforeOrSameClock(same));
+		assertFalse(dater.beforeClock(left));
+		
+		assertFalse(dater.sameClock(same));
+		
+		assertTrue(dater.afterClock(left));
+		assertTrue(dater.afterOrSameClock(left));
+		assertTrue(dater.afterOrSameClock(same));
+		assertTrue(dater.afterClock(right));
+		
+		assertFalse(dater.inClock(left, right));
+		
+		dater.setClock(16, 30, 30);
+		assertTrue(dater.beforeClock(right));
+		assertTrue(dater.beforeOrSameClock(right));
+		assertTrue(dater.beforeOrSameClock(same));
+		assertTrue(dater.beforeClock(left));
+		
+		assertFalse(dater.sameClock(same));
+		
+		assertFalse(dater.afterClock(left));
+		assertFalse(dater.afterOrSameClock(left));
+		assertFalse(dater.afterOrSameClock(same));
+		assertFalse(dater.afterClock(right));
+		
+		assertFalse(dater.inClock(left, right));
+		
+	}
+    
+    @Test
     public void testDaterPK() {
 		DateStyle[] styles = new DateStyle[] {DateStyle.TIGHT, DateStyle.DAY, DateStyle.DEFAULT};
 		
