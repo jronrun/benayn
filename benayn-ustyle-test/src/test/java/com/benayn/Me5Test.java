@@ -24,6 +24,12 @@ import com.benayn.ustyle.Resolves;
 import com.benayn.ustyle.Sources;
 import com.benayn.ustyle.Suppliers2;
 import com.benayn.ustyle.string.Indexer;
+import com.benayn.ustyle.string.Levenshtein;
+import com.benayn.ustyle.string.Levenshtein.CharacterSubstitution;
+import com.benayn.ustyle.string.Levenshtein.Damerau;
+import com.benayn.ustyle.string.Levenshtein.LevenshteinEditDistance;
+import com.benayn.ustyle.string.Levenshtein.LongestCommonSubsequence;
+import com.benayn.ustyle.string.Levenshtein.WeightedLevenshtein;
 import com.google.common.base.Converter;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
@@ -41,6 +47,67 @@ public class Me5Test extends Me4Test {
     public void testTmp() {
         
     }
+    
+    @Test
+	public void testLevenshtein() {
+		LevenshteinEditDistance led = Levenshtein.of("My string");
+		assertTrue(1d == led.distanceAbsolute("My string", "My $tring"));
+		assertTrue(2d == led.distanceAbsolute("My string", "M string2"));
+		
+		assertTrue(0.1111111111111111 == led.distance("My $tring"));
+		assertTrue(0.8888888888888888 == led.similarity("My $tring"));
+		assertTrue(led.isSimilarity("My $tring"));
+
+		Damerau damerau = Levenshtein.damerau("ABCDEF");
+		assertTrue(1d == damerau.absoluteDistance("ABCDEF", "ABDCEF"));
+		assertTrue(2d == damerau.absoluteDistance("ABCDEF", "BACDFE"));
+		assertTrue(1d == damerau.absoluteDistance("ABCDEF", "ABCDE"));
+		assertTrue(1d == damerau.absoluteDistance("ABCDEF", "BCDEF"));
+		assertTrue(1d == damerau.absoluteDistance("ABCDEF", "ABCGDEF"));
+		assertTrue(2d == damerau.absoluteDistance("ABCDEF", "BCDAEF"));
+		assertTrue(6d == damerau.absoluteDistance("ABCDEF", "POIU"));
+		assertTrue(0.42857142857142855 == damerau.distance("GHABCDE"));
+		assertTrue(0.0 == damerau.similarity("POIU"));
+		assertFalse(damerau.isSimilarity("POIU"));
+		
+		Levenshtein levenshtein = Levenshtein.jaroWinkler("My string");
+        assertTrue(0.051851868629455566 == levenshtein.distance("My $tring"));
+        assertTrue(0.9481481313705444 == levenshtein.similarity("My $tring"));
+
+        LongestCommonSubsequence lcs = Levenshtein.longestCommonSubsequence("AGCAT");
+        assertTrue(4d == lcs.distanceAbsolute("AGCAT", "GAC"));
+        assertTrue(2d == lcs.length("AGCAT", "GAC"));
+        assertTrue(0.5 == lcs.distance("GAC"));
+        
+        assertTrue(0.33333333333333326 == Levenshtein.QGram("ABCD", "ABCE", 2).distance());
+        assertTrue(0.0 == Levenshtein.QGram("", "QSDFGHJKLM", 2).similarity());
+        assertTrue(0.967391304347826 == Levenshtein.QGram(
+        		"High Qua1ityMedications   Discount On All Reorders = Best Deal Ever! Viagra50/100mg - $1.85 071",
+        		"High Qua1ityMedications   Discount On All Reorders = Best Deal Ever! Viagra50/100mg - $1.85 7z3", 2).similarity());
+        
+        String s1 = " Buy And Download Cheap OemSoftwares! Adobe CreativeSuite 5 Master Collection from cheap 4zp";
+        String s2 = " Buy And Download Cheap OemSoftwares! Adobe CreativeSuite 5 Master Collection from cheap d1x";
+        assertTrue(0.4166666865348816 == Levenshtein.NGram("ABCD", "ABTUIO", 2).distance());
+        assertTrue(0.9836956523358822 == Levenshtein.NGram(s1, s2, 4).similarity());
+        
+        assertTrue(0.6 == Levenshtein.jaccard("ABCDE", "ABCDF", 2).similarity());
+        
+        assertTrue(0.6666666666666666 == Levenshtein.sorensenDice("ABCDE", "ABCDFG", 2).similarity());
+        
+        assertTrue(0.7071067811865475 == Levenshtein.cosine("ABC", "ABCE").similarity());
+        assertTrue(0.9486832980505138 == Levenshtein.cosine("ABAB", "BAB", 2).similarity());
+        
+        WeightedLevenshtein wl = Levenshtein.weightedLevenshtein("String1", new CharacterSubstitution() {
+			
+			@Override public double cost(char c1, char c2) {
+				if (c1 == 't' && c2 == 'r') {
+					return 0.5;
+				}
+				return 1.0;
+			}
+		});
+		assertTrue(1.5 == wl.distanceAbsolute("String1", "Srring2"));
+	}
     
     @Test
 	public void testDaterInterval() {
