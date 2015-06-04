@@ -6,7 +6,7 @@
 
     <groupId>com.benayn</groupId>
     <artifactId>benayn</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <name>benayn</name>
 	<description>Guava extension, Berkeley DB JE Tools, Usage, Utilities</description>
 	<url>https://github.com/jronrun/benayn</url>
@@ -43,7 +43,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <benayn.version>1.0.5</benayn.version>
+        <benayn.version>1.0.6</benayn.version>
         <guava.version>18.0</guava.version>
     </properties>
 
