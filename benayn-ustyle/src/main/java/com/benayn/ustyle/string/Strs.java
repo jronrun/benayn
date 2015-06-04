@@ -70,6 +70,16 @@ public final class Strs extends CharMatcher {
 	}
 	
 	/**
+	 * Checks if a String is not null
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public static boolean isNotNull(String target) {
+		return !isNull(target);
+	}
+	
+	/**
 	 * Checks if the given target is a instance of String
 	 * 
 	 * @param target
@@ -78,6 +88,16 @@ public final class Strs extends CharMatcher {
 	public static boolean is(Object target) {
 //		return String.class.isInstance(target);
 		return target instanceof String;
+	}
+	
+	/**
+	 * Checks if the given target is not a instance of String
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public static boolean isNot(Object target) {
+		return !is(target);
 	}
 	
 	/**
@@ -91,6 +111,16 @@ public final class Strs extends CharMatcher {
 	}
 	
 	/**
+	 * Checks if a String is not empty ("") or null
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public static boolean isNotEmpty(String target) {
+		return !isEmpty(target);
+	}
+	
+	/**
 	 * Checks if a Character is white space
 	 * 
 	 * @param ch
@@ -99,6 +129,16 @@ public final class Strs extends CharMatcher {
 	public static boolean isWhitespace(int ch) {
 		return CHAR_WHITE_SPACE == ch || TAB == ch || LF == ch || CR == ch;
     }
+	
+	/**
+	 * Checks if a Character is not white space
+	 * 
+	 * @param ch
+	 * @return
+	 */
+	public static boolean isNotWhitespace(int ch) {
+		return !isWhitespace(ch);
+	}
 	
 	/**
 	 * Checks if a String is empty ("") or null or special value.
@@ -116,6 +156,17 @@ public final class Strs extends CharMatcher {
 	}
 	
 	/**
+	 * Checks if a String is not empty ("") or null or special value.
+	 * 
+	 * @param target
+	 * @param specialValueAsEmpty
+	 * @return
+	 */
+	public static boolean isNotEmpty(String target, String... specialValueAsEmpty) {
+		return !isEmpty(target, specialValueAsEmpty);
+	}
+	
+	/**
 	 * Checks if a String is whitespace, multi whitespace, empty ("") or null
 	 * 
 	 * @param target
@@ -123,6 +174,16 @@ public final class Strs extends CharMatcher {
 	 */
 	public static boolean isBlank(String target) {
 		return isBlank(target, WHITE_SPACE);
+	}
+	
+	/**
+	 * Checks if a String is not whitespace, multi whitespace, empty ("") or null
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public static boolean isNotBlank(String target) {
+		return !isBlank(target);
 	}
 			
 	/**
@@ -138,6 +199,17 @@ public final class Strs extends CharMatcher {
 		}
 		
 		return isEmpty(WHITESPACE.removeFrom(target), specialValueAsEmpty);
+	}
+	
+	/**
+	 * Checks if a String is not whitespace, multi whitespace, empty ("") or null or special value.
+	 * 
+	 * @param target
+	 * @param specialValueAsEmpty
+	 * @return
+	 */
+	public static boolean isNotBlank(String target, String... specialValueAsEmpty) {
+		return !isBlank(target, specialValueAsEmpty);
 	}
 	
 	/**
