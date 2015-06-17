@@ -73,6 +73,33 @@ public final class Dater {
     public static Date asDate(String target) {
     	return from(target).get();
     }
+    
+    /**
+     * Returns the present time as given date pattern text
+     * 
+     * @return
+     */
+    public static String nowAsText(String datePattern) {
+    	return now(datePattern).asText();
+    }
+    
+    /**
+     * Returns the present time as given {@link DateStyle} text
+     * 
+     * @return
+     */
+    public static String nowAsText(DateStyle dateStyle) {
+    	return now(dateStyle).asText();
+    }
+    
+    /**
+     * Returns the present time as {@link DateStyle#DEFAULT} text
+     * 
+     * @return
+     */
+    public static String nowAsText() {
+    	return now().asText();
+    }
 	
 	/**
 	 * Returns a new Dater instance with the present time
