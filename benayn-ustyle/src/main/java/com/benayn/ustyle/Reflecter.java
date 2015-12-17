@@ -454,6 +454,22 @@ public final class Reflecter<T> {
 	}
 	
 	/**
+	 * Loops the object's property and value
+	 * 
+	 * @param decision
+	 * @return
+	 */
+	public <K, V> Reflecter<T> keyValLoop(final Decision<Triple<K, Field, V>> decision) {
+		fieldLoop(new Decisional<Field>() {
+
+			@SuppressWarnings("unchecked") @Override protected void decision(Field input) {
+				decision.apply((Triple<K, Field, V>) Triple.of(input.getName(), input, getPropVal(input, input.getName())));
+			}
+		});
+		return this;
+	}
+	
+	/**
 	 * Ignore the fields in the given modifiers for the field represented
      * The <code>Modifier</code> class should be used to decode the modifiers.
      * 
@@ -497,6 +513,33 @@ public final class Reflecter<T> {
 	public Reflecter<T> filter(Decision<Field> decision) {
 		this.fieldHolder.get().filter(decision);
 		return this;
+	}
+	
+	/**
+	 * Omit property that value is <code>null</code>
+	 * 
+	 * @return
+	 */
+	public Reflecter<T> omitNull() {
+		return filter(nullValueDecision);
+	}
+	
+	/**
+	 * Omit property that value is <code>null</code> or empty string
+	 * 
+	 * @return
+	 */
+	public Reflecter<T> omitEmpty() {
+		return filter(emptyValueDecision);
+	}
+	
+	/**
+	 * Omit property that value is <code>null</code> or blank string
+	 * 
+	 * @return
+	 */
+	public Reflecter<T> omitBlank() {
+		return filter(blankValueDecision);
 	}
 	
 	/**
@@ -840,6 +883,39 @@ public final class Reflecter<T> {
 	};
 	private static final Decision<Field> primitivesD = new Decision<Field>(){
 		@Override public boolean apply(Field input) { return allPrimitiveTypes().contains(input.getType()); }
+	};
+	private final Decision<Field> nullValueDecision = new Decision<Field>() {
+		
+		@Override public boolean apply(Field input) {
+			return null == getPropVal(input, input.getName()) ? false : true;
+		}
+	};
+	
+	private final Decision<Field> emptyValueDecision = new Decision<Field>() {
+		
+		@Override public boolean apply(Field input) {
+			Object tgt = getPropVal(input, input.getName());
+			if (null == tgt) { return false; }
+			
+			if (Decisions.ObjDecision.IS_STRING.apply(tgt)) {
+				return Strs.isEmpty(tgt.toString()) ? false : true;
+			}
+			
+			return true;
+		}
+	};
+	
+	private final Decision<Field> blankValueDecision = new Decision<Field>() {
+		
+		@Override public boolean apply(Field input) {
+			Object tgt = getPropVal(input, input.getName());
+			if (null == tgt) { return false; }
+			if (Decisions.ObjDecision.IS_STRING.apply(tgt)) {
+				return Strs.isBlank(tgt.toString()) ? false : true;
+			}
+			
+			return true;
+		}
 	};
 	
 	/**
