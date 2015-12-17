@@ -44,7 +44,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <benayn.version>1.0.6</benayn.version>
-        <guava.version>18.0</guava.version>
+        <guava.version>19.0</guava.version>
     </properties>
 
     <dependencies>
